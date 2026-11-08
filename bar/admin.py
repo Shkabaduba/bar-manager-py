@@ -1,5 +1,6 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
+from unfold.admin import ModelAdmin
 
 from .models import (
     BarIngredient,
@@ -12,7 +13,11 @@ from .models import (
 
 
 @admin.register(Bartender)
-class BartenderAdmin(UserAdmin):
+class BartenderAdmin(UserAdmin, ModelAdmin):
+    list_display = (
+        "username",
+        "first_name",
+    )
     list_display = UserAdmin.list_display + ("staff_id",)
     fieldsets = UserAdmin.fieldsets + (
         (("Additional info", {"fields": ("staff_id",)}),)
@@ -34,34 +39,34 @@ class BartenderAdmin(UserAdmin):
 
 
 @admin.register(BarSupplier)
-class BarSupplierAdmin(admin.ModelAdmin):
+class BarSupplierAdmin(ModelAdmin):
     list_display = ("name", "phone", "email")
     search_fields = ("name",)
 
 
 @admin.register(BarIngredient)
-class BarIngredientAdmin(admin.ModelAdmin):
+class BarIngredientAdmin(ModelAdmin):
     list_display = ("name", "stock_quantity", "supplier")
     search_fields = ("name",)
     list_filter = ("supplier",)
 
 
 @admin.register(DrinksCategory)
-class DrinksCategoryAdmin(admin.ModelAdmin):
+class DrinksCategoryAdmin(ModelAdmin):
     list_display = ("name", "is_alcohol")
     list_filter = ("is_alcohol",)
     search_fields = ("name",)
 
 
 @admin.register(Drink)
-class DrinkAdmin(admin.ModelAdmin):
+class DrinkAdmin(ModelAdmin):
     list_display = ("name", "price", "volume_ml", "category")
     search_fields = ("name",)
     list_filter = ("category",)
 
 
 @admin.register(Order)
-class OrderAdmin(admin.ModelAdmin):
+class OrderAdmin(ModelAdmin):
     list_display = ("id", "table_number", "bartender", "is_paid", "created_at")
     list_filter = ("is_paid", "created_at")
     search_fields = ("table_number", "bartender__username")

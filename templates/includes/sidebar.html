@@ -1,23 +1,29 @@
-<ul class="sidebar-nav list-group">
-  {% if user.is_authenticated %}
-    <li class="list-group-item">User: <a href="#">{{ user.get_username }}</a></li>
-    <li class="list-group-item">
+<div class="card bg-base-200 shadow-xl p-4" xmlns="http://www.w3.org/1999/html">
+  <h2 class="text-xl font-bold mb-4 px-4 text-primary">🍸 Bar Manager</h2>
+
+  <div class="px-4 mb-4">
+    {% if user.is_authenticated %}
+      <p class="text-sm opacity-80 mb-2">
+      Bartender: <a href="#" class="link link-primary font-semibold">{{ user.get_username }}</a>
+      </p>
       <form method="post" action="{% url 'logout' %}">
         {% csrf_token %}
-        <button type="submit" class="btn btn-link p-0">Logout</button>
+        <button type="submit" class="btn btn-outline btn-error btn-xs">Logout</button>
       </form>
-    </li>
-  {% else %}
-    <li class="list-group-item"><a href="{% url 'login'%}?next={{request.path}}">Login</a></li>
-  {% endif %}
+    {% else %}
+      <a href="{% url 'login' %}?next={{ request.path }}" class="btn btn-primary btn-sm w-full">Login</a>
+    {% endif %}
+  </div>
 
-  <br>
+  <div class="divider my-1"></div>
 
-  <li class="list-group-item"><a href="{% url 'bar:index' %}">Home</a></li>
-  <li class="list-group-item"><a href="{% url 'bar:drink-list' %}">Drinks</a></li>
-  <li class="list-group-item"><a href="{% url 'bar:category-list' %}">Categories</a></li>
-  <li class="list-group-item"><a href="{% url 'bar:ingredient-list' %}">Ingredients</a></li>
-  <li class="list-group-item"><a href="{% url 'bar:supplier-list' %}">Suppliers</a></li>
-  <li class="list-group-item"><a href="{% url 'bar:bartender-list' %}">Bartenders</a></li>
-  <li class="list-group-item"><a href="{% url 'bar:order-list' %}">Orders</a></li>
-</ul>
+  <ul class="menu w-full p-0 [&_li>*]:rounded-lg">
+    <li><a href="{% url 'bar:index' %}">Home Dashboard</a></li>
+    <li><a href="{% url 'bar:drink-list' %}">Drinks</a></li>
+    <li><a href="{% url 'bar:category-list' %}">Categories</a></li>
+    <li><a href="{% url 'bar:ingredient-list' %}">Ingredients</a></li>
+    <li><a href="{% url 'bar:supplier-list' %}">Suppliers</a></li>
+    <li><a href="{% url 'bar:bartender-list' %}">Bartenders</a></li>
+    <li><a href="{% url 'bar:order-list' %}">Orders</a></li>
+  </ul>
+</div>
