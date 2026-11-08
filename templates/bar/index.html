@@ -1,17 +1,14 @@
 {% extends "base.html" %}
 
 {% block content %}
-  <h1>Bar Manager Home</h1>
+  <h1>Bar Manager Dashboard</h1>
   <p>Welcome to the Bar Management System!</p>
 
-  <h2>Bar Statistics:</h2>
+  <h2>Current Bar Shift Statistics:</h2>
   <ul>
-    <li><strong>Drinks:</strong> {{ num_drinks }}</li>
-    <li><strong>Categories:</strong> {{ num_categories }}</li>
-    <li><strong>Bartenders:</strong> {{ num_bartenders }}</li>
-    <li><strong>Ingredients:</strong> {{ num_ingredients }}</li>
-    <li><strong>Suppliers:</strong> {{ num_suppliers }}</li>
-    <li><strong>Orders:</strong> {{ num_orders }}</li>
+    <li><strong>Drinks in menu:</strong> {{ num_drinks }} (across {{ num_categories }} categories)</li>
+    <li><strong>Active unpaid orders:</strong> {{ active_orders }}</li>
+    <li><strong>Out of stock ingredients:</strong> {{ out_of_stock_ingredients }}</li>
   </ul>
 
   <p>You have visited this page {{ num_visits }} time{{ num_visits|pluralize }}</p>

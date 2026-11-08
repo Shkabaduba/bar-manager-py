@@ -15,10 +15,10 @@ from .models import (
 def index(request):
     num_drinks = Drink.objects.count()
     num_categories = DrinksCategory.objects.count()
-    num_bartenders = Bartender.objects.count()
-    num_suppliers = BarSupplier.objects.count()
-    num_ingredients = BarIngredient.objects.count()
-    num_orders = Order.objects.count()
+    out_of_stock_ingredients = BarIngredient.objects.filter(
+        stock_quantity=0
+    ).count()
+    active_orders = Order.objects.filter(is_paid=False).count()
 
     num_visits = request.session.get("num_visits", 0)
     request.session["num_visits"] = num_visits + 1
@@ -26,10 +26,8 @@ def index(request):
     context = {
         "num_drinks": num_drinks,
         "num_categories": num_categories,
-        "num_bartenders": num_bartenders,
-        "num_suppliers": num_suppliers,
-        "num_ingredients": num_ingredients,
-        "num_orders": num_orders,
+        "active_orders": active_orders,
+        "out_of_stock_ingredients": out_of_stock_ingredients,
         "num_visits": num_visits + 1,
     }
 
