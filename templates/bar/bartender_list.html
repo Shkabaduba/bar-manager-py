@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <h1>List of Bartenders</h1>
+
+  {% if bartender_list %}
+    <table class="table">
+      <tr>
+        <th>ID</th>
+        <th>Username</th>
+        <th>First Name</th>
+        <th>Last Name</th>
+        <th>Bartender's ID</th>
+      </tr>
+
+      {% for bartender in bartender_list %}
+        <tr>
+          <td>{{ bartender.id }}</td>
+          <td>
+            {{ bartender.username }}
+            {% if bartender == user %}
+              (Me)
+            {% endif %}
+          </td>
+          <td>{{ bartender.first_name }}</td>
+          <td>{{ bartender.last_name }}</td>
+          <td>{{ bartender.staff_id }}</td>
+        </tr>
+      {% endfor %}
+    </table>
+  {% else %}
+    <p>There are no bartenders in the bar yet.</p>
+  {% endif %}
+{% endblock %}

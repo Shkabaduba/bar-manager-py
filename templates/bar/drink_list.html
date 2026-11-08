@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <h1>List of Drinks</h1>
+
+  {% if drink_list %}
+    <table class="table">
+      <tr>
+        <th>ID</th>
+        <th>Name</th>
+        <th>Price</th>
+        <th>Volume</th>
+        <th>Name of Category</th>
+      </tr>
+
+      {% for drink in drink_list %}
+        <tr>
+          <td>{{ drink.id }}</td>
+          <td>{{ drink.name }}</td>
+          <td>{{ drink.price }}</td>
+          <td>{{ drink.volume_ml }}</td>
+          <td>{{ drink.category.name }}</td>
+        </tr>
+      {% endfor %}
+    </table>
+  {% else %}
+    <p>There are no drinks in the bar yet.</p>
+  {% endif %}
+{% endblock %}

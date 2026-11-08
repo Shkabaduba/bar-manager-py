@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <h1>Drinks Categories</h1>
+
+  {% if category_list %}
+    <table class="table">
+      <tr>
+        <th>ID</th>
+        <th>Name</th>
+        <th>Type</th>
+      </tr>
+
+      {% for category in category_list %}
+        <tr>
+          <td>{{ category.id }}</td>
+          <td>{{ category.name }}</td>
+          <td>
+            {% if category.is_alcohol %}
+              Alcohol Drink!
+            {% else %}
+              Non-alcohol Drink!
+            {% endif %}
+          </td>
+        </tr>
+      {% endfor %}
+    </table>
+  {% else %}
+    <p>There are no categories in the bar yet.</p>
+  {% endif %}
+{% endblock %}

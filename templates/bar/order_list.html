@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <h1>List of Orders</h1>
+
+  {% if order_list %}
+    <table class="table">
+      <tr>
+        <th>ID</th>
+        <th>Table Number</th>
+        <th>Bartender</th>
+        <th>Start Time</th>
+        <th>Paid</th>
+      </tr>
+
+      {% for order in order_list %}
+        <tr>
+          <td>{{ order.id }}</td>
+          <td>{{ order.table_number }}</td>
+          <td>{{ order.bartender.username }}</td>
+          <td>{{ order.created_at }}</td>
+          <td>
+            {% if order.is_paid %}
+              Paid
+            {% else %}
+              Unpaid
+            {% endif %}
+          </td>
+        </tr>
+      {% endfor %}
+    </table>
+  {% else %}
+    <p>There are no orders in the bar for now.</p>
+  {% endif %}
+{% endblock %}

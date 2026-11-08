@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <h1>List of Ingredients</h1>
+
+  {% if ingredient_list %}
+    <table class="table">
+      <tr>
+        <th>ID</th>
+        <th>Name</th>
+        <th>Stock Quantity</th>
+        <th>Supplier</th>
+      </tr>
+
+      {% for ingredient in ingredient_list %}
+        <tr>
+          <td>{{ ingredient.id }}</td>
+          <td>{{ ingredient.name }}</td>
+          <td>{{ ingredient.stock_quantity }}</td>
+          <td>{{ ingredient.supplier.name }}</td>
+        </tr>
+      {% endfor %}
+    </table>
+  {% else %}
+    <p>There are no ingredients in the bar yet.</p>
+  {% endif %}
+{% endblock %}
