@@ -9,6 +9,8 @@ from .forms import (
     BartenderStaffUpdateForm,
     BartenderCreationForm,
     DrinkSearchForm,
+    BartenderSearchForm,
+    CategorySearchForm,
 )
 
 from .models import (
@@ -49,6 +51,43 @@ class DrinksCategoryListView(LoginRequiredMixin, generic.ListView):
     context_object_name = "category_list"
     template_name = "bar/category_list.html"
     paginate_by = 5
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super().get_context_data(**kwargs)
+        name = self.request.GET.get("name", "")
+        context["search_form"] = CategorySearchForm(
+            initial={"name": name}
+        )
+        return context
+
+    def get_queryset(self):
+        queryset = DrinksCategory.objects.all()
+        form = CategorySearchForm(self.request.GET)
+        if form.is_valid():
+            return queryset.filter(
+                name__icontains=form.cleaned_data["name"]
+            )
+        return queryset
+
+
+class DrinksCategoryCreateView(LoginRequiredMixin, generic.CreateView):
+    model = DrinksCategory
+    fields = "__all__"
+    template_name = "bar/category_form.html"
+    success_url = reverse_lazy("bar:category-list")
+
+
+class DrinksCategoryUpdateView(LoginRequiredMixin, generic.UpdateView):
+    model = DrinksCategory
+    fields = "__all__"
+    template_name = "bar/category_form.html"
+    success_url = reverse_lazy("bar:category-list")
+
+
+class DrinksCategoryDeleteView(LoginRequiredMixin, generic.DeleteView):
+    model = DrinksCategory
+    template_name = "bar/category_confirm_delete.html"
+    success_url = reverse_lazy("bar:category-list")
 
 
 class BarSupplierListView(LoginRequiredMixin, generic.ListView):
@@ -110,12 +149,28 @@ class DrinkDeleteView(LoginRequiredMixin, generic.DeleteView):
     success_url = reverse_lazy("bar:drink-list")
 
 
-
 class BartenderListView(LoginRequiredMixin, generic.ListView):
     model = Bartender
     context_object_name = "bartender_list"
     template_name = "bar/bartender_list.html"
     paginate_by = 5
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super().get_context_data(**kwargs)
+        username = self.request.GET.get("username", "")
+        context["search_form"] = BartenderSearchForm(
+            initial={"username": username}
+        )
+        return context
+
+    def get_queryset(self):
+        queryset = Bartender.objects.all()
+        form = BartenderSearchForm(self.request.GET)
+        if form.is_valid():
+            return queryset.filter(
+                username__icontains=form.cleaned_data["username"]
+            )
+        return queryset
 
 
 class BartenderCreateView(LoginRequiredMixin, generic.CreateView):
@@ -142,8 +197,10 @@ class OrderListView(LoginRequiredMixin, generic.ListView):
     paginate_by = 5
 
     def get_queryset(self):
-        queryset = Order.objects.prefetch_related("drinks").select_related("bartender")
-        return queryset
+        return (
+            Order.objects.prefetch_related("drinks")
+            .select_related("bartender")
+        )
 
 
 class OrderDetailView(LoginRequiredMixin, generic.DetailView):
@@ -151,8 +208,10 @@ class OrderDetailView(LoginRequiredMixin, generic.DetailView):
     template_name = "bar/order_detail.html"
 
     def get_queryset(self):
-        queryset = Order.objects.prefetch_related("drinks").select_related("bartender")
-        return queryset
+        return (
+            Order.objects.prefetch_related("drinks")
+            .select_related("bartender")
+        )
 
 
 class DrinkDetailView(LoginRequiredMixin, generic.DetailView):
@@ -160,8 +219,10 @@ class DrinkDetailView(LoginRequiredMixin, generic.DetailView):
     template_name = "bar/drink_detail.html"
 
     def get_queryset(self):
-        queryset = Drink.objects.select_related("category").prefetch_related("ingredients__supplier")
-        return queryset
+        return (
+            Drink.objects.select_related("category")
+            .prefetch_related("ingredients__supplier")
+        )
 
 
 class BartenderDetailView(LoginRequiredMixin, generic.DetailView):
@@ -171,6 +232,7 @@ class BartenderDetailView(LoginRequiredMixin, generic.DetailView):
     def get_queryset(self):
         queryset = Bartender.objects.prefetch_related("orders__drinks")
         return queryset
+
 
 @login_required
 def toggle_assign_order(request, pk):

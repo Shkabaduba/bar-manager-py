@@ -4,6 +4,10 @@
   <div class="flex justify-between items-center mb-4">
     <h1>List of Bartenders</h1>
     <a href="{% url 'bar:bartender-create' %}" class="btn btn-primary btn-sm">+ Create Bartender</a>
+  <form method="get" action="" class="flex gap-2 mb-4">
+    {{ search_form.username }}
+    <button type="submit" class="btn btn-primary btn-sm">Search</button>
+  </form>
   </div>
 
   {% if bartender_list %}

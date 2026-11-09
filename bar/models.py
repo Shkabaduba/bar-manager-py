@@ -1,9 +1,7 @@
-from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.urls import reverse
 from django.conf import settings
-from django.shortcuts import render, get_object_or_404, redirect
 
 
 class BarSupplier(models.Model):
@@ -104,7 +102,6 @@ class Order(models.Model):
 
     class Meta:
         ordering = ["-created_at"]
-
 
     def __str__(self):
         return f"Order #{self.id} (Table {self.table_number})"
