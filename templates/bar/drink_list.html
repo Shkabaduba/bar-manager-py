@@ -1,7 +1,17 @@
 {% extends "base.html" %}
+{% load crispy_forms_tags %}
 
 {% block content %}
-  <h1>List of Drinks</h1>
+  <div class="flex justify-between items-center mb-4">
+    <h1>List of Drinks</h1>
+    <a href="{% url 'bar:drink-create' %}" class="btn btn-primary btn-sm">+ Create Drink</a>
+  </div>
+
+  <form method="get" action="" class="flex gap-2 mb-4 items-center [&_.form-group]:mb-0 [&_input]:rounded-md [&_input]:px-3">
+    {{ search_form|crispy }}
+    <button type="submit" class="btn btn-primary btn-sm">🔍</button>
+  </form>
+
 
   {% if drink_list %}
     <table class="table">

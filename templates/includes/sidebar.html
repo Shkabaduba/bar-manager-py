@@ -4,7 +4,7 @@
   <div class="px-4 mb-4">
     {% if user.is_authenticated %}
       <p class="text-sm opacity-80 mb-2">
-      Bartender: <a href="#" class="link link-primary font-semibold">{{ user.get_username }}</a>
+      Bartender: <a href="{{ user.get_absolute_url }}" class="link link-primary font-semibold">{{ user.get_username }}</a>
       </p>
       <form method="post" action="{% url 'logout' %}">
         {% csrf_token %}

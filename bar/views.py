@@ -1,7 +1,15 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.urls import reverse_lazy
 from django.views import generic
+
+from .forms import (
+    DrinkForm,
+    BartenderStaffUpdateForm,
+    BartenderCreationForm,
+    DrinkSearchForm,
+)
 
 from .models import (
     BarIngredient,
@@ -67,9 +75,40 @@ class DrinksListView(LoginRequiredMixin, generic.ListView):
     template_name = "bar/drink_list.html"
     paginate_by = 5
 
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super().get_context_data(**kwargs)
+        name = self.request.GET.get("name", "")
+        context["search_form"] = DrinkSearchForm(
+            initial={"name": name}
+        )
+        return context
+
     def get_queryset(self):
         queryset = Drink.objects.select_related("category")
+        form = DrinkSearchForm(self.request.GET)
+        if form.is_valid():
+            return queryset.filter(
+                name__icontains=form.cleaned_data["name"]
+            )
         return queryset
+
+
+class DrinkCreateView(LoginRequiredMixin, generic.CreateView):
+    model = Drink
+    form_class = DrinkForm
+    success_url = reverse_lazy("bar:drink-list")
+
+
+class DrinkUpdateView(LoginRequiredMixin, generic.UpdateView):
+    model = Drink
+    form_class = DrinkForm
+    success_url = reverse_lazy("bar:drink-list")
+
+
+class DrinkDeleteView(LoginRequiredMixin, generic.DeleteView):
+    model = Drink
+    success_url = reverse_lazy("bar:drink-list")
+
 
 
 class BartenderListView(LoginRequiredMixin, generic.ListView):
@@ -77,6 +116,23 @@ class BartenderListView(LoginRequiredMixin, generic.ListView):
     context_object_name = "bartender_list"
     template_name = "bar/bartender_list.html"
     paginate_by = 5
+
+
+class BartenderCreateView(LoginRequiredMixin, generic.CreateView):
+    model = Bartender
+    form_class = BartenderCreationForm
+    success_url = reverse_lazy("bar:bartender-list")
+
+
+class BartenderStaffUpdateView(LoginRequiredMixin, generic.UpdateView):
+    model = Bartender
+    form_class = BartenderStaffUpdateForm
+    success_url = reverse_lazy("bar:bartender-list")
+
+
+class BartenderDeleteView(LoginRequiredMixin, generic.DeleteView):
+    model = Bartender
+    success_url = reverse_lazy("bar:bartender-list")
 
 
 class OrderListView(LoginRequiredMixin, generic.ListView):

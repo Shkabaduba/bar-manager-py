@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <div class="flex justify-between items-center mb-4">
+    <h1>Bartender: {{ bartender.username }}</h1>
+    <div class="flex gap-2">
+      <a href="{% url 'bar:bartender-update' bartender.id %}" class="btn btn-info btn-sm">Update Staff ID</a>
+      <a href="{% url 'bar:bartender-delete' bartender.id %}" class="btn btn-error btn-sm">Delete</a>
+      <a href="{% url 'bar:bartender-list' %}" class="btn btn-outline btn-sm">← Back to Bartenders</a>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+    <div class="bg-base-300 p-4 rounded-box">
+      <p class="text-xs uppercase tracking-wide opacity-70">Full Name</p>
+      <p class="text-lg font-bold">
+        {% if bartender.first_name or bartender.last_name %}
+          {{ bartender.first_name }} {{ bartender.last_name }}
+        {% else %}
+          <span class="opacity-70 font-normal">Not specified</span>
+        {% endif %}
+      </p>
+    </div>
+
+    <div class="bg-base-300 p-4 rounded-box">
+      <p class="text-xs uppercase tracking-wide opacity-70">Staff ID</p>
+      <p class="text-lg font-bold text-primary">{{ bartender.staff_id }}</p>
+    </div>
+
+    <div class="bg-base-300 p-4 rounded-box">
+      <p class="text-xs uppercase tracking-wide opacity-70">Assigned Orders</p>
+      <p class="text-lg font-bold">{{ bartender.orders.count }}</p>
+    </div>
+  </div>
+
+  <h2>Assigned Orders:</h2>
+  {% if bartender.orders.all %}
+    <table class="table w-full">
+      <thead>
+        <tr>
+          <th>Order</th>
+          <th>Table</th>
+          <th>Time</th>
+          <th>Status</th>
+          <th>Drinks</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for order in bartender.orders.all %}
+          <tr>
+            <td>
+              <a href="{{ order.get_absolute_url }}" class="link link-primary font-bold">
+                #{{ order.id }}
+              </a>
+            </td>
+            <td>Table {{ order.table_number }}</td>
+            <td>{{ order.created_at|date:"Y-m-d H:i" }}</td>
+            <td>
+              {% if order.is_paid %}
+                <span class="badge badge-success">Paid</span>
+              {% else %}
+                <span class="badge badge-warning">Unpaid</span>
+              {% endif %}
+            </td>
+            <td>
+              {% if order.drinks.all %}
+                <div class="flex flex-wrap gap-1">
+                  {% for drink in order.drinks.all %}
+                    <a href="{{ drink.get_absolute_url }}" class="badge badge-outline hover:badge-primary">
+                      {{ drink.name }}
+                    </a>
+                  {% endfor %}
+                </div>
+              {% else %}
+                <span class="opacity-70 text-sm">No drinks</span>
+              {% endif %}
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+    <p class="opacity-70">No orders assigned to this bartender yet.</p>
+  {% endif %}
+{% endblock %}

@@ -1,7 +1,10 @@
 {% extends "base.html" %}
 
 {% block content %}
-  <h1>List of Bartenders</h1>
+  <div class="flex justify-between items-center mb-4">
+    <h1>List of Bartenders</h1>
+    <a href="{% url 'bar:bartender-create' %}" class="btn btn-primary btn-sm">+ Create Bartender</a>
+  </div>
 
   {% if bartender_list %}
     <table class="table">
@@ -17,7 +20,9 @@
         <tr>
           <td>{{ bartender.id }}</td>
           <td>
-            {{ bartender.username }}
+            <a href="{{ bartender.get_absolute_url }}" class="link link-primary font-bold">
+              {{ bartender.username }}
+            </a>
             {% if bartender == user %}
               (Me)
             {% endif %}

@@ -3,7 +3,11 @@
 {% block content %}
   <div class="flex justify-between items-center mb-4">
     <h1>{{ drink.name }}</h1>
-    <a href="{% url 'bar:drink-list' %}" class="btn btn-outline btn-sm">← Back to Drinks</a>
+    <div class="flex gap-2">
+      <a href="{% url 'bar:drink-update' drink.id %}" class="btn btn-info btn-sm">Update</a>
+      <a href="{% url 'bar:drink-delete' drink.id %}" class="btn btn-error btn-sm">Delete</a>
+      <a href="{% url 'bar:drink-list' %}" class="btn btn-outline btn-sm">← Back to Drinks</a>
+    </div>
   </div>
 
   <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">

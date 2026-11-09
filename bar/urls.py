@@ -10,7 +10,14 @@ from .views import (
     OrderListView,
     OrderDetailView,
     DrinkDetailView,
-    BartenderDetailView, toggle_assign_order,
+    BartenderDetailView,
+    toggle_assign_order,
+    DrinkCreateView,
+    DrinkUpdateView,
+    DrinkDeleteView,
+    BartenderCreateView,
+    BartenderStaffUpdateView,
+    BartenderDeleteView,
 )
 
 
@@ -26,6 +33,12 @@ urlpatterns = [
     path("drinks/<int:pk>/", DrinkDetailView.as_view(), name="drink-detail"),
     path("bartenders/<int:pk>/", BartenderDetailView.as_view(), name="bartender-detail"),
     path("orders/<int:pk>/toggle-assign/", toggle_assign_order, name="toggle-assign-order"),
+    path("drinks/create/", DrinkCreateView.as_view(), name="drink-create"),
+    path("drinks/<int:pk>/update/", DrinkUpdateView.as_view(), name="drink-update"),
+    path("drinks/<int:pk>/delete/", DrinkDeleteView.as_view(), name="drink-delete"),
+    path("bartenders/create/", BartenderCreateView.as_view(), name="bartender-create"),
+    path("bartenders/<int:pk>/update/", BartenderStaffUpdateView.as_view(), name="bartender-update"),
+    path("bartenders/<int:pk>/delete/", BartenderDeleteView.as_view(), name="bartender-delete"),
 ]
 
 app_name = "bar"
