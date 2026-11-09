@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% block content %}
-  <div class="flex-container justify-between items-center mb-4">
+  <div class="flex justify-between items-center mb-4">
     <h1>Order #{{ order.id }} (Table {{ order.table_number }})</h1>
     <a href="{% url 'bar:order-list' %}" class="btn btn-outline btn-sm">Back to Orders</a>
   </div>
@@ -32,7 +32,7 @@
           <form method="post" action="{% url 'bar:toggle-assign-order' order.id %}">
             {% csrf_token %}
             <button type="submit" class="btn btn-warning btn-sm">
-              Release order (Отказаться)
+              Release order
             </button>
           </form>
         {% elif order.bartender is None %}

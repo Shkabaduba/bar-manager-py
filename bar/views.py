@@ -3,6 +3,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy
 from django.views import generic
+from django.views.decorators.http import require_POST
 
 from .forms import (
     DrinkForm,
@@ -235,6 +236,7 @@ class BartenderDetailView(LoginRequiredMixin, generic.DetailView):
 
 
 @login_required
+@require_POST
 def toggle_assign_order(request, pk):
     order = get_object_or_404(Order, pk=pk)
 

@@ -7,7 +7,7 @@
     <a href="{% url 'bar:category-create' %}" class="btn btn-primary btn-sm">+ Create Category</a>
   </div>
 
-  <form method="get" action="" class="flex gap-2 mb-4 items-center">
+  <form method="get" action="" class="flex gap-2 mb-4 items-center [&_.form-group]:mb-0 [&_input]:rounded-md [&_input]:px-3">
     {{ search_form|crispy }}
     <button type="submit" class="btn btn-primary btn-sm">Search</button>
   </form>
