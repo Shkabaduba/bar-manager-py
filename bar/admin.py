@@ -1,6 +1,11 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from unfold.admin import ModelAdmin
+from unfold.forms import (
+    AdminPasswordChangeForm,
+    UserChangeForm,
+    UserCreationForm,
+)
 
 from .models import (
     BarIngredient,
@@ -14,6 +19,10 @@ from .models import (
 
 @admin.register(Bartender)
 class BartenderAdmin(UserAdmin, ModelAdmin):
+    form = UserChangeForm
+    add_form = UserCreationForm
+    change_password_form = AdminPasswordChangeForm
+
     list_display = (
         "username",
         "first_name",

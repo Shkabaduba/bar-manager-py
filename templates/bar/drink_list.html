@@ -16,9 +16,13 @@
       {% for drink in drink_list %}
         <tr>
           <td>{{ drink.id }}</td>
-          <td>{{ drink.name }}</td>
-          <td>{{ drink.price }}</td>
-          <td>{{ drink.volume_ml }}</td>
+          <td>
+            <a href="{{ drink.get_absolute_url }}" class="link link-primary font-bold">
+              {{ drink.name }}
+            </a>
+          </td>
+          <td>${{ drink.price }}</td>
+          <td>{{ drink.volume_ml }} ml</td>
           <td>{{ drink.category.name }}</td>
         </tr>
       {% endfor %}

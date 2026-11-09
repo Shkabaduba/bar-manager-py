@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <div class="flex justify-between items-center mb-4">
+    <h1>{{ drink.name }}</h1>
+    <a href="{% url 'bar:drink-list' %}" class="btn btn-outline btn-sm">← Back to Drinks</a>
+  </div>
+
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+    <div class="bg-base-300 p-4 rounded-box">
+      <p class="text-xs uppercase tracking-wide opacity-70">Category</p>
+      <p class="text-lg font-bold">{{ drink.category.name }}</p>
+      {% if drink.category.is_alcohol %}
+        <span class="badge badge-warning badge-sm">Alcoholic</span>
+      {% else %}
+        <span class="badge badge-success badge-sm">Non-Alcoholic</span>
+      {% endif %}
+    </div>
+
+    <div class="bg-base-300 p-4 rounded-box">
+      <p class="text-xs uppercase tracking-wide opacity-70">Volume</p>
+      <p class="text-lg font-bold">{{ drink.volume_ml }} ml</p>
+    </div>
+
+    <div class="bg-base-300 p-4 rounded-box">
+      <p class="text-xs uppercase tracking-wide opacity-70">Price</p>
+      <p class="text-lg font-bold text-success">${{ drink.price }}</p>
+    </div>
+  </div>
+
+  <h2>Recipe Ingredients:</h2>
+  {% if drink.ingredients.all %}
+    <table class="table w-full">
+      <thead>
+        <tr>
+          <th>Ingredient</th>
+          <th>Stock Quantity</th>
+          <th>Supplier</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for ingredient in drink.ingredients.all %}
+          <tr>
+            <td class="font-semibold">{{ ingredient.name }}</td>
+            <td>
+              {% if ingredient.stock_quantity > 0 %}
+                <span class="badge badge-success">{{ ingredient.stock_quantity }} in stock</span>
+              {% else %}
+                <span class="badge badge-error">Out of stock!</span>
+              {% endif %}
+            </td>
+            <td>
+              {{ ingredient.supplier.name }}
+              <span class="text-xs opacity-70">({{ ingredient.supplier.phone }})</span>
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+    <p class="opacity-70">No ingredients specified for this drink.</p>
+  {% endif %}
+{% endblock %}

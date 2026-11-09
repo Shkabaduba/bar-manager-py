@@ -15,15 +15,27 @@
 
       {% for order in order_list %}
         <tr>
-          <td>{{ order.id }}</td>
-          <td>{{ order.table_number }}</td>
-          <td>{{ order.bartender.username }}</td>
-          <td>{{ order.created_at }}</td>
+          <td>
+            <a href="{{ order.get_absolute_url }}" class="link link-primary font-bold">
+              #{{ order.id }}
+            </a>
+          </td>
+          <td>Table {{ order.table_number }}</td>
+          <td>
+            {% if order.bartender %}
+              <a href="{{ order.bartender.get_absolute_url }}" class="link link-hover">
+                {{ order.bartender.username }}
+              </a>
+            {% else %}
+              <span class="badge badge-ghost text-error">Unassigned</span>
+            {% endif %}
+          </td>
+          <td>{{ order.created_at|date:"Y-m-d H:i" }}</td>
           <td>
             {% if order.is_paid %}
-              Paid
+              <span class="badge badge-success">Paid</span>
             {% else %}
-              Unpaid
+              <span class="badge badge-warning">Unpaid</span>
             {% endif %}
           </td>
         </tr>

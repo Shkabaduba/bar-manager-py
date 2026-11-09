@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views import generic
@@ -88,3 +88,42 @@ class OrderListView(LoginRequiredMixin, generic.ListView):
     def get_queryset(self):
         queryset = Order.objects.prefetch_related("drinks").select_related("bartender")
         return queryset
+
+
+class OrderDetailView(LoginRequiredMixin, generic.DetailView):
+    model = Order
+    template_name = "bar/order_detail.html"
+
+    def get_queryset(self):
+        queryset = Order.objects.prefetch_related("drinks").select_related("bartender")
+        return queryset
+
+
+class DrinkDetailView(LoginRequiredMixin, generic.DetailView):
+    model = Drink
+    template_name = "bar/drink_detail.html"
+
+    def get_queryset(self):
+        queryset = Drink.objects.select_related("category").prefetch_related("ingredients__supplier")
+        return queryset
+
+
+class BartenderDetailView(LoginRequiredMixin, generic.DetailView):
+    model = Bartender
+    template_name = "bar/bartender_detail.html"
+
+    def get_queryset(self):
+        queryset = Bartender.objects.prefetch_related("orders__drinks")
+        return queryset
+
+@login_required
+def toggle_assign_order(request, pk):
+    order = get_object_or_404(Order, pk=pk)
+
+    if order.bartender == request.user:
+        order.bartender = None
+    elif order.bartender is None:
+        order.bartender = request.user
+
+    order.save()
+    return redirect("bar:order-detail", pk=pk)

@@ -1,7 +1,9 @@
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.urls import reverse
 from django.conf import settings
+from django.shortcuts import render, get_object_or_404, redirect
 
 
 class BarSupplier(models.Model):
@@ -73,10 +75,6 @@ class Drink(models.Model):
         BarIngredient,
         related_name="drinks",
     )
-    bartenders = models.ManyToManyField(
-        settings.AUTH_USER_MODEL,
-        related_name="drinks",
-    )
 
     class Meta:
         ordering = ["name"]
@@ -94,7 +92,9 @@ class Order(models.Model):
     is_paid = models.BooleanField(default=False)
     bartender = models.ForeignKey(
         settings.AUTH_USER_MODEL,
-        on_delete=models.CASCADE,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
         related_name="orders",
     )
     drinks = models.ManyToManyField(
@@ -105,5 +105,9 @@ class Order(models.Model):
     class Meta:
         ordering = ["-created_at"]
 
+
     def __str__(self):
         return f"Order #{self.id} (Table {self.table_number})"
+
+    def get_absolute_url(self):
+        return reverse("bar:order-detail", kwargs={"pk": self.pk})
