@@ -8,31 +8,35 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.14/dist/full.min.css" rel="stylesheet" type="text/css"/>
   <script src="https://cdn.tailwindcss.com"></script>
-   <style>
-    h1 {
-      font-size: 1.9rem;
-      font-weight: 700;
-      margin-bottom: 1rem;
-      padding-bottom: 0.5rem;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-    }
-    h2 {
-      font-size: 1.25rem;
-      font-weight: 600;
-      margin-top: 1.5rem;
-      margin-bottom: 0.75rem;
-    }
-    p {
-      margin: 0.5rem 0;
-    }
-    ul:not(.menu):not(.pagination) {
-      list-style-type: disc;
-      padding-left: 1.5rem;
-      margin: 1rem 0;
-    }
-    ul:not(.menu):not(.pagination) li {
-      margin-bottom: 0.5rem;
-    }
+  <style>
+      h1 {
+          font-size: 1.9rem;
+          font-weight: 700;
+          margin-bottom: 1rem;
+          padding-bottom: 0.5rem;
+          border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      }
+
+      h2 {
+          font-size: 1.25rem;
+          font-weight: 600;
+          margin-top: 1.5rem;
+          margin-bottom: 0.75rem;
+      }
+
+      p {
+          margin: 0.5rem 0;
+      }
+
+      ul:not(.menu):not(.pagination) {
+          list-style-type: disc;
+          padding-left: 1.5rem;
+          margin: 1rem 0;
+      }
+
+      ul:not(.menu):not(.pagination) li {
+          margin-bottom: 0.5rem;
+      }
   </style>
 </head>
 <body class="min-h-screen bg-base-100 text-base-content">
@@ -45,6 +49,11 @@
     </div>
     <div class="md:col-span-9">
       <div class="card rounded-box bg-base-200 shadow-xl p-6">
+        {% for message in messages %}
+          <div class="alert alert-{{ message.tags }} mb-4">
+            <span>{{ message }}</span>
+          </div>
+        {% endfor %}
         {% block content %}
         {% endblock %}
         <div class="mt-4">

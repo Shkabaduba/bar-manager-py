@@ -1,29 +1,103 @@
-<div class="card bg-base-200 shadow-xl p-4" xmlns="http://www.w3.org/1999/html">
-  <h2 class="text-xl font-bold mb-4 px-4 text-primary">🍸 Bar Manager</h2>
+<div class="card bg-base-200 shadow-xl border border-base-content/5 p-4 sticky top-6">
+  <!-- Brand / Logo -->
+  <div class="flex items-center gap-3 px-3 py-2 mb-2">
+    <div class="w-10 h-10 rounded-xl bg-primary/20 text-primary flex items-center justify-center text-2xl shadow-inner">
+      🍸
+    </div>
+    <div>
+      <h2 class="text-lg font-black tracking-wide text-primary leading-tight m-0 border-none p-0">BarManager</h2>
+      <span class="text-[10px] uppercase font-bold tracking-widest opacity-50">POS & Inventory</span>
+    </div>
+  </div>
 
-  <div class="px-4 mb-4">
+  <!-- User Profile Card -->
+  <div class="bg-base-300/60 rounded-xl p-3 my-2 border border-base-content/5">
     {% if user.is_authenticated %}
-      <p class="text-sm opacity-80 mb-2">
-      Bartender: <a href="{{ user.get_absolute_url }}" class="link link-primary font-semibold">{{ user.get_username }}</a>
-      </p>
-      <form method="post" action="{% url 'logout' %}">
-        {% csrf_token %}
-        <button type="submit" class="btn btn-outline btn-error btn-xs">Logout</button>
-      </form>
+      <div class="flex items-center justify-between gap-2">
+        <div class="flex items-center gap-2 overflow-hidden">
+          <div class="avatar placeholder">
+            <div class="bg-primary text-primary-content rounded-full w-8 h-8 text-xs font-bold shadow">
+              {{ user.get_username|slice:":1"|upper }}
+            </div>
+          </div>
+          <div class="truncate">
+            <a href="{{ user.get_absolute_url }}" class="text-sm font-bold hover:text-primary transition-colors truncate block">
+              {{ user.get_username }}
+            </a>
+            <span class="text-[11px] opacity-60 block">
+              {% if user.is_superuser %}Chief Bartender{% else %}On Shift{% endif %}
+            </span>
+          </div>
+        </div>
+
+        <form method="post" action="{% url 'logout' %}" class="m-0">
+          {% csrf_token %}
+          <button type="submit" title="Logout" class="btn btn-ghost btn-circle btn-xs text-error hover:bg-error/20">
+            🚪
+          </button>
+        </form>
+      </div>
     {% else %}
-      <a href="{% url 'login' %}?next={{ request.path }}" class="btn btn-primary btn-sm w-full">Login</a>
+      <a href="{% url 'login' %}?next={{ request.path }}" class="btn btn-primary btn-sm w-full gap-2">
+        <span>🔑</span> Login to Shift
+      </a>
     {% endif %}
   </div>
 
-  <div class="divider my-1"></div>
+  <div class="divider my-2 opacity-40"></div>
 
-  <ul class="menu w-full p-0 [&_li>*]:rounded-lg">
-    <li><a href="{% url 'bar:index' %}">Home Dashboard</a></li>
-    <li><a href="{% url 'bar:drink-list' %}">Drinks</a></li>
-    <li><a href="{% url 'bar:category-list' %}">Categories</a></li>
-    <li><a href="{% url 'bar:ingredient-list' %}">Ingredients</a></li>
-    <li><a href="{% url 'bar:supplier-list' %}">Suppliers</a></li>
-    <li><a href="{% url 'bar:bartender-list' %}">Bartenders</a></li>
-    <li><a href="{% url 'bar:order-list' %}">Orders</a></li>
+  <!-- Navigation Menu -->
+  <div class="px-3 pb-1 text-[11px] font-bold uppercase tracking-wider opacity-40">Shift Management</div>
+  <ul class="menu menu-md w-full p-0 gap-1 [&_li>*]:rounded-xl font-medium">
+    <li>
+      <a href="{% url 'bar:index' %}" class="{% if request.resolver_match.url_name == 'index' %}active font-bold{% endif %}">
+        <span class="text-base">📊</span> Dashboard
+      </a>
+    </li>
+    <li>
+      <a href="{% url 'bar:order-list' %}" class="{% if 'order' in request.resolver_match.url_name %}active font-bold{% endif %}">
+        <span class="text-base">🧾</span> Orders
+      </a>
+    </li>
+    <li>
+      <a href="{% url 'bar:drink-list' %}" class="{% if 'drink' in request.resolver_match.url_name %}active font-bold{% endif %}">
+        <span class="text-base">🍹</span> Drinks Menu
+      </a>
+    </li>
+    <li>
+      <a href="{% url 'bar:category-list' %}" class="{% if 'category' in request.resolver_match.url_name %}active font-bold{% endif %}">
+        <span class="text-base">🏷️</span> Categories
+      </a>
+    </li>
   </ul>
+
+  <div class="px-3 pt-3 pb-1 text-[11px] font-bold uppercase tracking-wider opacity-40">Stock & Team</div>
+  <ul class="menu menu-md w-full p-0 gap-1 [&_li>*]:rounded-xl font-medium">
+    <li>
+      <a href="{% url 'bar:ingredient-list' %}" class="{% if 'ingredient' in request.resolver_match.url_name %}active font-bold{% endif %}">
+        <span class="text-base">📦</span> Ingredients
+      </a>
+    </li>
+    <li>
+      <a href="{% url 'bar:supplier-list' %}" class="{% if 'supplier' in request.resolver_match.url_name %}active font-bold{% endif %}">
+        <span class="text-base">🚚</span> Suppliers
+      </a>
+    </li>
+    <li>
+      <a href="{% url 'bar:bartender-list' %}" class="{% if 'bartender' in request.resolver_match.url_name %}active font-bold{% endif %}">
+        <span class="text-base">👨‍🍳</span> Bartenders
+      </a>
+    </li>
+  </ul>
+
+  {% if user.is_staff %}
+    <div class="divider my-2 opacity-40"></div>
+    <ul class="menu menu-sm w-full p-0 [&_li>*]:rounded-xl">
+      <li>
+        <a href="/admin/" target="_blank" class="text-xs opacity-75 hover:opacity-100 hover:text-secondary">
+          <span>⚙️</span> Unfold Admin Panel ↗
+        </a>
+      </li>
+    </ul>
+  {% endif %}
 </div>

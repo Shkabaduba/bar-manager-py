@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load crispy_forms_tags %}
 
 {% block content %}
   <div class="flex justify-between items-center mb-4">
@@ -7,7 +8,7 @@
   </div>
 
   <form method="get" action="" class="flex gap-2 mb-4 items-center [&_.form-group]:mb-0 [&_input]:rounded-md [&_input]:px-3">
-    {{ search_form.username }}
+    {{ search_form|crispy }}
     <button type="submit" class="btn btn-primary btn-sm">Search</button>
   </form>
 

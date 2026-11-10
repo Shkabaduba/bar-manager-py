@@ -3,7 +3,7 @@ from django.test import TestCase
 from django.urls import reverse
 
 from .forms import BartenderCreationForm, BartenderStaffUpdateForm
-from .models import BarSupplier, Drink, DrinksCategory, Order
+from .models import BarSupplier, Drink, DrinksCategory, Order, BarIngredient
 
 
 class ModelTest(TestCase):
@@ -108,6 +108,79 @@ class PrivateViewTests(TestCase):
             staff_id="Acf",
         )
         self.client.force_login(self.user)
+
+    def test_create_drink(self):
+        category = DrinksCategory.objects.create(name="Cocktails")
+        supplier = BarSupplier.objects.create(
+            name="Metro", phone="+380501112233"
+        )
+        ingredient = BarIngredient.objects.create(
+            name="Rum", stock_quantity=10, supplier=supplier
+        )
+        form_data = {
+            "name": "Daiquiri",
+            "price": "11.50",
+            "volume_ml": 200,
+            "category": category.id,
+            "ingredients": [ingredient.id],
+        }
+        response = self.client.post(
+            reverse("bar:drink-create"),
+            data=form_data
+        )
+        self.assertEqual(response.status_code, 302)
+        self.assertTrue(Drink.objects.filter(name="Daiquiri").exists())
+
+    def test_update_drink(self):
+        category = DrinksCategory.objects.create(name="Cocktails")
+        supplier = BarSupplier.objects.create(
+            name="Metro", phone="+380501112233"
+        )
+        ingredient = BarIngredient.objects.create(
+            name="Gin", stock_quantity=5, supplier=supplier
+        )
+        drink = Drink.objects.create(
+            name="Old Name", price=10.0, volume_ml=250, category=category
+        )
+        form_data = {
+            "name": "New Name",
+            "price": "15.00",
+            "volume_ml": 300,
+            "category": category.id,
+            "ingredients": [ingredient.id],
+        }
+        response = self.client.post(
+            reverse("bar:drink-update", args=[drink.id]), data=form_data
+        )
+        self.assertEqual(response.status_code, 302)
+        drink.refresh_from_db()
+        self.assertEqual(drink.name, "New Name")
+
+    def test_delete_drink(self):
+        category = DrinksCategory.objects.create(name="Cocktails")
+        drink = Drink.objects.create(
+            name="To Delete", price=10.0, volume_ml=250, category=category
+        )
+        response = self.client.post(
+            reverse("bar:drink-delete", args=[drink.id])
+        )
+        self.assertEqual(response.status_code, 302)
+        self.assertFalse(Drink.objects.filter(id=drink.id).exists())
+
+    def test_search_categories(self):
+        cat1 = DrinksCategory.objects.create(
+            name="Cocktails",
+            is_alcohol=True
+        )
+        cat2 = DrinksCategory.objects.create(
+            name="Lemonades",
+            is_alcohol=False
+        )
+        response = self.client.get(
+            reverse("bar:category-list"), {"name": "Cock"}
+        )
+        self.assertIn(cat1, response.context["category_list"])
+        self.assertNotIn(cat2, response.context["category_list"])
 
     def test_retrieve_lists(self):
         urls = [

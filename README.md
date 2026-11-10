@@ -38,24 +38,45 @@ This project provides comprehensive tools for managing bar inventory, cocktail r
    ```bash
    git clone https://github.com/Oleksandr-Shkabbura/bar-manager-py.git
    cd bar-manager-py
+   ```
 
-Create and activate a virtual environment:
-# Windows (cmd/PowerShell)
-python -m venv .venv
-.venv\Scripts\activate
-Install dependencies:
-pip install -r requirements.txt
-Apply database migrations:
-python manage.py migrate
-Create a superuser (Chief Bartender):
-python manage.py createsuperuser
-Run the development server:
-python manage.py runserver
-Open http://127.0.0.1:8000/ in your browser.
- 
-🧪 Running Tests & Linter
+2. **Create and activate a virtual environment:**
+   ```bash
+   python -m venv .venv
+   .venv\Scripts\activate
+   ```
+
+3. **Install dependencies:**
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+4. **Apply database migrations:**
+   ```bash
+   python manage.py migrate
+   ```
+
+5. **Create a superuser (Chief Bartender):**
+   ```bash
+   python manage.py createsuperuser
+   ```
+
+6. **Run the development server:**
+   ```bash
+   python manage.py runserver
+   ```
+   Open [http://127.0.0.1:8000/](http://127.0.0.1:8000/) in your browser.
+
+---
+
+## 🧪 Running Tests & Linter
+
 Run unit tests:
+```bash
 python manage.py test
+```
 
 Check code style with Flake8:
+```bash
 flake8
+```

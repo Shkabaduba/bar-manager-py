@@ -22,7 +22,9 @@
       <p><strong>Assigned Bartender:</strong>
         {% if order.bartender %}
           <span class="badge badge-primary">{{ order.bartender.username }}</span>
-          <span class="text-sm opacity-70">({{ order.bartender.first_name }} {{ order.bartender.last_name }})</span>
+          {% if order.bartender.first_name or order.bartender.last_name %}
+            <span class="text-sm opacity-70">({{ order.bartender.first_name }} {{ order.bartender.last_name }})</span>
+          {% endif %}
         {% else %}
           <span class="badge badge-ghost text-error">Unassigned</span>
         {% endif %}

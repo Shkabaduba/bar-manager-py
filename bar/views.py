@@ -4,6 +4,8 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy
 from django.views import generic
 from django.views.decorators.http import require_POST
+from django.db import transaction
+from django.contrib import messages
 
 from .forms import (
     DrinkForm,
@@ -238,12 +240,19 @@ class BartenderDetailView(LoginRequiredMixin, generic.DetailView):
 @login_required
 @require_POST
 def toggle_assign_order(request, pk):
-    order = get_object_or_404(Order, pk=pk)
-
-    if order.bartender == request.user:
-        order.bartender = None
-    elif order.bartender is None:
-        order.bartender = request.user
-
-    order.save()
+    with transaction.atomic():
+        order = get_object_or_404(
+            Order.objects.select_for_update(), pk=pk
+        )
+        if order.bartender == request.user:
+            order.bartender = None
+            order.save(update_fields=["bartender"])
+        elif order.bartender is None:
+            order.bartender = request.user
+            order.save(update_fields=["bartender"])
+        else:
+            messages.warning(
+                request,
+                "Order has been assigned by other Bartender"
+            )
     return redirect("bar:order-detail", pk=pk)
