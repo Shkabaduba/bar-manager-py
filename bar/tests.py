@@ -118,7 +118,7 @@ class PublicViewTests(TestCase):
 class PrivateViewTests(TestCase):
     def setUp(self):
         self.user = get_user_model().objects.create_user(
-            username="test_driver",
+            username="test_username",
             password="test_password123",
             staff_id="Acf",
         )

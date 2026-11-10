@@ -23,10 +23,6 @@ class BartenderAdmin(UserAdmin, ModelAdmin):
     add_form = UserCreationForm
     change_password_form = AdminPasswordChangeForm
 
-    list_display = (
-        "username",
-        "first_name",
-    )
     list_display = UserAdmin.list_display + ("staff_id",)
     fieldsets = UserAdmin.fieldsets + (
         (("Additional info", {"fields": ("staff_id",)}),)

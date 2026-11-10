@@ -284,7 +284,7 @@ class OrderDetailView(LoginRequiredMixin, generic.DetailView):
 
     def get_queryset(self):
         return (
-            Order.objects.prefetch_related("drinks")
+            Order.objects.prefetch_related("drinks__category")
             .select_related("bartender")
         )
 

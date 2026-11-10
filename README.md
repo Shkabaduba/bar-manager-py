@@ -1,34 +1,35 @@
 # 🍸 Bar Management System
 
-A web-based Bar Management application built with **Django 6**, styled using **Tailwind CSS & DaisyUI (Dracula Theme)**. Featuring a custom admin interface powered by **Django-Unfold**.
+A web-based Bar Management application built with **Django 6.1**, styled using **Tailwind CSS & DaisyUI (Rocket Dark Theme)**, and featuring a custom admin interface powered by **Django-Unfold**.
 
-This project provides comprehensive tools for managing bar inventory, cocktail recipes, supplier contacts, and real-time shift order assignment.
+This project provides comprehensive tools for managing bar inventory, cocktail recipes, supplier contacts, staff shifts, and real-time table order assignment.
 
 ---
 
 ## 🚀 Features
 
-* **Shift Dashboard**: Tracks active unpaid checks, ingredients out of stock, cocktail menu count, and shift visit counter.
+* **Shift Dashboard**: Real-time overview of active unpaid checks, ingredients out of stock, cocktail menu statistics, and session shift visit counter.
 * **Full CRUD Operations**:
-  * **Drinks**: Recipe creation with volume, price, category, and multi-ingredient selection with checkboxes.
-  * **Categories**: Alcoholic and non-alcoholic drinks classification.
-  * **Bartenders**: User registration, `staff_id` update with validation, and profile management.
+  * **Drinks**: Recipe creation, editing, and deletion with volume, price, category, and multi-ingredient checkbox selection.
+  * **Categories**: Alcoholic and non-alcoholic drinks classification with full CRUD support.
+  * **Ingredients**: Stock inventory management with supplier links and out-of-stock indicators.
+  * **Suppliers**: Supplier contact directory with phone and email management.
+  * **Bartenders**: Staff registration, `staff_id` validation (8–15 characters), and profile management.
 * **Interactive Order Assignment**:
-  * Bartenders can take incoming table orders ("Take this order") and release them with one click.
-  * Profile view displays all active and completed checks assigned to the specific bartender.
-* **Ingredient Stock Tracking**: Cocktail detail views display ingredient availability and supplier contact details.
-* **Search & Filter**: Real-time search across drinks, categories, and bartenders with persistent query parameters during pagination.
-* **Custom Admin Interface**: Modern, responsive admin dashboard powered by **Django-Unfold**.
+  * Bartenders can take incoming table orders ("Take this order") and release them with one click, protected against race conditions using `transaction.atomic()` and `select_for_update()`.
+  * Bartender profile displays all assigned active and paid checks.
+* **Search & Pagination**: Real-time search across drinks, categories, ingredients, suppliers, and bartenders with preserved query parameters across pages.
+* **Custom Admin Interface**: Modern dark admin dashboard powered by **Django-Unfold**.
 
 ---
 
 ## 🛠 Tech Stack
 
 * **Backend**: Python 3.14, Django 6.1
-* **UI & Styling**: Tailwind CSS, DaisyUI (Dracula Theme), Crispy Forms (Bootstrap 4 pack)
-* **Admin**: Django-Unfold
+* **UI & Styling**: Tailwind CSS, DaisyUI, Inter Typography, Crispy Forms (Bootstrap 4 pack)
+* **Admin Panel**: Django-Unfold
 * **Database**: SQLite3
-* **Code Quality**: Flake8 (PEP8 compliance), Django Unit Tests
+* **Code Quality**: Flake8 (PEP8 compliance), Django Unit Tests (25 tests)
 
 ---
 
@@ -36,14 +37,17 @@ This project provides comprehensive tools for managing bar inventory, cocktail r
 
 1. **Clone the repository:**
    ```bash
-   git clone https://github.com/Oleksandr-Shkabbura/bar-manager-py.git
+   git clone https://github.com/Shkabaduba/bar-manager-py.git
    cd bar-manager-py
    ```
 
 2. **Create and activate a virtual environment:**
    ```bash
    python -m venv .venv
+   # Windows:
    .venv\Scripts\activate
+   # macOS / Linux:
+   source .venv/bin/activate
    ```
 
 3. **Install dependencies:**
@@ -71,7 +75,7 @@ This project provides comprehensive tools for managing bar inventory, cocktail r
 
 ## 🧪 Running Tests & Linter
 
-Run unit tests:
+Run the unit test suite:
 ```bash
 python manage.py test
 ```
