@@ -2,13 +2,13 @@ from django.contrib.auth import get_user_model
 from django.test import TestCase
 from django.urls import reverse
 
-from .forms import (
+from bar.forms import (
     BartenderCreationForm,
     BartenderStaffUpdateForm,
     SupplierSearchForm,
     IngredientSearchForm,
 )
-from .models import BarSupplier, Drink, DrinksCategory, Order, BarIngredient
+from bar.models import BarSupplier, Drink, DrinksCategory, Order, BarIngredient
 
 
 class ModelTest(TestCase):

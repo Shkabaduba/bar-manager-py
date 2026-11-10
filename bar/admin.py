@@ -7,7 +7,7 @@ from unfold.forms import (
     UserCreationForm,
 )
 
-from .models import (
+from bar.models import (
     BarIngredient,
     BarSupplier,
     Bartender,

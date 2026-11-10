@@ -1,7 +1,7 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.core.exceptions import ValidationError
-from .models import Drink, BarIngredient, Bartender
+from bar.models import Drink, BarIngredient, Bartender
 
 
 class DrinkForm(forms.ModelForm):
@@ -46,6 +46,20 @@ def validate_staff_id(
     return staff_id
 
 
+class BaseNameSearchForm(forms.Form):
+    placeholder = "Search by name"
+
+    name = forms.CharField(
+        max_length=255,
+        required=False,
+        label="",
+    )
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["name"].widget.attrs["placeholder"] = self.placeholder
+
+
 class BartenderSearchForm(forms.Form):
     username = forms.CharField(
         max_length=255,
@@ -56,42 +70,17 @@ class BartenderSearchForm(forms.Form):
     )
 
 
-class DrinkSearchForm(forms.Form):
-    name = forms.CharField(
-        max_length=255,
-        required=False,
-        label="",
-        widget=forms.TextInput(attrs={"placeholder": "Search by drink name"}
-                               )
-    )
+class DrinkSearchForm(BaseNameSearchForm):
+    placeholder = "Search by drink name"
 
 
-class CategorySearchForm(forms.Form):
-    name = forms.CharField(
-        max_length=255,
-        required=False,
-        label="",
-        widget=forms.TextInput(attrs={"placeholder": "Search by name"})
-    )
+class CategorySearchForm(BaseNameSearchForm):
+    placeholder = "Search by category name"
 
 
-class SupplierSearchForm(forms.Form):
-    name = forms.CharField(
-        max_length=255,
-        required=False,
-        label="",
-        widget=forms.TextInput(
-            attrs={"placeholder": "Search by supplier name"}
-        )
-    )
+class SupplierSearchForm(BaseNameSearchForm):
+    placeholder = "Search by supplier name"
 
 
-class IngredientSearchForm(forms.Form):
-    name = forms.CharField(
-        max_length=255,
-        required=False,
-        label="",
-        widget=forms.TextInput(
-            attrs={"placeholder": "Search by ingredient name"}
-        )
-    )
+class IngredientSearchForm(BaseNameSearchForm):
+    placeholder = "Search by ingredient name"

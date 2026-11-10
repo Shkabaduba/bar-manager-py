@@ -7,7 +7,7 @@ from django.views.decorators.http import require_POST
 from django.db import transaction
 from django.contrib import messages
 
-from .forms import (
+from bar.forms import (
     DrinkForm,
     BartenderStaffUpdateForm,
     BartenderCreationForm,
@@ -18,7 +18,7 @@ from .forms import (
     IngredientSearchForm,
 )
 
-from .models import (
+from bar.models import (
     BarIngredient,
     BarSupplier,
     Bartender,
@@ -51,218 +51,172 @@ def index(request):
     return render(request, "bar/index.html", context=context)
 
 
-class DrinksCategoryListView(LoginRequiredMixin, generic.ListView):
+class BaseSearchListView(LoginRequiredMixin, generic.ListView):
+    paginate_by = 5
+    search_form_class = None
+    search_field = "name"
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super().get_context_data(**kwargs)
+        if self.search_form_class:
+            search_value = self.request.GET.get(self.search_field, "")
+            context["search_form"] = self.search_form_class(
+                initial={self.search_field: search_value}
+            )
+        return context
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        if self.search_form_class:
+            form = self.search_form_class(self.request.GET)
+            if form.is_valid():
+                lookup = f"{self.search_field}__icontains"
+                return queryset.filter(
+                    **{lookup: form.cleaned_data[self.search_field]}
+                )
+        return queryset
+
+
+class DrinksCategoryListView(BaseSearchListView):
     model = DrinksCategory
     context_object_name = "category_list"
     template_name = "bar/category_list.html"
-    paginate_by = 5
-
-    def get_context_data(self, *, object_list=None, **kwargs):
-        context = super().get_context_data(**kwargs)
-        name = self.request.GET.get("name", "")
-        context["search_form"] = CategorySearchForm(
-            initial={"name": name}
-        )
-        return context
-
-    def get_queryset(self):
-        queryset = DrinksCategory.objects.all()
-        form = CategorySearchForm(self.request.GET)
-        if form.is_valid():
-            return queryset.filter(
-                name__icontains=form.cleaned_data["name"]
-            )
-        return queryset
+    search_form_class = CategorySearchForm
 
 
-class DrinksCategoryCreateView(LoginRequiredMixin, generic.CreateView):
+class CategoryCrudMixin(LoginRequiredMixin):
     model = DrinksCategory
-    fields = "__all__"
-    template_name = "bar/category_form.html"
     success_url = reverse_lazy("bar:category-list")
 
 
-class DrinksCategoryUpdateView(LoginRequiredMixin, generic.UpdateView):
-    model = DrinksCategory
+class CategoryFormMixin(CategoryCrudMixin):
     fields = "__all__"
     template_name = "bar/category_form.html"
-    success_url = reverse_lazy("bar:category-list")
 
 
-class DrinksCategoryDeleteView(LoginRequiredMixin, generic.DeleteView):
-    model = DrinksCategory
+class DrinksCategoryCreateView(CategoryFormMixin, generic.CreateView):
+    pass
+
+
+class DrinksCategoryUpdateView(CategoryFormMixin, generic.UpdateView):
+    pass
+
+
+class DrinksCategoryDeleteView(CategoryCrudMixin, generic.DeleteView):
     template_name = "bar/category_confirm_delete.html"
-    success_url = reverse_lazy("bar:category-list")
 
 
-class BarSupplierListView(LoginRequiredMixin, generic.ListView):
+class BarSupplierListView(BaseSearchListView):
     model = BarSupplier
     context_object_name = "supplier_list"
     template_name = "bar/supplier_list.html"
-    paginate_by = 5
-
-    def get_context_data(self, *, object_list=None, **kwargs):
-        context = super().get_context_data(**kwargs)
-        name = self.request.GET.get("name", "")
-        context["search_form"] = SupplierSearchForm(
-            initial={"name": name}
-        )
-        return context
-
-    def get_queryset(self):
-        queryset = BarSupplier.objects.all()
-        form = SupplierSearchForm(self.request.GET)
-        if form.is_valid():
-            return queryset.filter(
-                name__icontains=form.cleaned_data["name"]
-            )
-        return queryset
+    search_form_class = SupplierSearchForm
 
 
-class BarSupplierCreateView(LoginRequiredMixin, generic.CreateView):
+class SupplierCrudMixin(LoginRequiredMixin):
     model = BarSupplier
-    fields = "__all__"
-    template_name = "bar/supplier_form.html"
     success_url = reverse_lazy("bar:supplier-list")
 
 
-class BarSupplierUpdateView(LoginRequiredMixin, generic.UpdateView):
-    model = BarSupplier
+class SupplierFormMixin(SupplierCrudMixin):
     fields = "__all__"
     template_name = "bar/supplier_form.html"
-    success_url = reverse_lazy("bar:supplier-list")
 
 
-class BarSupplierDeleteView(LoginRequiredMixin, generic.DeleteView):
-    model = BarSupplier
+class BarSupplierCreateView(SupplierFormMixin, generic.CreateView):
+    pass
+
+
+class BarSupplierUpdateView(SupplierFormMixin, generic.UpdateView):
+    pass
+
+
+class BarSupplierDeleteView(SupplierCrudMixin, generic.DeleteView):
     template_name = "bar/supplier_confirm_delete.html"
-    success_url = reverse_lazy("bar:supplier-list")
 
 
-class BarIngredientListView(LoginRequiredMixin, generic.ListView):
+class BarIngredientListView(BaseSearchListView):
     model = BarIngredient
+    queryset = BarIngredient.objects.select_related("supplier")
     context_object_name = "ingredient_list"
     template_name = "bar/ingredient_list.html"
-    paginate_by = 5
-
-    def get_context_data(self, *, object_list=None, **kwargs):
-        context = super().get_context_data(**kwargs)
-        name = self.request.GET.get("name", "")
-        context["search_form"] = IngredientSearchForm(
-            initial={"name": name}
-        )
-        return context
-
-    def get_queryset(self):
-        queryset = BarIngredient.objects.select_related("supplier")
-        form = IngredientSearchForm(self.request.GET)
-        if form.is_valid():
-            return queryset.filter(
-                name__icontains=form.cleaned_data["name"]
-            )
-        return queryset
+    search_form_class = IngredientSearchForm
 
 
-class BarIngredientCreateView(LoginRequiredMixin, generic.CreateView):
+class IngredientCrudMixin(LoginRequiredMixin):
     model = BarIngredient
-    fields = "__all__"
-    template_name = "bar/ingredient_form.html"
     success_url = reverse_lazy("bar:ingredient-list")
 
 
-class BarIngredientUpdateView(LoginRequiredMixin, generic.UpdateView):
-    model = BarIngredient
+class IngredientFormMixin(IngredientCrudMixin):
     fields = "__all__"
     template_name = "bar/ingredient_form.html"
-    success_url = reverse_lazy("bar:ingredient-list")
 
 
-class BarIngredientDeleteView(LoginRequiredMixin, generic.DeleteView):
-    model = BarIngredient
+class BarIngredientCreateView(IngredientFormMixin, generic.CreateView):
+    pass
+
+
+class BarIngredientUpdateView(IngredientFormMixin, generic.UpdateView):
+    pass
+
+
+class BarIngredientDeleteView(IngredientCrudMixin, generic.DeleteView):
     template_name = "bar/ingredient_confirm_delete.html"
-    success_url = reverse_lazy("bar:ingredient-list")
 
 
-class DrinksListView(LoginRequiredMixin, generic.ListView):
+class DrinksListView(BaseSearchListView):
     model = Drink
+    queryset = Drink.objects.select_related("category")
     context_object_name = "drink_list"
     template_name = "bar/drink_list.html"
-    paginate_by = 5
-
-    def get_context_data(self, *, object_list=None, **kwargs):
-        context = super().get_context_data(**kwargs)
-        name = self.request.GET.get("name", "")
-        context["search_form"] = DrinkSearchForm(
-            initial={"name": name}
-        )
-        return context
-
-    def get_queryset(self):
-        queryset = Drink.objects.select_related("category")
-        form = DrinkSearchForm(self.request.GET)
-        if form.is_valid():
-            return queryset.filter(
-                name__icontains=form.cleaned_data["name"]
-            )
-        return queryset
+    search_form_class = DrinkSearchForm
 
 
-class DrinkCreateView(LoginRequiredMixin, generic.CreateView):
+class DrinkCrudMixin(LoginRequiredMixin):
     model = Drink
+    success_url = reverse_lazy("bar:drink-list")
+
+
+class DrinkFormMixin(DrinkCrudMixin):
     form_class = DrinkForm
-    success_url = reverse_lazy("bar:drink-list")
 
 
-class DrinkUpdateView(LoginRequiredMixin, generic.UpdateView):
-    model = Drink
-    form_class = DrinkForm
-    success_url = reverse_lazy("bar:drink-list")
+class DrinkCreateView(DrinkFormMixin, generic.CreateView):
+    pass
 
 
-class DrinkDeleteView(LoginRequiredMixin, generic.DeleteView):
-    model = Drink
-    success_url = reverse_lazy("bar:drink-list")
+class DrinkUpdateView(DrinkFormMixin, generic.UpdateView):
+    pass
 
 
-class BartenderListView(LoginRequiredMixin, generic.ListView):
+class DrinkDeleteView(DrinkCrudMixin, generic.DeleteView):
+    pass
+
+
+class BartenderListView(BaseSearchListView):
     model = Bartender
     context_object_name = "bartender_list"
     template_name = "bar/bartender_list.html"
-    paginate_by = 5
-
-    def get_context_data(self, *, object_list=None, **kwargs):
-        context = super().get_context_data(**kwargs)
-        username = self.request.GET.get("username", "")
-        context["search_form"] = BartenderSearchForm(
-            initial={"username": username}
-        )
-        return context
-
-    def get_queryset(self):
-        queryset = Bartender.objects.all()
-        form = BartenderSearchForm(self.request.GET)
-        if form.is_valid():
-            return queryset.filter(
-                username__icontains=form.cleaned_data["username"]
-            )
-        return queryset
+    search_field = "username"
+    search_form_class = BartenderSearchForm
 
 
-class BartenderCreateView(LoginRequiredMixin, generic.CreateView):
+class BartenderCrudMixin(LoginRequiredMixin):
     model = Bartender
+    success_url = reverse_lazy("bar:bartender-list")
+
+
+class BartenderCreateView(BartenderCrudMixin, generic.CreateView):
     form_class = BartenderCreationForm
-    success_url = reverse_lazy("bar:bartender-list")
 
 
-class BartenderStaffUpdateView(LoginRequiredMixin, generic.UpdateView):
-    model = Bartender
+class BartenderStaffUpdateView(BartenderCrudMixin, generic.UpdateView):
     form_class = BartenderStaffUpdateForm
-    success_url = reverse_lazy("bar:bartender-list")
 
 
-class BartenderDeleteView(LoginRequiredMixin, generic.DeleteView):
-    model = Bartender
-    success_url = reverse_lazy("bar:bartender-list")
+class BartenderDeleteView(BartenderCrudMixin, generic.DeleteView):
+    pass
 
 
 class OrderListView(LoginRequiredMixin, generic.ListView):
