@@ -14,6 +14,8 @@ from .forms import (
     DrinkSearchForm,
     BartenderSearchForm,
     CategorySearchForm,
+    SupplierSearchForm,
+    IngredientSearchForm,
 )
 
 from .models import (
@@ -99,6 +101,43 @@ class BarSupplierListView(LoginRequiredMixin, generic.ListView):
     template_name = "bar/supplier_list.html"
     paginate_by = 5
 
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super().get_context_data(**kwargs)
+        name = self.request.GET.get("name", "")
+        context["search_form"] = SupplierSearchForm(
+            initial={"name": name}
+        )
+        return context
+
+    def get_queryset(self):
+        queryset = BarSupplier.objects.all()
+        form = SupplierSearchForm(self.request.GET)
+        if form.is_valid():
+            return queryset.filter(
+                name__icontains=form.cleaned_data["name"]
+            )
+        return queryset
+
+
+class BarSupplierCreateView(LoginRequiredMixin, generic.CreateView):
+    model = BarSupplier
+    fields = "__all__"
+    template_name = "bar/supplier_form.html"
+    success_url = reverse_lazy("bar:supplier-list")
+
+
+class BarSupplierUpdateView(LoginRequiredMixin, generic.UpdateView):
+    model = BarSupplier
+    fields = "__all__"
+    template_name = "bar/supplier_form.html"
+    success_url = reverse_lazy("bar:supplier-list")
+
+
+class BarSupplierDeleteView(LoginRequiredMixin, generic.DeleteView):
+    model = BarSupplier
+    template_name = "bar/supplier_confirm_delete.html"
+    success_url = reverse_lazy("bar:supplier-list")
+
 
 class BarIngredientListView(LoginRequiredMixin, generic.ListView):
     model = BarIngredient
@@ -106,9 +145,42 @@ class BarIngredientListView(LoginRequiredMixin, generic.ListView):
     template_name = "bar/ingredient_list.html"
     paginate_by = 5
 
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super().get_context_data(**kwargs)
+        name = self.request.GET.get("name", "")
+        context["search_form"] = IngredientSearchForm(
+            initial={"name": name}
+        )
+        return context
+
     def get_queryset(self):
         queryset = BarIngredient.objects.select_related("supplier")
+        form = IngredientSearchForm(self.request.GET)
+        if form.is_valid():
+            return queryset.filter(
+                name__icontains=form.cleaned_data["name"]
+            )
         return queryset
+
+
+class BarIngredientCreateView(LoginRequiredMixin, generic.CreateView):
+    model = BarIngredient
+    fields = "__all__"
+    template_name = "bar/ingredient_form.html"
+    success_url = reverse_lazy("bar:ingredient-list")
+
+
+class BarIngredientUpdateView(LoginRequiredMixin, generic.UpdateView):
+    model = BarIngredient
+    fields = "__all__"
+    template_name = "bar/ingredient_form.html"
+    success_url = reverse_lazy("bar:ingredient-list")
+
+
+class BarIngredientDeleteView(LoginRequiredMixin, generic.DeleteView):
+    model = BarIngredient
+    template_name = "bar/ingredient_confirm_delete.html"
+    success_url = reverse_lazy("bar:ingredient-list")
 
 
 class DrinksListView(LoginRequiredMixin, generic.ListView):

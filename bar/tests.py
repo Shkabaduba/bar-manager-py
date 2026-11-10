@@ -2,7 +2,12 @@ from django.contrib.auth import get_user_model
 from django.test import TestCase
 from django.urls import reverse
 
-from .forms import BartenderCreationForm, BartenderStaffUpdateForm
+from .forms import (
+    BartenderCreationForm,
+    BartenderStaffUpdateForm,
+    SupplierSearchForm,
+    IngredientSearchForm,
+)
 from .models import BarSupplier, Drink, DrinksCategory, Order, BarIngredient
 
 
@@ -83,6 +88,16 @@ class FormTest(TestCase):
                 data={"staff_id": staff_id}
             )
             self.assertFalse(form.is_valid())
+
+    def test_supplier_search_form(self):
+        form = SupplierSearchForm(data={"name": "Metro"})
+        self.assertTrue(form.is_valid())
+        self.assertEqual(form.cleaned_data["name"], "Metro")
+
+    def test_ingredient_search_form(self):
+        form = IngredientSearchForm(data={"name": "Mint"})
+        self.assertTrue(form.is_valid())
+        self.assertEqual(form.cleaned_data["name"], "Mint")
 
 
 class PublicViewTests(TestCase):
@@ -227,3 +242,124 @@ class PrivateViewTests(TestCase):
         self.client.post(reverse("bar:toggle-assign-order", args=[order.id]))
         order.refresh_from_db()
         self.assertIsNone(order.bartender)
+
+    def test_search_suppliers(self):
+        supplier1 = BarSupplier.objects.create(
+            name="Metro Cash & Carry", phone="+380501112233"
+        )
+        supplier2 = BarSupplier.objects.create(
+            name="WineBureau", phone="+380502223344"
+        )
+        response = self.client.get(
+            reverse("bar:supplier-list"), {"name": "Metro"}
+        )
+        self.assertIn(supplier1, response.context["supplier_list"])
+        self.assertNotIn(supplier2, response.context["supplier_list"])
+
+    def test_create_supplier(self):
+        data = {
+            "name": "Local Craft Spirits",
+            "phone": "+380509998877",
+            "email": "craft@bar.com",
+        }
+        response = self.client.post(reverse("bar:supplier-create"), data=data)
+        self.assertEqual(response.status_code, 302)
+        self.assertTrue(
+            BarSupplier.objects.filter(name="Local Craft Spirits").exists()
+        )
+
+    def test_update_supplier(self):
+        supplier = BarSupplier.objects.create(
+            name="Old Supplier", phone="+380501112233"
+        )
+        data = {
+            "name": "Updated Supplier",
+            "phone": "+380501112233",
+            "email": "updated@bar.com",
+        }
+        response = self.client.post(
+            reverse("bar:supplier-update", args=[supplier.id]), data=data
+        )
+        self.assertEqual(response.status_code, 302)
+        supplier.refresh_from_db()
+        self.assertEqual(supplier.name, "Updated Supplier")
+
+    def test_delete_supplier(self):
+        supplier = BarSupplier.objects.create(
+            name="Delete Me Supplier", phone="+380500000000"
+        )
+        response = self.client.post(
+            reverse("bar:supplier-delete", args=[supplier.id])
+        )
+        self.assertEqual(response.status_code, 302)
+        self.assertFalse(
+            BarSupplier.objects.filter(id=supplier.id).exists()
+        )
+
+    def test_search_ingredients(self):
+        supplier = BarSupplier.objects.create(
+            name="Syrup World", phone="+380503334455"
+        )
+        ing1 = BarIngredient.objects.create(
+            name="Lime Juice", stock_quantity=10, supplier=supplier
+        )
+        ing2 = BarIngredient.objects.create(
+            name="Sugar Syrup", stock_quantity=15, supplier=supplier
+        )
+        response = self.client.get(
+            reverse("bar:ingredient-list"), {"name": "Lime"}
+        )
+        self.assertIn(ing1, response.context["ingredient_list"])
+        self.assertNotIn(ing2, response.context["ingredient_list"])
+
+    def test_create_ingredient(self):
+        supplier = BarSupplier.objects.create(
+            name="Distributor X", phone="+380504445566"
+        )
+        data = {
+            "name": "Angostura Bitters",
+            "stock_quantity": 4,
+            "supplier": supplier.id,
+        }
+        response = self.client.post(
+            reverse("bar:ingredient-create"), data=data
+        )
+        self.assertEqual(response.status_code, 302)
+        self.assertTrue(
+            BarIngredient.objects.filter(name="Angostura Bitters").exists()
+        )
+
+    def test_update_ingredient(self):
+        supplier = BarSupplier.objects.create(
+            name="Distributor Y", phone="+380504445577"
+        )
+        ingredient = BarIngredient.objects.create(
+            name="Vodka", stock_quantity=8, supplier=supplier
+        )
+        data = {
+            "name": "Premium Vodka",
+            "stock_quantity": 12,
+            "supplier": supplier.id,
+        }
+        response = self.client.post(
+            reverse("bar:ingredient-update", args=[ingredient.id]), data=data
+        )
+        self.assertEqual(response.status_code, 302)
+        ingredient.refresh_from_db()
+        self.assertEqual(ingredient.name, "Premium Vodka")
+        self.assertEqual(ingredient.stock_quantity, 12)
+
+    def test_delete_ingredient(self):
+        supplier = BarSupplier.objects.create(
+            name="Distributor Z", phone="+380504445588"
+        )
+        ingredient = BarIngredient.objects.create(
+            name="Tonic Water", stock_quantity=20, supplier=supplier
+        )
+        response = self.client.post(
+            reverse("bar:ingredient-delete", args=[ingredient.id])
+        )
+        self.assertEqual(response.status_code, 302)
+        self.assertFalse(
+            BarIngredient.objects.filter(id=ingredient.id).exists()
+        )

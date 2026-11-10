@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <h1>Delete Ingredient</h1>
+
+  <p>Are you sure you want to delete ingredient: <strong>{{ baringredient.name }}</strong>?</p>
+
+  <form action="" method="post">
+    {% csrf_token %}
+    <input type="submit" value="Yes, delete" class="btn btn-error mt-4">
+    <a href="{% url 'bar:ingredient-list' %}" class="btn btn-outline mt-4">Cancel</a>
+  </form>
+{% endblock %}

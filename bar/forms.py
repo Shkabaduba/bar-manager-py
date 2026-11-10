@@ -71,6 +71,27 @@ class CategorySearchForm(forms.Form):
         max_length=255,
         required=False,
         label="",
-        widget=forms.TextInput(attrs={"placeholder": "Search by name"}
-                               )
+        widget=forms.TextInput(attrs={"placeholder": "Search by name"})
+    )
+
+
+class SupplierSearchForm(forms.Form):
+    name = forms.CharField(
+        max_length=255,
+        required=False,
+        label="",
+        widget=forms.TextInput(
+            attrs={"placeholder": "Search by supplier name"}
+        )
+    )
+
+
+class IngredientSearchForm(forms.Form):
+    name = forms.CharField(
+        max_length=255,
+        required=False,
+        label="",
+        widget=forms.TextInput(
+            attrs={"placeholder": "Search by ingredient name"}
+        )
     )

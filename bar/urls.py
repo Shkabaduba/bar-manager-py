@@ -21,6 +21,12 @@ from .views import (
     DrinksCategoryCreateView,
     DrinksCategoryUpdateView,
     DrinksCategoryDeleteView,
+    BarSupplierCreateView,
+    BarSupplierUpdateView,
+    BarSupplierDeleteView,
+    BarIngredientCreateView,
+    BarIngredientUpdateView,
+    BarIngredientDeleteView,
 )
 
 
@@ -116,6 +122,36 @@ urlpatterns = [
         "categories/<int:pk>/delete/",
         DrinksCategoryDeleteView.as_view(),
         name="category-delete",
+    ),
+    path(
+        "suppliers/create/",
+        BarSupplierCreateView.as_view(),
+        name="supplier-create",
+    ),
+    path(
+        "suppliers/<int:pk>/update/",
+        BarSupplierUpdateView.as_view(),
+        name="supplier-update",
+    ),
+    path(
+        "suppliers/<int:pk>/delete/",
+        BarSupplierDeleteView.as_view(),
+        name="supplier-delete",
+    ),
+    path(
+        "ingredients/create/",
+        BarIngredientCreateView.as_view(),
+        name="ingredient-create",
+    ),
+    path(
+        "ingredients/<int:pk>/update/",
+        BarIngredientUpdateView.as_view(),
+        name="ingredient-update",
+    ),
+    path(
+        "ingredients/<int:pk>/delete/",
+        BarIngredientDeleteView.as_view(),
+        name="ingredient-delete",
     ),
 ]
 

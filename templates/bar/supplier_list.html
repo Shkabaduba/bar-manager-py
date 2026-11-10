@@ -1,25 +1,49 @@
 {% extends "base.html" %}
+{% load crispy_forms_tags %}
 
 {% block content %}
-  <h1>List of Suppliers</h1>
+  <div class="flex justify-between items-center mb-4">
+    <h1>List of Suppliers</h1>
+    <a href="{% url 'bar:supplier-create' %}" class="btn btn-primary btn-sm">+ Create Supplier</a>
+  </div>
+
+  <form method="get" action="" class="flex gap-2 mb-4 items-center [&_.form-group]:mb-0 [&_input]:rounded-md [&_input]:px-3">
+    {{ search_form|crispy }}
+    <button type="submit" class="btn btn-primary btn-sm">Search</button>
+  </form>
 
   {% if supplier_list %}
     <table class="table">
-      <tr>
-        <th>ID</th>
-        <th>Name</th>
-        <th>Phone</th>
-        <th>Email</th>
-      </tr>
-
-      {% for supplier in supplier_list %}
+      <thead>
         <tr>
-          <td>{{ supplier.id }}</td>
-          <td>{{ supplier.name }}</td>
-          <td>{{ supplier.phone }}</td>
-          <td>{{ supplier.email }}</td>
+          <th>ID</th>
+          <th>Name</th>
+          <th>Phone</th>
+          <th>Email</th>
+          <th>Update</th>
+          <th>Delete</th>
         </tr>
-      {% endfor %}
+      </thead>
+      <tbody>
+        {% for supplier in supplier_list %}
+          <tr>
+            <td>{{ supplier.id }}</td>
+            <td>{{ supplier.name }}</td>
+            <td>{{ supplier.phone }}</td>
+            <td>{{ supplier.email|default:"—" }}</td>
+            <td>
+              <a href="{% url 'bar:supplier-update' supplier.id %}" class="btn btn-info btn-xs">
+                Update
+              </a>
+            </td>
+            <td>
+              <a href="{% url 'bar:supplier-delete' supplier.id %}" class="btn btn-error btn-xs">
+                Delete
+              </a>
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
     </table>
   {% else %}
     <p>There are no suppliers in the bar yet.</p>
