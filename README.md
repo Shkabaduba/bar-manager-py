@@ -84,3 +84,7 @@ Check code style with Flake8:
 ```bash
 flake8
 ```
+## 🚀 Live Demo
+
+- **Website:** https://bar-manager-py.onrender.com
+- **Test user:** `user` / `user12345`
