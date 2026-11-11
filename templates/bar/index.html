@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6 pb-4 border-b border-base-content/10">
+    <div>
+      <h1 class="text-3xl font-extrabold text-primary mb-1 border-none pb-0">🍸 Bar Manager Dashboard</h1>
+      <p class="text-sm opacity-70">Shift Control & Inventory Overview</p>
+    </div>
+    <div class="badge badge-outline badge-lg gap-2">
+      <span class="inline-block w-2 h-2 rounded-full bg-success animate-pulse"></span>
+      Shift Visits: <strong class="text-primary">{{ num_visits }}</strong>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+    <!-- Active Orders Card -->
+    <div class="card bg-base-300 shadow-md hover:shadow-lg transition-all border-l-4 {% if active_orders %}border-warning{% else %}border-success{% endif %}">
+      <div class="card-body p-4">
+        <div class="flex justify-between items-center">
+          <span class="text-xs uppercase tracking-wider opacity-70 font-semibold">Active Orders</span>
+          <span class="text-2xl">🧾</span>
+        </div>
+        <div class="text-3xl font-black text-warning">{{ active_orders }}</div>
+        <p class="text-xs opacity-60">Pending table checks</p>
+      </div>
+    </div>
+
+    <div class="card bg-base-300 shadow-md hover:shadow-lg transition-all border-l-4 border-primary">
+      <div class="card-body p-4">
+        <div class="flex justify-between items-center">
+          <span class="text-xs uppercase tracking-wider opacity-70 font-semibold">Drinks Menu</span>
+          <span class="text-2xl">🍹</span>
+        </div>
+        <div class="text-3xl font-black text-primary">{{ num_drinks }}</div>
+        <p class="text-xs opacity-60">Across {{ num_categories }} categories</p>
+      </div>
+    </div>
+
+    <div class="card bg-base-300 shadow-md hover:shadow-lg transition-all border-l-4 {% if out_of_stock_ingredients %}border-error{% else %}border-success{% endif %}">
+      <div class="card-body p-4">
+        <div class="flex justify-between items-center">
+          <span class="text-xs uppercase tracking-wider opacity-70 font-semibold">Out of Stock</span>
+          <span class="text-2xl">⚠️</span>
+        </div>
+        <div class="text-3xl font-black {% if out_of_stock_ingredients %}text-error{% else %}text-success{% endif %}">
+          {{ out_of_stock_ingredients }}
+        </div>
+        <p class="text-xs opacity-60">Ingredients require refill</p>
+      </div>
+    </div>
+
+    <div class="card bg-base-300 shadow-md hover:shadow-lg transition-all border-l-4 border-secondary">
+      <div class="card-body p-4">
+        <div class="flex justify-between items-center">
+          <span class="text-xs uppercase tracking-wider opacity-70 font-semibold">Categories</span>
+          <span class="text-2xl">🏷️</span>
+        </div>
+        <div class="text-3xl font-black text-secondary">{{ num_categories }}</div>
+        <p class="text-xs opacity-60">Bar drink varieties</p>
+      </div>
+    </div>
+  </div>
+
+  <h2 class="text-xl font-bold mb-4 flex items-center gap-2">
+    <span>⚡</span> Quick Shift Actions
+  </h2>
+  <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+    <a href="{% url 'bar:order-list' %}" class="btn btn-outline btn-warning justify-start gap-3 h-auto py-3">
+      <span class="text-xl">📋</span>
+      <div class="text-left">
+        <div class="font-bold">View Orders</div>
+        <div class="text-xs opacity-60 font-normal">Take or release active checks</div>
+      </div>
+    </a>
+
+    <a href="{% url 'bar:drink-create' %}" class="btn btn-outline btn-primary justify-start gap-3 h-auto py-3">
+      <span class="text-xl">➕</span>
+      <div class="text-left">
+        <div class="font-bold">New Cocktail</div>
+        <div class="text-xs opacity-60 font-normal">Add recipe to drink menu</div>
+      </div>
+    </a>
+
+    <a href="{% url 'bar:ingredient-list' %}" class="btn btn-outline btn-accent justify-start gap-3 h-auto py-3">
+      <span class="text-xl">📦</span>
+      <div class="text-left">
+        <div class="font-bold">Stock Storage</div>
+        <div class="text-xs opacity-60 font-normal">Inspect inventory residues</div>
+      </div>
+    </a>
+  </div>
+{% endblock %}

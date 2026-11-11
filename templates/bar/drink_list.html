@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+  <div class="flex justify-between items-center mb-4">
+    <h1>List of Drinks</h1>
+    <a href="{% url 'bar:drink-create' %}" class="btn btn-primary btn-sm">+ Create Drink</a>
+  </div>
+
+  <form method="get" action="" class="flex gap-2 mb-4 items-center [&_.form-group]:mb-0 [&_input]:rounded-md [&_input]:px-3">
+    {{ search_form|crispy }}
+    <button type="submit" class="btn btn-primary btn-sm">Search</button>
+  </form>
+
+
+  {% if drink_list %}
+    <table class="table">
+      <tr>
+        <th>ID</th>
+        <th>Name</th>
+        <th>Price</th>
+        <th>Volume</th>
+        <th>Name of Category</th>
+      </tr>
+
+      {% for drink in drink_list %}
+        <tr>
+          <td>{{ drink.id }}</td>
+          <td>
+            <a href="{{ drink.get_absolute_url }}" class="link link-primary font-bold">
+              {{ drink.name }}
+            </a>
+          </td>
+          <td>${{ drink.price }}</td>
+          <td>{{ drink.volume_ml }} ml</td>
+          <td>{{ drink.category.name }}</td>
+        </tr>
+      {% endfor %}
+    </table>
+  {% else %}
+    <p>There are no drinks in the bar yet.</p>
+  {% endif %}
+{% endblock %}

@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+{% block content %}
+  <div class="flex justify-between items-center mb-4">
+    <h1>Order #{{ order.id }} (Table {{ order.table_number }})</h1>
+    <a href="{% url 'bar:order-list' %}" class="btn btn-outline btn-sm">Back to Orders</a>
+  </div>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+    <div class="bg-base-300 p-4 rounded-box">
+      <p><strong>Table Number:</strong> {{ order.table_number }}</p>
+      <p><strong>Created At:</strong> {{ order.created_at|date:"Y-m-d H:i" }}</p>
+      <p><strong>Status:</strong>
+        {% if order.is_paid %}
+          <span class="badge badge-success">Paid</span>
+        {% else %}
+          <span class="badge badge-warning">Unpaid</span>
+        {% endif %}
+      </p>
+    </div>
+
+    <div class="bg-base-300 p-4 rounded-box">
+      <p><strong>Assigned Bartender:</strong>
+        {% if order.bartender %}
+          <span class="badge badge-primary">{{ order.bartender.username }}</span>
+          {% if order.bartender.first_name or order.bartender.last_name %}
+            <span class="text-sm opacity-70">({{ order.bartender.first_name }} {{ order.bartender.last_name }})</span>
+          {% endif %}
+        {% else %}
+          <span class="badge badge-ghost text-error">Unassigned</span>
+        {% endif %}
+      </p>
+      <div class="mt-4">
+        {% if order.bartender == user %}
+          <form method="post" action="{% url 'bar:toggle-assign-order' order.id %}">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-warning btn-sm">
+              Release order
+            </button>
+          </form>
+        {% elif order.bartender is None %}
+          <form method="post" action="{% url 'bar:toggle-assign-order' order.id %}">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-success btn-sm">
+              Take this order
+            </button>
+          </form>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <h2>Drinks in Order#{{ order.id }}:</h2>
+  {% if order.drinks.all %}
+    <table class="table w-full">
+      <thead>
+      <tr>
+        <th>Name</th>
+        <th>Category</th>
+        <th>Volume</th>
+        <th>Price</th>
+      </tr>
+      </thead>
+      <tbody>
+      {% for drink in order.drinks.all %}
+        <tr>
+          <td>
+            <a href="{{ drink.get_absolute_url }}" class="link link-hover font-semibold">
+              {{ drink.name }}
+            </a>
+          </td>
+          <td>{{ drink.category.name }}</td>
+          <td>{{ drink.volume_ml }} ml</td>
+          <td>${{ drink.price }}</td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+    <p class="opacity-70">No drinks in this order yet.</p>
+  {% endif %}
+{% endblock %}

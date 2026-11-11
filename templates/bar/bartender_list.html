@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+  <div class="flex justify-between items-center mb-4">
+    <h1>List of Bartenders</h1>
+    <a href="{% url 'bar:bartender-create' %}" class="btn btn-primary btn-sm">+ Create Bartender</a>
+  </div>
+
+  <form method="get" action="" class="flex gap-2 mb-4 items-center [&_.form-group]:mb-0 [&_input]:rounded-md [&_input]:px-3">
+    {{ search_form|crispy }}
+    <button type="submit" class="btn btn-primary btn-sm">Search</button>
+  </form>
+
+  {% if bartender_list %}
+    <table class="table">
+      <tr>
+        <th>ID</th>
+        <th>Username</th>
+        <th>First Name</th>
+        <th>Last Name</th>
+        <th>Bartender's ID</th>
+      </tr>
+
+      {% for bartender in bartender_list %}
+        <tr>
+          <td>{{ bartender.id }}</td>
+          <td>
+            <a href="{{ bartender.get_absolute_url }}" class="link link-primary font-bold">
+              {{ bartender.username }}
+            </a>
+            {% if bartender == user %}
+              (Me)
+            {% endif %}
+          </td>
+          <td>{{ bartender.first_name }}</td>
+          <td>{{ bartender.last_name }}</td>
+          <td>{{ bartender.staff_id }}</td>
+        </tr>
+      {% endfor %}
+    </table>
+  {% else %}
+    <p>There are no bartenders in the bar yet.</p>
+  {% endif %}
+{% endblock %}

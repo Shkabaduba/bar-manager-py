@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <h1>List of Orders</h1>
+
+  {% if order_list %}
+    <table class="table">
+      <tr>
+        <th>ID</th>
+        <th>Table Number</th>
+        <th>Bartender</th>
+        <th>Start Time</th>
+        <th>Paid</th>
+      </tr>
+
+      {% for order in order_list %}
+        <tr>
+          <td>
+            <a href="{{ order.get_absolute_url }}" class="link link-primary font-bold">
+              #{{ order.id }}
+            </a>
+          </td>
+          <td>Table {{ order.table_number }}</td>
+          <td>
+            {% if order.bartender %}
+              <a href="{{ order.bartender.get_absolute_url }}" class="link link-hover">
+                {{ order.bartender.username }}
+              </a>
+            {% else %}
+              <span class="badge badge-ghost text-error">Unassigned</span>
+            {% endif %}
+          </td>
+          <td>{{ order.created_at|date:"Y-m-d H:i" }}</td>
+          <td>
+            {% if order.is_paid %}
+              <span class="badge badge-success">Paid</span>
+            {% else %}
+              <span class="badge badge-warning">Unpaid</span>
+            {% endif %}
+          </td>
+        </tr>
+      {% endfor %}
+    </table>
+  {% else %}
+    <p>There are no orders in the bar for now.</p>
+  {% endif %}
+{% endblock %}
