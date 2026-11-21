@@ -11,7 +11,7 @@
   <meta name="csrf-token" content="{{ csrf_token }}">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Silkscreen:wght@400;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="{% static 'css/tokens.css' %}">
   <link rel="stylesheet" href="{% static 'css/bento.css' %}">
   <link rel="stylesheet" href="{% static 'css/components.css' %}">
@@ -20,6 +20,14 @@
   <script src="{% static 'js/app.js' %}" defer></script>
 </head>
 <body>
+  <div class="cyber-backdrop" aria-hidden="true">
+    <div class="cyber-grid-layer"></div>
+    <div class="cyber-orb orb-magenta"></div>
+    <div class="cyber-orb orb-cyan"></div>
+    <div class="cyber-orb orb-violet"></div>
+    <div class="cyber-scanlines"></div>
+  </div>
+
   <div id="htmx-progress-bar" aria-hidden="true"></div>
 
   {% block layout %}

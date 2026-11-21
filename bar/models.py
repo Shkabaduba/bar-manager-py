@@ -211,7 +211,7 @@ class Drink(models.Model):
         ]
 
     def __str__(self):
-        return f"{self.name} ({self.volume_ml}ml - ${self.price})"
+        return f"{self.name} ({self.volume_ml}ml - {self.price} ₴)"
 
     def get_absolute_url(self):
         return reverse("bar:drink-detail", kwargs={"pk": self.pk})

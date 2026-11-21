@@ -92,7 +92,7 @@ class ModelTest(TestCase):
         )
         self.assertEqual(
             str(drink),
-            f"{drink.name} ({drink.volume_ml}ml - ${drink.price})",
+            f"{drink.name} ({drink.volume_ml}ml - {drink.price} ₴)",
         )
 
     def test_create_bartender_with_staff_id(self):

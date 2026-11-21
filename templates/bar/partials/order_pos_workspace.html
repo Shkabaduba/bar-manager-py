@@ -1,4 +1,4 @@
-{% load i18n %}
+{% load i18n static bar_extras %}
 <div id="order-pos-workspace">
   <div class="bento-grid mb-6">
     <div class="span-6 bento-card">
@@ -27,7 +27,7 @@
         </div>
         <div class="flex justify-between items-center">
           <span class="page-subtitle">{% trans "Order Total" %}</span>
-          <span class="kpi-value text-success mono-num" style="font-size: 1.4rem;">${{ order_total }}</span>
+          <span class="kpi-value text-success mono-num" style="font-size: 1.4rem;">{{ order_total }} ₴</span>
         </div>
       </div>
     </div>
@@ -57,7 +57,7 @@
             >
               {% csrf_token %}
               <button type="submit" class="btn btn-warning btn-sm" hx-disabled-elt="this">
-                {% trans "Release order" %}
+                <span>{% trans "Release order" %}</span>
               </button>
             </form>
           {% elif order.bartender is None %}
@@ -70,7 +70,7 @@
             >
               {% csrf_token %}
               <button type="submit" class="btn btn-success btn-sm" hx-disabled-elt="this">
-                {% trans "Take this order" %}
+                <span>{% trans "Take this order" %}</span>
               </button>
             </form>
           {% endif %}
@@ -85,7 +85,7 @@
             {% csrf_token %}
             <input type="hidden" name="expected_version" value="{{ order.version }}">
             <button type="submit" class="btn btn-outline btn-sm" hx-disabled-elt="this">
-              {% trans "Cancel Order" %}
+              <span>{% trans "Cancel Order" %}</span>
             </button>
           </form>
         </div>
@@ -100,7 +100,7 @@
   <div class="pos-grid">
     <div class="bento-card">
       <h2 class="section-title">
-        🧾 {% blocktrans with order_id=order.id %}Check #{{ order_id }}{% endblocktrans %}
+        {% blocktrans with order_id=order.id %}Check #{{ order_id }}{% endblocktrans %}
       </h2>
 
       {% if order_items %}
@@ -120,11 +120,19 @@
               {% for order_item in order_items %}
                 <tr>
                   <td>
-                    <a href="{{ order_item.drink.get_absolute_url }}" class="link-primary">
-                      {{ order_item.drink.name }}
-                    </a>
+                    <div class="pos-drink-cell">
+                      <img
+                        src="{% static order_item.drink|drink_pixel_art %}"
+                        alt=""
+                        class="pixel-art pos-thumb"
+                        loading="lazy"
+                      >
+                      <a href="{{ order_item.drink.get_absolute_url }}" class="link-primary">
+                        {{ order_item.drink.name }}
+                      </a>
+                    </div>
                   </td>
-                  <td class="mono-num">${{ order_item.unit_price_snapshot }}</td>
+                  <td class="mono-num">{{ order_item.unit_price_snapshot }} ₴</td>
                   <td class="mono-num"><strong>{{ order_item.quantity }}</strong></td>
                   {% if is_order_mutable %}
                     <td>
@@ -186,7 +194,7 @@
             {% csrf_token %}
             <input type="hidden" name="expected_version" value="{{ order.version }}">
             <button type="submit" class="btn btn-success btn-block" hx-disabled-elt="this">
-              ✓ {% trans "Pay & Close" %} (${{ order_total }})
+              <span>✓ {% trans "Pay & Close" %} ({{ order_total }} ₴)</span>
             </button>
           </form>
         {% endif %}
@@ -197,7 +205,7 @@
 
     {% if is_order_mutable %}
       <div class="bento-card">
-        <h2 class="section-title">🍹 {% trans "Quick Add from Menu" %}</h2>
+        <h2 class="section-title">{% trans "Quick Add from Menu" %}</h2>
         {% if menu_drinks %}
           <div class="table-wrap">
             <table class="table">
@@ -212,8 +220,18 @@
               <tbody>
                 {% for drink in menu_drinks %}
                   <tr>
-                    <td><strong>{{ drink.name }}</strong></td>
-                    <td class="mono-num">${{ drink.price }}</td>
+                    <td>
+                      <div class="pos-drink-cell">
+                        <img
+                          src="{% static drink|drink_pixel_art %}"
+                          alt=""
+                          class="pixel-art pos-thumb"
+                          loading="lazy"
+                        >
+                        <strong>{{ drink.name }}</strong>
+                      </div>
+                    </td>
+                    <td class="mono-num">{{ drink.price }} ₴</td>
                     <td class="mono-num">
                       {% if drink.costing.max_portions is not None %}
                         {% if drink.costing.availability_status == "STOP_LIST" %}
@@ -240,7 +258,7 @@
                         <input type="hidden" name="delta" value="1">
                         <input type="hidden" name="expected_version" value="{{ order.version }}">
                         <button type="submit" class="btn btn-xs btn-primary" hx-disabled-elt="this">
-                          + {% trans "Add" %}
+                          <span>+ {% trans "Add" %}</span>
                         </button>
                       </form>
                     </td>

@@ -443,7 +443,7 @@ class HtmxPartialsAndInteractiveTests(TestCase):
         preview_html = preview_resp.content.decode("utf-8")
         self.assertNotIn("<!DOCTYPE", preview_html)
         self.assertIn("HTMX Gin", preview_html)
-        self.assertIn("$75.00", preview_html)
+        self.assertIn("75.00 ₴", preview_html)
         self.assertIn("100.00%", preview_html)
 
         analytics_resp = self.client.get(
@@ -485,6 +485,13 @@ class CyberBentoShellAndAssetsTests(TestCase):
             "css/animations.css",
             "js/htmx.min.js",
             "js/app.js",
+            "img/cyber_bar_bg.png",
+            "img/pixel_bar_logo.png",
+            "img/cocktail_negroni.png",
+            "img/cocktail_whiskey_sour.png",
+            "img/cocktail_lemonade.png",
+            "img/cocktail_signature.png",
+            "img/cocktail_classic.png",
         )
         for asset_path in static_assets:
             disk_path = settings.BASE_DIR / "static" / asset_path
@@ -696,7 +703,7 @@ class CyberBentoShellAndAssetsTests(TestCase):
         self.assertEqual(detail_resp.status_code, 200)
         detail_html = detail_resp.content.decode("utf-8")
         self.assertIn("1 paid checks", detail_html)
-        self.assertIn("$180.00", detail_html)
+        self.assertIn("180.00 ₴", detail_html)
         extra_count_queries = [
             query["sql"]
             for query in query_ctx.captured_queries
@@ -705,6 +712,56 @@ class CyberBentoShellAndAssetsTests(TestCase):
             and '"bar_bartender"' not in query["sql"]
         ]
         self.assertEqual(extra_count_queries, [])
+
+    def test_uah_currency_pixel_art_and_button_hover_css(self):
+        category = DrinksCategory.objects.create(name="Signature Cocktails")
+        drink = Drink.objects.create(
+            name="Classic Negroni",
+            price=Decimal("360.00"),
+            volume_ml=90,
+            category=category,
+        )
+        order = create_order(table_number=7, bartender=self.bartender)
+        set_order_item(order_id=order.pk, drink_id=drink.pk, quantity=1)
+
+        self.client.force_login(self.manager)
+        urls_with_expected = (
+            (
+                reverse("bar:index"),
+                ("cyber_bar_bg.png", "pixel_bar_logo.png", "₴"),
+            ),
+            (
+                reverse("bar:drink-list"),
+                ("cocktail_negroni.png", "360.00 ₴"),
+            ),
+            (
+                reverse("bar:drink-detail", args=[drink.pk]),
+                ("cocktail_negroni.png", "360.00 ₴"),
+            ),
+            (
+                reverse("bar:order-detail", args=[order.pk]),
+                ("cocktail_negroni.png", "360.00 ₴"),
+            ),
+            (reverse("bar:analytics"), ("₴",)),
+        )
+        for target_url, expected_tokens in urls_with_expected:
+            response = self.client.get(target_url)
+            self.assertEqual(response.status_code, 200)
+            html = response.content.decode("utf-8")
+            self.assertIsNone(re.search(r"\$\d", html), f"$ in {target_url}")
+            for token in expected_tokens:
+                self.assertIn(token, html)
+
+        css_path = settings.BASE_DIR / "static" / "css" / "components.css"
+        css_text = css_path.read_text(encoding="utf-8")
+        for selector in (
+            ".btn.btn-primary:hover",
+            ".btn.btn-success:hover",
+            ".btn.btn-warning:hover",
+            ".btn.btn-error:hover",
+            ".btn.btn-info:hover",
+        ):
+            self.assertIn(selector, css_text)
 
 
 class LocalizationTests(TestCase):

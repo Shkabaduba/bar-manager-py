@@ -160,6 +160,85 @@
     notifyRecipeLiveInputs();
   }
 
+  var reducedMotion = Boolean(
+    window.matchMedia &&
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches
+  );
+
+  function animateCountUp(root) {
+    if (reducedMotion || typeof window.requestAnimationFrame !== "function") {
+      return;
+    }
+    var scope = root && root.querySelectorAll ? root : document;
+    var targets = scope.querySelectorAll("[data-count-up]");
+    targets.forEach(function (el) {
+      if (el.dataset.counted === "1") {
+        return;
+      }
+      var raw = (el.textContent || "").trim();
+      var match = raw.match(/^([^0-9-]*)(-?\d+(?:[.,]\d+)?)(.*)$/);
+      if (!match) {
+        return;
+      }
+      var prefix = match[1];
+      var numText = match[2];
+      var suffix = match[3];
+      var sep = numText.indexOf(",") !== -1 ? "," : ".";
+      var normalized = numText.replace(",", ".");
+      var targetVal = parseFloat(normalized);
+      if (!isFinite(targetVal) || targetVal === 0) {
+        el.dataset.counted = "1";
+        return;
+      }
+      var decimals = normalized.indexOf(".") !== -1
+        ? normalized.split(".")[1].length
+        : 0;
+      el.dataset.counted = "1";
+      var duration = 600;
+      var startTime = null;
+
+      function tick(ts) {
+        if (startTime === null) {
+          startTime = ts;
+        }
+        var progress = Math.min((ts - startTime) / duration, 1);
+        var eased = 1 - Math.pow(1 - progress, 3);
+        var current = targetVal * eased;
+        var formatted = decimals > 0
+          ? current.toFixed(decimals).replace(".", sep)
+          : String(Math.round(current));
+        el.textContent = prefix + formatted + suffix;
+        if (progress < 1) {
+          window.requestAnimationFrame(tick);
+        } else {
+          el.textContent = raw;
+        }
+      }
+
+      window.requestAnimationFrame(tick);
+    });
+  }
+
+  function initLiveClock() {
+    function updateClock() {
+      var clocks = document.querySelectorAll("[data-live-clock]");
+      if (!clocks.length) {
+        return;
+      }
+      var now = new Date();
+      var hh = String(now.getHours()).padStart(2, "0");
+      var mm = String(now.getMinutes()).padStart(2, "0");
+      var ss = String(now.getSeconds()).padStart(2, "0");
+      var formatted = hh + ":" + mm + ":" + ss;
+      clocks.forEach(function (node) {
+        node.textContent = formatted;
+      });
+    }
+
+    updateClock();
+    window.setInterval(updateClock, 1000);
+  }
+
   // HTMX CSRF Header & Status Handling
   document.addEventListener("htmx:configRequest", function (evt) {
     var verb = (evt.detail.verb || "get").toUpperCase();
@@ -207,6 +286,10 @@
     }
   });
 
+  document.addEventListener("htmx:afterSettle", function (evt) {
+    animateCountUp(evt.detail.target || document);
+  });
+
   // HX-Trigger Custom Events
   document.body.addEventListener("showToast", function (evt) {
     var detail = evt.detail || {};
@@ -244,11 +327,10 @@
     }
   });
 
-  // Bento Card Cursor Spotlight
-  var reducedMotion = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  // Cyberpunk Card Cursor Spotlight
   if (!reducedMotion) {
     document.addEventListener("mousemove", function (evt) {
-      var card = evt.target.closest(".bento-card");
+      var card = evt.target.closest(".bento-card, .drink-card, .cyber-hero");
       if (!card) {
         return;
       }
@@ -280,8 +362,10 @@
     }
   });
 
-  // Auto-dismiss Server Flash Messages
+  // Auto-dismiss Server Flash Messages, Count-Up KPIs & Live Shift Clock
   window.addEventListener("DOMContentLoaded", function () {
+    animateCountUp(document);
+    initLiveClock();
     var alerts = document.querySelectorAll("[data-auto-dismiss]");
     alerts.forEach(function (alertEl) {
       window.setTimeout(function () {

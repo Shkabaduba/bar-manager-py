@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% load i18n %}
+{% load i18n static bar_extras %}
 
 {% block content %}
   <div class="page-header">
@@ -16,30 +16,54 @@
     </div>
     <div class="inline-actions">
       {% if user.can_manage_bar %}
-        <a href="{% url 'bar:drink-update' drink.id %}" class="btn btn-info btn-sm">{% trans "Update" %}</a>
-        <a href="{% url 'bar:drink-delete' drink.id %}" class="btn btn-error btn-sm">{% trans "Delete" %}</a>
+        <a href="{% url 'bar:drink-update' drink.id %}" class="btn btn-info btn-sm"><span>{% trans "Update" %}</span></a>
+        <a href="{% url 'bar:drink-delete' drink.id %}" class="btn btn-error btn-sm"><span>{% trans "Delete" %}</span></a>
       {% endif %}
-      <a href="{% url 'bar:drink-list' %}" class="btn btn-outline btn-sm">← {% trans "Back to Drinks" %}</a>
+      <a href="{% url 'bar:drink-list' %}" class="btn btn-outline btn-sm"><span>← {% trans "Back to Drinks" %}</span></a>
+    </div>
+  </div>
+
+  <div class="bento-card drink-detail-hero mb-6">
+    <div class="drink-detail-art-frame">
+      <img
+        src="{% static drink|drink_pixel_art %}"
+        alt="{{ drink.name }}"
+        class="pixel-art drink-detail-art-img"
+      >
+    </div>
+
+    <div class="flex flex-col gap-3">
+      <div class="inline-actions">
+        <span class="badge badge-primary pixel-badge">{{ drink.category.name }}</span>
+        <span class="badge badge-neutral mono-num">{{ drink.volume_ml }} ml</span>
+        {% if not drink.is_active %}
+          <span class="badge badge-error">{% trans "Inactive" %}</span>
+        {% endif %}
+      </div>
+      <h2 class="section-title" style="margin-bottom: 0;">{{ drink.name }}</h2>
+      <p class="page-subtitle" style="font-size: 0.95rem; line-height: 1.6;">
+        {{ drink.description|default:_("No description provided.") }}
+      </p>
     </div>
   </div>
 
   <div class="bento-grid bento-stagger mb-6">
     <div class="span-3 bento-card kpi-card is-success">
       <div class="kpi-label">{% trans "Menu Price" %}</div>
-      <div class="kpi-value text-success mono-num">${{ drink.price }}</div>
+      <div class="kpi-value text-success mono-num" data-count-up>{{ drink.price }} ₴</div>
       <p class="kpi-meta mono-num">{% trans "Volume" %}: {{ drink.volume_ml }} ml</p>
     </div>
 
     <div class="span-3 bento-card kpi-card">
       <div class="kpi-label">{% trans "Unit Cost & Margin" %}</div>
-      <div class="kpi-value mono-num">${{ costing.cost_price }}</div>
-      <p class="kpi-meta mono-num">{% trans "Gross Margin" %}: ${{ costing.gross_margin }}</p>
+      <div class="kpi-value mono-num" data-count-up>{{ costing.cost_price }} ₴</div>
+      <p class="kpi-meta mono-num">{% trans "Gross Margin" %}: {{ costing.gross_margin }} ₴</p>
     </div>
 
     <div class="span-3 bento-card kpi-card">
       <div class="kpi-label">{% trans "Food Cost %" %}</div>
       <div class="kpi-value text-primary mono-num">{{ costing.food_cost_pct }}%</div>
-      <p class="kpi-meta mono-num">{% trans "Target Price" %}: ${{ costing.recommended_price }}</p>
+      <p class="kpi-meta mono-num">{% trans "Target Price" %}: {{ costing.recommended_price }} ₴</p>
     </div>
 
     <div class="span-3 bento-card kpi-card {% if costing.availability_status == 'STOP_LIST' %}is-danger{% elif costing.availability_status == 'LOW_STOCK' %}is-warning{% else %}is-success{% endif %}">

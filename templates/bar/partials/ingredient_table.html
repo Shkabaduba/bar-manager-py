@@ -30,7 +30,7 @@
                   <span class="badge badge-success">{{ ingredient.stock_quantity }} {{ ingredient.unit }}</span>
                 {% endif %}
               </td>
-              <td class="mono-num">${{ ingredient.cost_per_unit }}</td>
+              <td class="mono-num">{{ ingredient.cost_per_unit }} ₴</td>
               <td>{{ ingredient.supplier.name }}</td>
               {% if user.can_manage_bar %}
                 <td>

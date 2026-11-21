@@ -34,7 +34,7 @@
               </td>
               <td class="mono-num">{{ order.items_count|default:0 }}</td>
               <td class="mono-num">
-                ${% if order.status == "PAID" %}{{ order.total_revenue_snapshot|floatformat:2 }}{% else %}{{ order.calculated_total|default:"0.00"|floatformat:2 }}{% endif %}
+                {% if order.status == "PAID" %}{{ order.total_revenue_snapshot|floatformat:2 }}{% else %}{{ order.calculated_total|default:"0.00"|floatformat:2 }}{% endif %} ₴
               </td>
               <td>
                 {% if order.status == "PAID" %}

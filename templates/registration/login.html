@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% load i18n %}
+{% load i18n static %}
 
 {% block title %}
   <title>{% trans "Sign In | Bar Manager" %}</title>
@@ -8,9 +8,12 @@
 {% block layout %}
   {% get_current_language as CURRENT_LANGUAGE %}
   <div class="auth-shell">
+    <img src="{% static 'img/cyber_bar_bg.png' %}" alt="" class="pixel-art auth-bg-img" aria-hidden="true">
+    <div class="auth-bg-scrim" aria-hidden="true"></div>
+
     <div class="auth-card">
       <div class="flex justify-between items-center mb-4">
-        <span class="badge badge-primary">{% trans "Shift Portal" %}</span>
+        <span class="badge badge-primary pixel-badge">{% trans "Shift Portal" %}</span>
         <form action="{% url 'set_language' %}" method="post" class="lang-switcher">
           {% csrf_token %}
           <input type="hidden" name="next" value="{{ request.get_full_path }}">
@@ -24,7 +27,9 @@
       </div>
 
       <div class="auth-brand">
-        <div class="auth-icon">🍸</div>
+        <div class="auth-icon">
+          <img src="{% static 'img/pixel_bar_logo.png' %}" alt="" class="pixel-art auth-logo-img">
+        </div>
         <h1>{% trans "Bar Manager" %}</h1>
         <p class="page-subtitle">{% trans "Sign in to start your shift" %}</p>
       </div>
@@ -74,7 +79,7 @@
         </div>
 
         <button type="submit" class="btn btn-primary btn-block mt-4">
-          {% trans "Sign In to Shift" %} →
+          <span>{% trans "Sign In to Shift" %} →</span>
         </button>
       </form>
     </div>

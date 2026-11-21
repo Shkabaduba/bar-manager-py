@@ -466,6 +466,9 @@ msgstr "Записів у журналі аудиту не знайдено."
 msgid "No closed orders for this period."
 msgstr "За цей період немає закритих замовлень."
 
+msgid "No description provided."
+msgstr "Опис відсутній."
+
 msgid "No drinks"
 msgstr "Немає напоїв"
 
@@ -673,6 +676,9 @@ msgstr "Контроль зміни та огляд складу"
 msgid "Shift Ended"
 msgstr "Зміну завершено"
 
+msgid "Shift Online"
+msgstr "Зміна онлайн"
+
 msgid "Shift Portal"
 msgstr "Портал зміни"
 
@@ -849,6 +855,9 @@ msgstr "Оновити залишок і середньозважену ціну
 
 msgid "Username"
 msgstr "Логін"
+
+msgid "View Recipe"
+msgstr "Рецепт"
 
 msgid "Volume"
 msgstr "Об'єм"

@@ -33,7 +33,7 @@
               <td><strong>{{ movement.ingredient.name }}</strong></td>
               <td class="mono-num">{{ movement.quantity_delta }} {{ movement.ingredient.unit }}</td>
               <td class="mono-num">{{ movement.balance_after }} {{ movement.ingredient.unit }}</td>
-              <td class="mono-num">${{ movement.total_cost }}</td>
+              <td class="mono-num">{{ movement.total_cost }} ₴</td>
               <td>{{ movement.reason|default:"—" }}</td>
               <td>{{ movement.performed_by.username|default:_("System") }}</td>
             </tr>

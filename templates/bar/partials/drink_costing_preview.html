@@ -8,11 +8,11 @@
     <div class="bento-grid mb-4">
       <div class="span-6 bg-base-300">
         <div class="kpi-label">{% trans "Cost Price" %}</div>
-        <div class="kpi-value mono-num" style="font-size: 1.35rem;">${{ costing.cost_price }}</div>
+        <div class="kpi-value mono-num" style="font-size: 1.35rem;">{{ costing.cost_price }} ₴</div>
       </div>
       <div class="span-6 bg-base-300">
         <div class="kpi-label">{% trans "Gross Margin" %}</div>
-        <div class="kpi-value text-success mono-num" style="font-size: 1.35rem;">${{ costing.gross_margin }}</div>
+        <div class="kpi-value text-success mono-num" style="font-size: 1.35rem;">{{ costing.gross_margin }} ₴</div>
       </div>
       <div class="span-6 bg-base-300">
         <div class="kpi-label">{% trans "Food Cost %" %}</div>
@@ -28,7 +28,7 @@
       </div>
       <div class="span-6 bg-base-300">
         <div class="kpi-label">{% trans "Recommended Price" %}</div>
-        <div class="kpi-value text-primary mono-num" style="font-size: 1.35rem;">${{ costing.recommended_price }}</div>
+        <div class="kpi-value text-primary mono-num" style="font-size: 1.35rem;">{{ costing.recommended_price }} ₴</div>
       </div>
       <div class="span-6 bg-base-300">
         <div class="kpi-label">{% trans "Est. Volume" %}</div>
@@ -63,7 +63,7 @@
               <tr>
                 <td><strong>{{ line.ingredient_name }}</strong></td>
                 <td class="mono-num">{{ line.amount }} {{ line.unit }}</td>
-                <td class="mono-num">${{ line.line_cost }}</td>
+                <td class="mono-num">{{ line.line_cost }} ₴</td>
                 <td class="mono-num">{{ line.cost_share_pct }}%</td>
                 <td class="mono-num">
                   {{ line.available_portions }}
