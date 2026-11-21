@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block content %}
+  <div class="page-header">
+    <div>
+      <h1>{% trans "Create Order" %}</h1>
+      <p class="page-subtitle">{% trans "Open a new table check and launch POS" %}</p>
+    </div>
+    <a href="{% url 'bar:order-list' %}" class="btn btn-outline btn-sm">
+      ← {% trans "Back to Orders" %}
+    </a>
+  </div>
+
+  <div class="bento-card" style="max-width: 520px;">
+    <form action="" method="post" novalidate>
+      {% csrf_token %}
+      {% include "includes/form_fields.html" %}
+
+      <div class="inline-actions mt-4">
+        <button type="submit" class="btn btn-primary">{% trans "Create Order" %}</button>
+        <a href="{% url 'bar:order-list' %}" class="btn btn-outline">{% trans "Cancel" %}</a>
+      </div>
+    </form>
+  </div>
+{% endblock %}

@@ -1,13 +1,17 @@
 {% extends "base.html" %}
+{% load i18n %}
 
 {% block content %}
-  <h1>Delete Supplier</h1>
+  <div class="confirm-delete-card">
+    <h1>{% trans "Delete Supplier" %}</h1>
+    <p class="page-subtitle mb-6">
+      {% blocktrans with name=barsupplier.name %}Are you sure you want to delete supplier <strong>{{ name }}</strong>?{% endblocktrans %}
+    </p>
 
-  <p>Are you sure you want to delete supplier: <strong>{{ barsupplier.name }}</strong>?</p>
-
-  <form action="" method="post">
-    {% csrf_token %}
-    <input type="submit" value="Yes, delete" class="btn btn-error mt-4">
-    <a href="{% url 'bar:supplier-list' %}" class="btn btn-outline mt-4">Cancel</a>
-  </form>
+    <form action="" method="post" class="inline-actions">
+      {% csrf_token %}
+      <button type="submit" class="btn btn-error">{% trans "Yes, delete" %}</button>
+      <a href="{% url 'bar:supplier-list' %}" class="btn btn-outline">{% trans "Cancel" %}</a>
+    </form>
+  </div>
 {% endblock %}

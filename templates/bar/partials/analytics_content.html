@@ -1,0 +1,194 @@
+{% load i18n %}
+<div id="analytics-region">
+  <div class="page-header">
+    <div>
+      <h1>{% trans "Analytics" %} ({{ report.period }})</h1>
+      <p class="page-subtitle">
+        <span class="mono-num">{{ report.start_date|date:"Y-m-d" }} — {{ report.end_date|date:"Y-m-d" }}</span>
+      </p>
+    </div>
+    <div class="inline-actions">
+      {% for option in valid_periods %}
+        <a
+          href="?period={{ option }}"
+          hx-get="{% url 'bar:analytics' %}?period={{ option }}"
+          hx-target="#analytics-region"
+          hx-swap="outerHTML"
+          hx-push-url="true"
+          class="btn btn-sm {% if option == period %}btn-primary{% else %}btn-outline{% endif %}"
+        >
+          {{ option }}
+        </a>
+      {% endfor %}
+      <a href="{% url 'bar:analytics-export' %}?period={{ period }}" class="btn btn-success btn-sm">
+        ⬇ {% trans "Export CSV" %}
+      </a>
+    </div>
+  </div>
+
+  <div class="bento-grid bento-stagger mb-6">
+    <div class="span-3 bento-card kpi-card is-success">
+      <div class="kpi-label">{% trans "Revenue" %}</div>
+      <div class="kpi-value text-success mono-num" style="font-size: 1.5rem;">${{ report.revenue }}</div>
+      <p class="kpi-meta mono-num">
+        {% blocktrans with paid=report.paid_orders_count force=report.force_closed_orders_count %}{{ paid }} paid ({{ force }} force-closed){% endblocktrans %}
+      </p>
+    </div>
+
+    <div class="span-3 bento-card kpi-card">
+      <div class="kpi-label">{% trans "COGS" %}</div>
+      <div class="kpi-value mono-num" style="font-size: 1.5rem;">${{ report.cogs }}</div>
+      <p class="kpi-meta mono-num">{% trans "Food Cost" %}: {{ report.food_cost_pct }}%</p>
+    </div>
+
+    <div class="span-3 bento-card kpi-card is-cyan">
+      <div class="kpi-label">{% trans "Gross Margin" %}</div>
+      <div class="kpi-value text-primary mono-num" style="font-size: 1.5rem;">${{ report.gross_margin }}</div>
+      <p class="kpi-meta mono-num">{% trans "Stock In" %}: ${{ report.stock_in_cost }}</p>
+    </div>
+
+    <div class="span-3 bento-card kpi-card {% if report.total_losses %}is-danger{% else %}is-success{% endif %}">
+      <div class="kpi-label">{% trans "Net Margin After Losses" %}</div>
+      <div class="kpi-value mono-num" style="font-size: 1.5rem;">${{ report.net_margin_after_losses }}</div>
+      <p class="kpi-meta mono-num">
+        {% trans "Losses" %}: ${{ report.total_losses }} • {% trans "Stock" %}: ${{ report.current_stock_value }}
+      </p>
+    </div>
+
+    <div class="span-12 bento-card">
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="section-title" style="margin-bottom: 0;">📈 {% trans "Daily In vs Out Flow" %}</h2>
+        <span class="badge badge-neutral mono-num">
+          {% trans "Peak" %}: ${{ chart_data.peak_amount }}
+        </span>
+      </div>
+
+      <div class="chart-wrap">
+        <svg viewBox="{{ chart_data.viewbox }}" class="chart-svg" role="img" aria-label="{% trans 'Daily Revenue, Stock In & Losses Chart' %}">
+          <line x1="16" y1="{{ chart_data.baseline_y }}" x2="624" y2="{{ chart_data.baseline_y }}" class="chart-axis-line" />
+          {% for bar_group in chart_data.bars %}
+            {% if bar_group.revenue_bar.height %}
+              <rect
+                x="{{ bar_group.revenue_bar.x }}"
+                y="{{ bar_group.revenue_bar.y }}"
+                width="{{ bar_group.revenue_bar.width }}"
+                height="{{ bar_group.revenue_bar.height }}"
+                rx="2"
+                class="bar-revenue"
+              >
+                <title>{{ bar_group.label }} Revenue: ${{ bar_group.revenue_bar.amount }}</title>
+              </rect>
+            {% endif %}
+            {% if bar_group.stock_in_bar.height %}
+              <rect
+                x="{{ bar_group.stock_in_bar.x }}"
+                y="{{ bar_group.stock_in_bar.y }}"
+                width="{{ bar_group.stock_in_bar.width }}"
+                height="{{ bar_group.stock_in_bar.height }}"
+                rx="2"
+                class="bar-stock-in"
+              >
+                <title>{{ bar_group.label }} Stock In: ${{ bar_group.stock_in_bar.amount }}</title>
+              </rect>
+            {% endif %}
+            {% if bar_group.loss_bar.height %}
+              <rect
+                x="{{ bar_group.loss_bar.x }}"
+                y="{{ bar_group.loss_bar.y }}"
+                width="{{ bar_group.loss_bar.width }}"
+                height="{{ bar_group.loss_bar.height }}"
+                rx="2"
+                class="bar-loss"
+              >
+                <title>{{ bar_group.label }} Losses: ${{ bar_group.loss_bar.amount }}</title>
+              </rect>
+            {% endif %}
+            {% if bar_group.show_label %}
+              <text x="{{ bar_group.label_x }}" y="190" text-anchor="middle" class="chart-axis-label">
+                {{ bar_group.label }}
+              </text>
+            {% endif %}
+          {% endfor %}
+        </svg>
+      </div>
+
+      <div class="chart-legend">
+        <span class="legend-item">
+          <span class="legend-dot is-indigo"></span>
+          {% trans "Revenue" %}
+        </span>
+        <span class="legend-item">
+          <span class="legend-dot is-emerald"></span>
+          {% trans "Stock In" %}
+        </span>
+        <span class="legend-item">
+          <span class="legend-dot is-rose"></span>
+          {% trans "Write-offs & Shortages" %}
+        </span>
+      </div>
+    </div>
+
+    <div class="span-6 bento-card">
+      <h2 class="section-title">🍸 {% trans "Top Margin Cocktails" %}</h2>
+      {% if report.top_drinks %}
+        <div class="table-wrap">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>{% trans "Drink" %}</th>
+                <th>{% trans "Portions" %}</th>
+                <th>{% trans "Revenue" %}</th>
+                <th>{% trans "Margin" %}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for drink_metric in report.top_drinks %}
+                <tr>
+                  <td>
+                    <strong>{{ drink_metric.drink_name }}</strong>
+                    <div class="page-subtitle">{{ drink_metric.category_name }}</div>
+                  </td>
+                  <td class="mono-num">{{ drink_metric.portions_sold }}</td>
+                  <td class="mono-num">${{ drink_metric.revenue }}</td>
+                  <td class="mono-num"><span class="badge badge-success">${{ drink_metric.gross_margin }}</span></td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      {% else %}
+        <p class="page-subtitle">{% trans "No paid orders for this period." %}</p>
+      {% endif %}
+    </div>
+
+    <div class="span-6 bento-card">
+      <h2 class="section-title">🏆 {% trans "Bartender Ranking" %}</h2>
+      {% if report.bartender_ranking %}
+        <div class="table-wrap">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>{% trans "Bartender" %}</th>
+                <th>{% trans "Orders Closed" %}</th>
+                <th>{% trans "Revenue" %}</th>
+                <th>{% trans "Avg Check" %}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for staff_metric in report.bartender_ranking %}
+                <tr>
+                  <td><strong>{{ staff_metric.username }}</strong></td>
+                  <td class="mono-num">{{ staff_metric.orders_closed }}</td>
+                  <td class="mono-num">${{ staff_metric.revenue }}</td>
+                  <td class="mono-num">${{ staff_metric.avg_check }}</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      {% else %}
+        <p class="page-subtitle">{% trans "No closed orders for this period." %}</p>
+      {% endif %}
+    </div>
+  </div>
+</div>

@@ -1,43 +1,42 @@
 {% extends "base.html" %}
-{% load crispy_forms_tags %}
+{% load i18n %}
 
 {% block content %}
-  <div class="flex justify-between items-center mb-4">
-    <h1>List of Drinks</h1>
-    <a href="{% url 'bar:drink-create' %}" class="btn btn-primary btn-sm">+ Create Drink</a>
+  <div class="page-header">
+    <div>
+      <h1>{% trans "Drinks Menu" %}</h1>
+      <p class="page-subtitle">{% trans "Cocktails, unit costing, Food Cost %, and real-time stop-list status" %}</p>
+    </div>
+    {% if user.can_manage_bar %}
+      <a href="{% url 'bar:drink-create' %}" class="btn btn-primary btn-sm">
+        + {% trans "Create Drink" %}
+      </a>
+    {% endif %}
   </div>
 
-  <form method="get" action="" class="flex gap-2 mb-4 items-center [&_.form-group]:mb-0 [&_input]:rounded-md [&_input]:px-3">
-    {{ search_form|crispy }}
-    <button type="submit" class="btn btn-primary btn-sm">Search</button>
+  <form
+    method="get"
+    action=""
+    hx-get="{% url 'bar:drink-list' %}"
+    hx-target="#drink-list-region"
+    hx-swap="outerHTML"
+    hx-push-url="true"
+    hx-trigger="submit, input changed delay:250ms from:input, change from:select"
+    class="filter-bar"
+  >
+    {{ search_form.name }}
+    <select name="category">
+      <option value="">{% trans "All categories" %}</option>
+      {% for cat in categories %}
+        <option value="{{ cat.pk }}" {% if selected_category == cat.pk|stringformat:"s" %}selected{% endif %}>
+          {{ cat.name }}
+        </option>
+      {% endfor %}
+    </select>
+    <button type="submit" class="btn btn-primary btn-sm">{% trans "Search" %}</button>
   </form>
 
-
-  {% if drink_list %}
-    <table class="table">
-      <tr>
-        <th>ID</th>
-        <th>Name</th>
-        <th>Price</th>
-        <th>Volume</th>
-        <th>Name of Category</th>
-      </tr>
-
-      {% for drink in drink_list %}
-        <tr>
-          <td>{{ drink.id }}</td>
-          <td>
-            <a href="{{ drink.get_absolute_url }}" class="link link-primary font-bold">
-              {{ drink.name }}
-            </a>
-          </td>
-          <td>${{ drink.price }}</td>
-          <td>{{ drink.volume_ml }} ml</td>
-          <td>{{ drink.category.name }}</td>
-        </tr>
-      {% endfor %}
-    </table>
-  {% else %}
-    <p>There are no drinks in the bar yet.</p>
-  {% endif %}
+  {% include "bar/partials/drink_table.html" %}
 {% endblock %}
+
+{% block pagination %}{% endblock %}

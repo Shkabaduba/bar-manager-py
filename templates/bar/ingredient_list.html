@@ -1,57 +1,57 @@
 {% extends "base.html" %}
-{% load crispy_forms_tags %}
+{% load i18n %}
 
 {% block content %}
-  <div class="flex justify-between items-center mb-4">
-    <h1>List of Ingredients</h1>
-    <a href="{% url 'bar:ingredient-create' %}" class="btn btn-primary btn-sm">+ Create Ingredient</a>
+  <div class="page-header">
+    <div>
+      <h1>{% trans "Ingredients Stock" %}</h1>
+      <p class="page-subtitle">{% trans "Live inventory balances, thresholds, and weighted average costs" %}</p>
+    </div>
+    {% if user.can_manage_bar %}
+      <div class="inline-actions">
+        <a
+          href="{% url 'bar:stock-in' %}"
+          hx-get="{% url 'bar:stock-in' %}"
+          hx-target="#drawer-body"
+          hx-swap="innerHTML"
+          class="btn btn-success btn-sm"
+        >
+          + {% trans "Stock In" %}
+        </a>
+        <a
+          href="{% url 'bar:ingredient-create' %}"
+          hx-get="{% url 'bar:ingredient-create' %}"
+          hx-target="#drawer-body"
+          hx-swap="innerHTML"
+          class="btn btn-primary btn-sm"
+        >
+          + {% trans "Create Ingredient" %}
+        </a>
+      </div>
+    {% endif %}
   </div>
 
-  <form method="get" action="" class="flex gap-2 mb-4 items-center [&_.form-group]:mb-0 [&_input]:rounded-md [&_input]:px-3">
-    {{ search_form|crispy }}
-    <button type="submit" class="btn btn-primary btn-sm">Search</button>
+  <form
+    method="get"
+    action=""
+    hx-get="{% url 'bar:ingredient-list' %}"
+    hx-target="#ingredient-list-region"
+    hx-swap="outerHTML"
+    hx-push-url="true"
+    hx-trigger="submit, input changed delay:250ms from:input, change from:select"
+    class="filter-bar"
+  >
+    {{ search_form.name }}
+    <select name="stock_status">
+      <option value="">{% trans "All stock levels" %}</option>
+      <option value="ok" {% if request.GET.stock_status == "ok" %}selected{% endif %}>{% trans "In stock" %}</option>
+      <option value="low" {% if request.GET.stock_status == "low" %}selected{% endif %}>{% trans "Low stock" %}</option>
+      <option value="out" {% if request.GET.stock_status == "out" %}selected{% endif %}>{% trans "Out of stock" %}</option>
+    </select>
+    <button type="submit" class="btn btn-primary btn-sm">{% trans "Search" %}</button>
   </form>
 
-  {% if ingredient_list %}
-    <table class="table">
-      <thead>
-        <tr>
-          <th>ID</th>
-          <th>Name</th>
-          <th>Stock Quantity</th>
-          <th>Supplier</th>
-          <th>Update</th>
-          <th>Delete</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for ingredient in ingredient_list %}
-          <tr>
-            <td>{{ ingredient.id }}</td>
-            <td>{{ ingredient.name }}</td>
-            <td>
-              {% if ingredient.stock_quantity == 0 %}
-                <span class="badge badge-error">Out of stock (0)</span>
-              {% else %}
-                <span class="badge badge-neutral">{{ ingredient.stock_quantity }}</span>
-              {% endif %}
-            </td>
-            <td>{{ ingredient.supplier.name }}</td>
-            <td>
-              <a href="{% url 'bar:ingredient-update' ingredient.id %}" class="btn btn-info btn-xs">
-                Update
-              </a>
-            </td>
-            <td>
-              <a href="{% url 'bar:ingredient-delete' ingredient.id %}" class="btn btn-error btn-xs">
-                Delete
-              </a>
-            </td>
-          </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-  {% else %}
-    <p>There are no ingredients in the bar yet.</p>
-  {% endif %}
+  {% include "bar/partials/ingredient_table.html" %}
 {% endblock %}
+
+{% block pagination %}{% endblock %}

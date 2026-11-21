@@ -1,55 +1,40 @@
 {% extends "base.html" %}
-{% load crispy_forms_tags %}
+{% load i18n %}
 
 {% block content %}
-  <div class="flex justify-between items-center mb-4">
-    <h1>Drinks Categories</h1>
-    <a href="{% url 'bar:category-create' %}" class="btn btn-primary btn-sm">+ Create Category</a>
+  <div class="page-header">
+    <div>
+      <h1>{% trans "Drinks Categories" %}</h1>
+      <p class="page-subtitle">{% trans "Manage menu sections and alcohol classification" %}</p>
+    </div>
+    {% if user.can_manage_bar %}
+      <a
+        href="{% url 'bar:category-create' %}"
+        hx-get="{% url 'bar:category-create' %}"
+        hx-target="#drawer-body"
+        hx-swap="innerHTML"
+        class="btn btn-primary btn-sm"
+      >
+        + {% trans "Create Category" %}
+      </a>
+    {% endif %}
   </div>
 
-  <form method="get" action="" class="flex gap-2 mb-4 items-center [&_.form-group]:mb-0 [&_input]:rounded-md [&_input]:px-3">
-    {{ search_form|crispy }}
-    <button type="submit" class="btn btn-primary btn-sm">Search</button>
+  <form
+    method="get"
+    action=""
+    hx-get="{% url 'bar:category-list' %}"
+    hx-target="#category-list-region"
+    hx-swap="outerHTML"
+    hx-push-url="true"
+    hx-trigger="submit, input changed delay:250ms from:input, change from:select"
+    class="filter-bar"
+  >
+    {{ search_form.name }}
+    <button type="submit" class="btn btn-primary btn-sm">{% trans "Search" %}</button>
   </form>
 
-  {% if category_list %}
-    <table class="table">
-      <thead>
-        <tr>
-          <th>ID</th>
-          <th>Name</th>
-          <th>Type</th>
-          <th>Update</th>
-          <th>Delete</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for category in category_list %}
-          <tr>
-            <td>{{ category.id }}</td>
-            <td>{{ category.name }}</td>
-            <td>
-              {% if category.is_alcohol %}
-                <span class="badge badge-warning">Alcoholic</span>
-              {% else %}
-                <span class="badge badge-success">Non-alcoholic</span>
-              {% endif %}
-            </td>
-            <td>
-              <a href="{% url 'bar:category-update' category.id %}" class="btn btn-info btn-xs">
-                Update
-              </a>
-            </td>
-            <td>
-              <a href="{% url 'bar:category-delete' category.id %}" class="btn btn-error btn-xs">
-                Delete
-              </a>
-            </td>
-          </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-  {% else %}
-    <p>There are no categories in the bar yet.</p>
-  {% endif %}
+  {% include "bar/partials/category_table.html" %}
 {% endblock %}
+
+{% block pagination %}{% endblock %}

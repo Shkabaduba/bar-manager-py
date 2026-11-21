@@ -1,0 +1,63 @@
+:root {
+  /* Core Canvas & Surfaces */
+  --bg-canvas: #080a0f;
+  --bg-surface-1: #0f131d;
+  --bg-surface-2: #161c2b;
+  --bg-surface-3: #1e2638;
+  --bg-glass: rgba(15, 19, 29, 0.78);
+  --bg-glass-hover: rgba(22, 28, 43, 0.9);
+  --bg-input: rgba(8, 10, 15, 0.85);
+
+  /* Borders */
+  --border-subtle: rgba(148, 163, 184, 0.14);
+  --border-bright: rgba(148, 163, 184, 0.3);
+  --border-focus: rgba(99, 102, 241, 0.65);
+
+  /* Text */
+  --text-primary: #f8fafc;
+  --text-secondary: #cbd5e1;
+  --text-muted: #94a3b8;
+  --text-dim: #64748b;
+
+  /* Brand & Semantic Accents */
+  --accent-indigo: #6366f1;
+  --accent-indigo-bright: #818cf8;
+  --accent-indigo-glow: rgba(99, 102, 241, 0.25);
+  --accent-emerald: #10b981;
+  --accent-emerald-bright: #34d399;
+  --accent-emerald-glow: rgba(16, 185, 129, 0.22);
+  --accent-amber: #f59e0b;
+  --accent-amber-soft: rgba(245, 158, 11, 0.16);
+  --accent-rose: #f43f5e;
+  --accent-rose-soft: rgba(244, 63, 94, 0.16);
+  --accent-cyan: #06b6d4;
+  --accent-cyan-soft: rgba(6, 182, 212, 0.16);
+
+  /* Gradients */
+  --grad-indigo: linear-gradient(135deg, #6366f1 0%, #818cf8 100%);
+  --grad-emerald: linear-gradient(135deg, #10b981 0%, #34d399 100%);
+  --grad-neon-bar: linear-gradient(90deg, #6366f1 0%, #06b6d4 50%, #10b981 100%);
+
+  /* Typography */
+  --font-sans: "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  /* Motion & Radii */
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
+  --radius-full: 9999px;
+
+  /* Shadows & Layers */
+  --shadow-card: 0 12px 32px -12px rgba(0, 0, 0, 0.65);
+  --shadow-glow-indigo: 0 8px 24px -6px rgba(99, 102, 241, 0.42);
+  --shadow-glow-emerald: 0 8px 24px -6px rgba(16, 185, 129, 0.35);
+  --z-backdrop: 40;
+  --z-sidebar: 45;
+  --z-drawer: 50;
+  --z-toast: 60;
+  --z-progress: 70;
+}

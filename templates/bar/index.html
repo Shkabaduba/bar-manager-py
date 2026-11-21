@@ -1,92 +1,156 @@
 {% extends "base.html" %}
+{% load i18n %}
 
 {% block content %}
-  <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6 pb-4 border-b border-base-content/10">
+  <div class="page-header">
     <div>
-      <h1 class="text-3xl font-extrabold text-primary mb-1 border-none pb-0">🍸 Bar Manager Dashboard</h1>
-      <p class="text-sm opacity-70">Shift Control & Inventory Overview</p>
+      <h1>{% trans "Bar Manager Dashboard" %}</h1>
+      <p class="page-subtitle">{% trans "Shift Control & Inventory Overview" %}</p>
     </div>
-    <div class="badge badge-outline badge-lg gap-2">
-      <span class="inline-block w-2 h-2 rounded-full bg-success animate-pulse"></span>
-      Shift Visits: <strong class="text-primary">{{ num_visits }}</strong>
-    </div>
-  </div>
-
-  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-    <!-- Active Orders Card -->
-    <div class="card bg-base-300 shadow-md hover:shadow-lg transition-all border-l-4 {% if active_orders %}border-warning{% else %}border-success{% endif %}">
-      <div class="card-body p-4">
-        <div class="flex justify-between items-center">
-          <span class="text-xs uppercase tracking-wider opacity-70 font-semibold">Active Orders</span>
-          <span class="text-2xl">🧾</span>
-        </div>
-        <div class="text-3xl font-black text-warning">{{ active_orders }}</div>
-        <p class="text-xs opacity-60">Pending table checks</p>
-      </div>
-    </div>
-
-    <div class="card bg-base-300 shadow-md hover:shadow-lg transition-all border-l-4 border-primary">
-      <div class="card-body p-4">
-        <div class="flex justify-between items-center">
-          <span class="text-xs uppercase tracking-wider opacity-70 font-semibold">Drinks Menu</span>
-          <span class="text-2xl">🍹</span>
-        </div>
-        <div class="text-3xl font-black text-primary">{{ num_drinks }}</div>
-        <p class="text-xs opacity-60">Across {{ num_categories }} categories</p>
-      </div>
-    </div>
-
-    <div class="card bg-base-300 shadow-md hover:shadow-lg transition-all border-l-4 {% if out_of_stock_ingredients %}border-error{% else %}border-success{% endif %}">
-      <div class="card-body p-4">
-        <div class="flex justify-between items-center">
-          <span class="text-xs uppercase tracking-wider opacity-70 font-semibold">Out of Stock</span>
-          <span class="text-2xl">⚠️</span>
-        </div>
-        <div class="text-3xl font-black {% if out_of_stock_ingredients %}text-error{% else %}text-success{% endif %}">
-          {{ out_of_stock_ingredients }}
-        </div>
-        <p class="text-xs opacity-60">Ingredients require refill</p>
-      </div>
-    </div>
-
-    <div class="card bg-base-300 shadow-md hover:shadow-lg transition-all border-l-4 border-secondary">
-      <div class="card-body p-4">
-        <div class="flex justify-between items-center">
-          <span class="text-xs uppercase tracking-wider opacity-70 font-semibold">Categories</span>
-          <span class="text-2xl">🏷️</span>
-        </div>
-        <div class="text-3xl font-black text-secondary">{{ num_categories }}</div>
-        <p class="text-xs opacity-60">Bar drink varieties</p>
-      </div>
+    <div class="badge badge-lg">
+      <span class="pulse-dot" aria-hidden="true"></span>
+      <span>{% trans "Shift Visits" %}:</span>
+      <strong class="mono-num">{{ num_visits }}</strong>
     </div>
   </div>
 
-  <h2 class="text-xl font-bold mb-4 flex items-center gap-2">
-    <span>⚡</span> Quick Shift Actions
-  </h2>
-  <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-    <a href="{% url 'bar:order-list' %}" class="btn btn-outline btn-warning justify-start gap-3 h-auto py-3">
-      <span class="text-xl">📋</span>
-      <div class="text-left">
-        <div class="font-bold">View Orders</div>
-        <div class="text-xs opacity-60 font-normal">Take or release active checks</div>
+  <div class="bento-grid bento-stagger mb-6">
+    <div class="span-3 bento-card kpi-card {% if active_orders %}is-warning{% else %}is-success{% endif %}">
+      <div class="kpi-header">
+        <span class="kpi-label">{% trans "Active Orders" %}</span>
+        <span class="kpi-icon">🧾</span>
       </div>
-    </a>
+      <div class="kpi-value text-warning">
+        <span id="kpi-active-orders">{{ active_orders }}</span>
+      </div>
+      <p class="kpi-meta">{% trans "Open & in-progress checks" %}</p>
+    </div>
 
-    <a href="{% url 'bar:drink-create' %}" class="btn btn-outline btn-primary justify-start gap-3 h-auto py-3">
-      <span class="text-xl">➕</span>
-      <div class="text-left">
-        <div class="font-bold">New Cocktail</div>
-        <div class="text-xs opacity-60 font-normal">Add recipe to drink menu</div>
+    <div class="span-3 bento-card kpi-card">
+      <div class="kpi-header">
+        <span class="kpi-label">{% trans "Drinks Menu" %}</span>
+        <span class="kpi-icon">🍹</span>
       </div>
-    </a>
+      <div class="kpi-value text-primary">
+        <span id="kpi-num-drinks">{{ num_drinks }}</span>
+      </div>
+      <p class="kpi-meta">
+        {% blocktrans with count=snapshot.num_active_drinks %}{{ count }} active items{% endblocktrans %}
+      </p>
+    </div>
 
-    <a href="{% url 'bar:ingredient-list' %}" class="btn btn-outline btn-accent justify-start gap-3 h-auto py-3">
-      <span class="text-xl">📦</span>
-      <div class="text-left">
-        <div class="font-bold">Stock Storage</div>
-        <div class="text-xs opacity-60 font-normal">Inspect inventory residues</div>
+    <div class="span-3 bento-card kpi-card {% if out_of_stock_ingredients %}is-danger{% else %}is-success{% endif %}">
+      <div class="kpi-header">
+        <span class="kpi-label">{% trans "Out of Stock" %}</span>
+        <span class="kpi-icon">⚠️</span>
       </div>
-    </a>
+      <div class="kpi-value {% if out_of_stock_ingredients %}text-error{% else %}text-success{% endif %}">
+        <span id="kpi-out-of-stock">{{ out_of_stock_ingredients }}</span>
+      </div>
+      <p class="kpi-meta">
+        {% blocktrans with low=snapshot.low_stock_ingredients %}{{ low }} low stock alerts{% endblocktrans %}
+      </p>
+    </div>
+
+    <div class="span-3 bento-card kpi-card is-cyan">
+      <div class="kpi-header">
+        <span class="kpi-label">{% trans "Categories" %}</span>
+        <span class="kpi-icon">🏷️</span>
+      </div>
+      <div class="kpi-value">
+        <span id="kpi-num-categories">{{ num_categories }}</span>
+      </div>
+      <p class="kpi-meta">
+        {% blocktrans with suppliers=snapshot.num_suppliers %}{{ suppliers }} active suppliers{% endblocktrans %}
+      </p>
+    </div>
+
+    {% if user.can_manage_bar %}
+      <div class="span-8 bento-card">
+        <div class="flex items-center justify-between mb-4">
+          <h2 class="section-title" style="margin-bottom: 0;">{% trans "Today Shift Financial Pulse" %}</h2>
+          <a href="{% url 'bar:analytics' %}" class="btn btn-outline btn-sm">
+            {% trans "Full Analytics" %} →
+          </a>
+        </div>
+        <div class="bento-grid">
+          <div class="span-3 bg-base-300">
+            <div class="kpi-label">{% trans "Revenue Today" %}</div>
+            <div class="kpi-value text-success mono-num" style="font-size: 1.45rem;">${{ snapshot.revenue_today }}</div>
+          </div>
+          <div class="span-3 bg-base-300">
+            <div class="kpi-label">{% trans "COGS Today" %}</div>
+            <div class="kpi-value mono-num" style="font-size: 1.45rem;">${{ snapshot.cogs_today }}</div>
+          </div>
+          <div class="span-3 bg-base-300">
+            <div class="kpi-label">{% trans "Gross Profit" %}</div>
+            <div class="kpi-value text-primary mono-num" style="font-size: 1.45rem;">${{ snapshot.gross_profit_today }}</div>
+          </div>
+          <div class="span-3 bg-base-300">
+            <div class="kpi-label">{% trans "Stock Value" %}</div>
+            <div class="kpi-value mono-num" style="font-size: 1.45rem;">${{ snapshot.stock_total_value }}</div>
+          </div>
+        </div>
+      </div>
+    {% endif %}
+
+    <div class="{% if user.can_manage_bar %}span-4{% else %}span-12{% endif %} bento-card">
+      <h2 class="section-title">⚡ {% trans "Quick Shift Actions" %}</h2>
+      <div class="flex flex-col gap-3">
+        <a href="{% url 'bar:order-list' %}" class="action-tile">
+          <span class="action-icon">📋</span>
+          <div>
+            <div class="action-title">{% trans "Active Orders" %}</div>
+            <div class="action-desc">{% trans "Take checks & process payments" %}</div>
+          </div>
+        </a>
+
+        <a
+          href="{% url 'bar:order-create' %}"
+          hx-get="{% url 'bar:order-create' %}"
+          hx-target="#drawer-body"
+          hx-swap="innerHTML"
+          class="action-tile"
+        >
+          <span class="action-icon">🧾</span>
+          <div>
+            <div class="action-title">{% trans "Open New Table Order" %}</div>
+            <div class="action-desc">{% trans "Launch POS workspace" %}</div>
+          </div>
+        </a>
+
+        {% if user.can_manage_bar %}
+          <a href="{% url 'bar:drink-create' %}" class="action-tile">
+            <span class="action-icon">➕</span>
+            <div>
+              <div class="action-title">{% trans "New Cocktail Recipe" %}</div>
+              <div class="action-desc">{% trans "Open live costing calculator" %}</div>
+            </div>
+          </a>
+
+          <a
+            href="{% url 'bar:stock-in' %}"
+            hx-get="{% url 'bar:stock-in' %}"
+            hx-target="#drawer-body"
+            hx-swap="innerHTML"
+            class="action-tile"
+          >
+            <span class="action-icon">📥</span>
+            <div>
+              <div class="action-title">{% trans "Record Stock Receipt" %}</div>
+              <div class="action-desc">{% trans "Update stock & weighted cost" %}</div>
+            </div>
+          </a>
+        {% else %}
+          <a href="{% url 'bar:ingredient-list' %}" class="action-tile">
+            <span class="action-icon">📦</span>
+            <div>
+              <div class="action-title">{% trans "Stock Storage" %}</div>
+              <div class="action-desc">{% trans "Inspect ingredient balances" %}</div>
+            </div>
+          </a>
+        {% endif %}
+      </div>
+    </div>
   </div>
 {% endblock %}

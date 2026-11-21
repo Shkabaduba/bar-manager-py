@@ -1,14 +1,32 @@
 {% extends "base.html" %}
-{% load crispy_forms_tags %}
+{% load i18n %}
 
 {% block content %}
-  <h1>{{ object|yesno:"Update,Create" }} bartender</h1>
+  <div class="page-header">
+    <div>
+      <h1>
+        {% if object %}
+          {% trans "Update Staff Member" %}
+        {% else %}
+          {% trans "Create Staff Member" %}
+        {% endif %}
+      </h1>
+      <p class="page-subtitle">{% trans "Manage staff IDs, roles, and access levels" %}</p>
+    </div>
+    <a href="{% url 'bar:bartender-list' %}" class="btn btn-outline btn-sm">
+      ← {% trans "Back to Bartenders" %}
+    </a>
+  </div>
 
-  <form action="" method="post" novalidate>
-    {% csrf_token %}
-    {{ form|crispy }}
+  <div class="bento-card" style="max-width: 620px;">
+    <form action="" method="post" novalidate>
+      {% csrf_token %}
+      {% include "includes/form_fields.html" %}
 
-    <input type="submit" value="Submit" class="btn btn-primary mt-4">
-    <a href="{% url 'bar:bartender-list' %}" class="btn btn-outline mt-4">Cancel</a>
-  </form>
+      <div class="inline-actions mt-4">
+        <button type="submit" class="btn btn-primary">{% trans "Save Staff Member" %}</button>
+        <a href="{% url 'bar:bartender-list' %}" class="btn btn-outline">{% trans "Cancel" %}</a>
+      </div>
+    </form>
+  </div>
 {% endblock %}

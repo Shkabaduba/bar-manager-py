@@ -1,0 +1,137 @@
+@view-transition {
+  navigation: auto;
+}
+
+/* Top Neon HTMX Progress Bar */
+#htmx-progress-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: var(--grad-neon-bar);
+  transform: scaleX(0);
+  transform-origin: left center;
+  opacity: 0;
+  z-index: var(--z-progress);
+  pointer-events: none;
+  transition: transform 0.28s var(--ease-out), opacity 0.2s ease;
+}
+
+#htmx-progress-bar.is-loading {
+  opacity: 1;
+  transform: scaleX(0.82);
+}
+
+/* Staggered Bento Card Entrance */
+@keyframes bentoFadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.99);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.bento-stagger > * {
+  animation: bentoFadeUp 0.36s var(--ease-out) both;
+}
+
+.bento-stagger > *:nth-child(2) {
+  animation-delay: 0.04s;
+}
+
+.bento-stagger > *:nth-child(3) {
+  animation-delay: 0.08s;
+}
+
+.bento-stagger > *:nth-child(4) {
+  animation-delay: 0.12s;
+}
+
+.bento-stagger > *:nth-child(5) {
+  animation-delay: 0.16s;
+}
+
+.bento-stagger > *:nth-child(6) {
+  animation-delay: 0.2s;
+}
+
+/* Toast Entrance */
+@keyframes toastSpringIn {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.96);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Shift Active Indicator */
+@keyframes pulseGlow {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.55);
+  }
+
+  50% {
+    box-shadow: 0 0 0 6px rgba(16, 185, 129, 0);
+  }
+}
+
+.pulse-dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: var(--radius-full);
+  background: var(--accent-emerald);
+  animation: pulseGlow 2.2s infinite;
+}
+
+/* HTMX Swap Transitions */
+.htmx-swapping {
+  opacity: 0.65;
+  transition: opacity 0.14s ease;
+}
+
+.htmx-added {
+  animation: bentoFadeUp 0.22s var(--ease-out) both;
+}
+
+/* Skeleton Loader */
+@keyframes shimmerSlide {
+  from {
+    background-position: -200% 0;
+  }
+
+  to {
+    background-position: 200% 0;
+  }
+}
+
+.skeleton-shimmer {
+  background: linear-gradient(
+    90deg,
+    var(--bg-surface-2) 25%,
+    var(--bg-surface-3) 50%,
+    var(--bg-surface-2) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmerSlide 1.4s infinite linear;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

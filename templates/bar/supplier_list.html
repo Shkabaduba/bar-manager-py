@@ -1,51 +1,40 @@
 {% extends "base.html" %}
-{% load crispy_forms_tags %}
+{% load i18n %}
 
 {% block content %}
-  <div class="flex justify-between items-center mb-4">
-    <h1>List of Suppliers</h1>
-    <a href="{% url 'bar:supplier-create' %}" class="btn btn-primary btn-sm">+ Create Supplier</a>
+  <div class="page-header">
+    <div>
+      <h1>{% trans "Suppliers" %}</h1>
+      <p class="page-subtitle">{% trans "Beverage distributors and partner contacts" %}</p>
+    </div>
+    {% if user.can_manage_bar %}
+      <a
+        href="{% url 'bar:supplier-create' %}"
+        hx-get="{% url 'bar:supplier-create' %}"
+        hx-target="#drawer-body"
+        hx-swap="innerHTML"
+        class="btn btn-primary btn-sm"
+      >
+        + {% trans "Create Supplier" %}
+      </a>
+    {% endif %}
   </div>
 
-  <form method="get" action="" class="flex gap-2 mb-4 items-center [&_.form-group]:mb-0 [&_input]:rounded-md [&_input]:px-3">
-    {{ search_form|crispy }}
-    <button type="submit" class="btn btn-primary btn-sm">Search</button>
+  <form
+    method="get"
+    action=""
+    hx-get="{% url 'bar:supplier-list' %}"
+    hx-target="#supplier-list-region"
+    hx-swap="outerHTML"
+    hx-push-url="true"
+    hx-trigger="submit, input changed delay:250ms from:input, change from:select"
+    class="filter-bar"
+  >
+    {{ search_form.name }}
+    <button type="submit" class="btn btn-primary btn-sm">{% trans "Search" %}</button>
   </form>
 
-  {% if supplier_list %}
-    <table class="table">
-      <thead>
-        <tr>
-          <th>ID</th>
-          <th>Name</th>
-          <th>Phone</th>
-          <th>Email</th>
-          <th>Update</th>
-          <th>Delete</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for supplier in supplier_list %}
-          <tr>
-            <td>{{ supplier.id }}</td>
-            <td>{{ supplier.name }}</td>
-            <td>{{ supplier.phone }}</td>
-            <td>{{ supplier.email|default:"—" }}</td>
-            <td>
-              <a href="{% url 'bar:supplier-update' supplier.id %}" class="btn btn-info btn-xs">
-                Update
-              </a>
-            </td>
-            <td>
-              <a href="{% url 'bar:supplier-delete' supplier.id %}" class="btn btn-error btn-xs">
-                Delete
-              </a>
-            </td>
-          </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-  {% else %}
-    <p>There are no suppliers in the bar yet.</p>
-  {% endif %}
+  {% include "bar/partials/supplier_table.html" %}
 {% endblock %}
+
+{% block pagination %}{% endblock %}

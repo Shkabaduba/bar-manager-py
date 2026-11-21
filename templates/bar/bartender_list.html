@@ -1,45 +1,40 @@
 {% extends "base.html" %}
-{% load crispy_forms_tags %}
+{% load i18n %}
 
 {% block content %}
-  <div class="flex justify-between items-center mb-4">
-    <h1>List of Bartenders</h1>
-    <a href="{% url 'bar:bartender-create' %}" class="btn btn-primary btn-sm">+ Create Bartender</a>
+  <div class="page-header">
+    <div>
+      <h1>{% trans "Staff & Bartenders" %}</h1>
+      <p class="page-subtitle">{% trans "Shift roster, roles, and performance links" %}</p>
+    </div>
+    {% if user.can_manage_staff %}
+      <a href="{% url 'bar:bartender-create' %}" class="btn btn-primary btn-sm">
+        + {% trans "Create Bartender" %}
+      </a>
+    {% endif %}
   </div>
 
-  <form method="get" action="" class="flex gap-2 mb-4 items-center [&_.form-group]:mb-0 [&_input]:rounded-md [&_input]:px-3">
-    {{ search_form|crispy }}
-    <button type="submit" class="btn btn-primary btn-sm">Search</button>
+  <form
+    method="get"
+    action=""
+    hx-get="{% url 'bar:bartender-list' %}"
+    hx-target="#bartender-list-region"
+    hx-swap="outerHTML"
+    hx-push-url="true"
+    hx-trigger="submit, input changed delay:250ms from:input, change from:select"
+    class="filter-bar"
+  >
+    {{ search_form.username }}
+    <select name="role">
+      <option value="">{% trans "All roles" %}</option>
+      <option value="OWNER" {% if request.GET.role == "OWNER" %}selected{% endif %}>{% trans "Owner / Admin" %}</option>
+      <option value="MANAGER" {% if request.GET.role == "MANAGER" %}selected{% endif %}>{% trans "Bar Manager" %}</option>
+      <option value="BARTENDER" {% if request.GET.role == "BARTENDER" %}selected{% endif %}>{% trans "Bartender" %}</option>
+    </select>
+    <button type="submit" class="btn btn-primary btn-sm">{% trans "Search" %}</button>
   </form>
 
-  {% if bartender_list %}
-    <table class="table">
-      <tr>
-        <th>ID</th>
-        <th>Username</th>
-        <th>First Name</th>
-        <th>Last Name</th>
-        <th>Bartender's ID</th>
-      </tr>
-
-      {% for bartender in bartender_list %}
-        <tr>
-          <td>{{ bartender.id }}</td>
-          <td>
-            <a href="{{ bartender.get_absolute_url }}" class="link link-primary font-bold">
-              {{ bartender.username }}
-            </a>
-            {% if bartender == user %}
-              (Me)
-            {% endif %}
-          </td>
-          <td>{{ bartender.first_name }}</td>
-          <td>{{ bartender.last_name }}</td>
-          <td>{{ bartender.staff_id }}</td>
-        </tr>
-      {% endfor %}
-    </table>
-  {% else %}
-    <p>There are no bartenders in the bar yet.</p>
-  {% endif %}
+  {% include "bar/partials/bartender_table.html" %}
 {% endblock %}
+
+{% block pagination %}{% endblock %}

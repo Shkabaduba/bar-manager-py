@@ -1,0 +1,35 @@
+{% load i18n %}
+<div id="audit-log-list-region" {% if oob_swap %}hx-swap-oob="outerHTML:#audit-log-list-region"{% endif %}>
+  {% if audit_logs %}
+    <div class="table-wrap">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>{% trans "Time" %}</th>
+            <th>{% trans "Actor" %}</th>
+            <th>{% trans "Action" %}</th>
+            <th>{% trans "Target" %}</th>
+            <th>{% trans "IP" %}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for log_entry in audit_logs %}
+            <tr>
+              <td class="mono-num">{{ log_entry.created_at|date:"Y-m-d H:i:s" }}</td>
+              <td>{{ log_entry.actor.username|default:_("System") }}</td>
+              <td><span class="badge badge-primary">{{ log_entry.action }}</span></td>
+              <td class="mono-num">{{ log_entry.target_model }} #{{ log_entry.target_id }}</td>
+              <td class="mono-num">{{ log_entry.ip_address|default:"—" }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <div class="bento-card">
+      <p class="page-subtitle">{% trans "No audit log entries found." %}</p>
+    </div>
+  {% endif %}
+
+  {% include "bar/partials/pagination.html" with htmx_target_id="audit-log-list-region" %}
+</div>

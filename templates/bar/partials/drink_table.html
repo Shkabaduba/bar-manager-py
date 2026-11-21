@@ -1,0 +1,71 @@
+{% load i18n %}
+<div id="drink-list-region" {% if oob_swap %}hx-swap-oob="outerHTML:#drink-list-region"{% endif %}>
+  {% if drink_list %}
+    <div class="table-wrap">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>{% trans "ID" %}</th>
+            <th>{% trans "Name" %}</th>
+            <th>{% trans "Price" %}</th>
+            <th>{% trans "Food Cost" %}</th>
+            <th>{% trans "Stock Limit" %}</th>
+            <th>{% trans "Volume" %}</th>
+            <th>{% trans "Category" %}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for drink in drink_list %}
+            <tr>
+              <td class="mono-num">{{ drink.id }}</td>
+              <td>
+                <a href="{{ drink.get_absolute_url }}" class="link-primary">
+                  {{ drink.name }}
+                </a>
+                {% if not drink.is_active %}
+                  <span class="badge badge-neutral">{% trans "Inactive" %}</span>
+                {% endif %}
+              </td>
+              <td class="mono-num">${{ drink.price }}</td>
+              <td class="mono-num">
+                {% if drink.costing %}
+                  ${{ drink.costing.cost_price }}
+                  {% if drink.costing.food_cost_zone == "OPTIMAL" %}
+                    <span class="badge badge-food-optimal">{{ drink.costing.food_cost_pct }}%</span>
+                  {% elif drink.costing.food_cost_zone == "MODERATE" %}
+                    <span class="badge badge-food-moderate">{{ drink.costing.food_cost_pct }}%</span>
+                  {% else %}
+                    <span class="badge badge-food-high">{{ drink.costing.food_cost_pct }}%</span>
+                  {% endif %}
+                {% else %}
+                  —
+                {% endif %}
+              </td>
+              <td class="mono-num">
+                {% if drink.costing and drink.costing.max_portions is not None %}
+                  {% if drink.costing.availability_status == "STOP_LIST" %}
+                    <span class="badge badge-stop">{{ drink.costing.max_portions }} — {% trans "STOP" %}</span>
+                  {% elif drink.costing.availability_status == "LOW_STOCK" %}
+                    <span class="badge badge-warning">{{ drink.costing.max_portions }} — {% trans "LOW" %}</span>
+                  {% else %}
+                    <span class="badge badge-success">{{ drink.costing.max_portions }}</span>
+                  {% endif %}
+                {% else %}
+                  —
+                {% endif %}
+              </td>
+              <td class="mono-num">{{ drink.volume_ml }} ml</td>
+              <td>{{ drink.category.name }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <div class="bento-card">
+      <p class="page-subtitle">{% trans "There are no drinks in the bar yet." %}</p>
+    </div>
+  {% endif %}
+
+  {% include "bar/partials/pagination.html" with htmx_target_id="drink-list-region" %}
+</div>

@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block content %}
+  <div class="page-header">
+    <div>
+      <h1>{% trans "Audit Log" %}</h1>
+      <p class="page-subtitle">{% trans "Security events, Force Close overrides, staff changes, and stock adjustments" %}</p>
+    </div>
+  </div>
+
+  <form
+    method="get"
+    action=""
+    hx-get="{% url 'bar:audit-list' %}"
+    hx-target="#audit-log-list-region"
+    hx-swap="outerHTML"
+    hx-push-url="true"
+    hx-trigger="submit, input changed delay:250ms from:input, change from:select"
+    class="filter-bar"
+  >
+    <input
+      type="text"
+      name="action"
+      value="{{ filter_form.action.value|default:'' }}"
+      placeholder="{% trans 'Filter by action (e.g. FORCE_CLOSE)' %}"
+    >
+    {{ filter_form.actor }}
+    <button type="submit" class="btn btn-primary btn-sm">{% trans "Filter" %}</button>
+  </form>
+
+  {% include "bar/partials/audit_log_table.html" %}
+{% endblock %}
+
+{% block pagination %}{% endblock %}

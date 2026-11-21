@@ -1,104 +1,76 @@
+{% load i18n static %}
+{% get_current_language as CURRENT_LANGUAGE %}
 <!DOCTYPE html>
-<html lang="en" class="dark">
+<html lang="{{ CURRENT_LANGUAGE|default:'en' }}" class="dark">
 <head>
   {% block title %}
-    <title>Bar Manager | Rocket Dashboard</title>
+    <title>{% trans "Bar Manager" %}</title>
   {% endblock %}
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="csrf-token" content="{{ csrf_token }}">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-  <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.14/dist/full.min.css" rel="stylesheet" type="text/css"/>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script>
-    tailwind.config = {
-      darkMode: 'class',
-      theme: {
-        extend: {
-          fontFamily: {
-            sans: ['Inter', 'sans-serif'],
-          },
-          colors: {
-            primary: {
-              50: '#eff6ff',
-              100: '#dbeafe',
-              500: '#3b82f6',
-              600: '#2563eb',
-              700: '#1d4ed8',
-            }
-          }
-        }
-      }
-    }
-  </script>
-  <style>
-    body { font-family: 'Inter', sans-serif; }
-    h1 {
-      font-size: 1.5rem;
-      font-weight: 700;
-      color: #ffffff;
-      margin-bottom: 1.25rem;
-      letter-spacing: -0.025em;
-    }
-    h2 {
-      font-size: 1.15rem;
-      font-weight: 600;
-      color: #f3f4f6;
-      margin-top: 1.5rem;
-      margin-bottom: 0.75rem;
-    }
-    table.table {
-      width: 100%;
-      text-align: left;
-      font-size: 0.875rem;
-      color: #9ca3af;
-    }
-    table.table thead, table.table tr:first-child th {
-      background-color: #374151;
-      color: #9ca3af;
-      text-transform: uppercase;
-      font-size: 0.75rem;
-      letter-spacing: 0.05em;
-      border: none;
-    }
-    table.table th, table.table td {
-      padding: 0.85rem 1rem;
-      border-bottom: 1px solid #374151;
-    }
-    table.table tr:hover {
-      background-color: rgba(55, 65, 81, 0.5);
-    }
-  </style>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{% static 'css/tokens.css' %}">
+  <link rel="stylesheet" href="{% static 'css/bento.css' %}">
+  <link rel="stylesheet" href="{% static 'css/components.css' %}">
+  <link rel="stylesheet" href="{% static 'css/animations.css' %}">
+  <script src="{% static 'js/htmx.min.js' %}" defer></script>
+  <script src="{% static 'js/app.js' %}" defer></script>
 </head>
-<body class="bg-gray-900 text-gray-200 min-h-screen antialiased">
-{% block layout %}
-<div class="w-full min-h-screen p-4 md:p-6 flex flex-col lg:flex-row gap-6 items-start">
-  <aside class="w-full lg:w-80 shrink-0">
-    {% block sidebar %}
-      {% include "includes/sidebar.html" %}
-    {% endblock %}
-  </aside>
+<body>
+  <div id="htmx-progress-bar" aria-hidden="true"></div>
 
-  <main class="flex-1 min-w-0 w-full">
-    <div class="bg-gray-800 border border-gray-700 rounded-2xl shadow-xl p-6 md:p-8 min-h-[88vh]">
-      {% for message in messages %}
-        <div class="alert alert-{{ message.tags }} mb-4 rounded-xl text-sm">
-          <span>{{ message }}</span>
+  {% block layout %}
+    <header class="mobile-topbar">
+      <button type="button" class="btn btn-outline btn-sm" data-sidebar-toggle aria-label="{% trans 'Open navigation' %}">
+        ☰ {% trans "Menu" %}
+      </button>
+      <span class="brand-title">{% trans "Bar Manager" %}</span>
+      <span class="pulse-dot" aria-hidden="true"></span>
+    </header>
+
+    <div id="sidebar-backdrop" class="sidebar-backdrop"></div>
+
+    <div class="app-shell">
+      <aside id="app-sidebar-wrap" class="app-sidebar-wrap">
+        <div class="app-sidebar">
+          {% block sidebar %}
+            {% include "includes/sidebar.html" %}
+          {% endblock %}
         </div>
-      {% endfor %}
+      </aside>
 
-      {% block content %}
-      {% endblock %}
+      <main class="app-main">
+        <div class="main-stage">
+          {% for message in messages %}
+            <div class="alert alert-{{ message.tags|default:'info' }}" data-auto-dismiss role="status">
+              <span>{{ message }}</span>
+            </div>
+          {% endfor %}
 
-      <div class="mt-8 pt-4 border-t border-gray-700/60">
-        {% block pagination %}
-          {% include "includes/pagination.html" %}
-        {% endblock %}
-      </div>
+          {% block content %}{% endblock %}
+
+          {% block pagination %}
+            {% include "includes/pagination.html" %}
+          {% endblock %}
+        </div>
+      </main>
     </div>
-  </main>
-</div>
-{% endblock layout %}
+  {% endblock layout %}
+
+  <div id="toast-stack" class="toast-stack" aria-live="polite" aria-atomic="true"></div>
+
+  <div id="drawer-backdrop" class="drawer-backdrop"></div>
+  <aside id="drawer-panel" class="drawer-panel" aria-hidden="true" aria-label="{% trans 'Quick form drawer' %}">
+    <div class="drawer-header">
+      <span class="kpi-label">{% trans "Quick Action" %}</span>
+      <button type="button" class="btn btn-ghost btn-sm" data-drawer-close aria-label="{% trans 'Close drawer' %}">
+        ✕
+      </button>
+    </div>
+    <div id="drawer-body" class="drawer-body" aria-live="polite"></div>
+  </aside>
 </body>
 </html>

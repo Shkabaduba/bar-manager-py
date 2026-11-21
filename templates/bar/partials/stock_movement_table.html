@@ -1,0 +1,51 @@
+{% load i18n %}
+<div id="stock-movement-list-region" {% if oob_swap %}hx-swap-oob="outerHTML:#stock-movement-list-region"{% endif %}>
+  {% if movement_list %}
+    <div class="table-wrap">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>{% trans "Date" %}</th>
+            <th>{% trans "Type" %}</th>
+            <th>{% trans "Ingredient" %}</th>
+            <th>{% trans "Delta" %}</th>
+            <th>{% trans "Balance After" %}</th>
+            <th>{% trans "Total Cost" %}</th>
+            <th>{% trans "Reason" %}</th>
+            <th>{% trans "By" %}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for movement in movement_list %}
+            <tr>
+              <td class="mono-num">{{ movement.created_at|date:"Y-m-d H:i" }}</td>
+              <td>
+                {% if movement.movement_type == "IN" %}
+                  <span class="badge badge-success">{{ movement.movement_type }}</span>
+                {% elif movement.movement_type == "WRITEOFF" %}
+                  <span class="badge badge-error">{{ movement.movement_type }}</span>
+                {% elif movement.movement_type == "ADJUSTMENT" %}
+                  <span class="badge badge-warning">{{ movement.movement_type }}</span>
+                {% else %}
+                  <span class="badge badge-primary">{{ movement.movement_type }}</span>
+                {% endif %}
+              </td>
+              <td><strong>{{ movement.ingredient.name }}</strong></td>
+              <td class="mono-num">{{ movement.quantity_delta }} {{ movement.ingredient.unit }}</td>
+              <td class="mono-num">{{ movement.balance_after }} {{ movement.ingredient.unit }}</td>
+              <td class="mono-num">${{ movement.total_cost }}</td>
+              <td>{{ movement.reason|default:"—" }}</td>
+              <td>{{ movement.performed_by.username|default:_("System") }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <div class="bento-card">
+      <p class="page-subtitle">{% trans "No stock movements recorded yet." %}</p>
+    </div>
+  {% endif %}
+
+  {% include "bar/partials/pagination.html" with htmx_target_id="stock-movement-list-region" %}
+</div>

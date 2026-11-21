@@ -1,0 +1,872 @@
+# Ukrainian translations for Bar Manager.
+msgid ""
+msgstr ""
+"Project-Id-Version: Bar Manager\n"
+"POT-Creation-Date: 2026-11-21 23:45+0200\n"
+"PO-Revision-Date: 2026-11-21 23:45+0200\n"
+"Language: uk\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=4; plural=(n % 1 == 0 && n % 10 == 1 && n % 100 != 11 ? 0 : n % 1 == 0 && n % 10 >= 2 && n % 10 <= 4 && (n % 100 < 12 || n % 100 > 14) ? 1 : n % 1 == 0 && (n % 10 == 0 || (n % 10 >= 5 && n % 10 <= 9) || (n % 100 >= 11 && n % 100 <= 14)) ? 2 : 3);\n"
+
+msgid "%(count)s active items"
+msgstr "%(count)s активних позицій"
+
+msgid "%(low)s low stock alerts"
+msgstr "%(low)s низьких залишків"
+
+msgid "%(paid)s paid (%(force)s force-closed)"
+msgstr "%(paid)s оплачено (%(force)s примусово)"
+
+msgid "%(paid)s paid checks"
+msgstr "%(paid)s оплачених чеків"
+
+msgid "%(suppliers)s active suppliers"
+msgstr "%(suppliers)s активних постачальників"
+
+msgid "403 Access Denied | Bar Manager"
+msgstr "403 Доступ заборонено | Bar Manager"
+
+msgid "Access Denied"
+msgstr "Доступ заборонено"
+
+msgid "Action"
+msgstr "Дія"
+
+msgid "Actions"
+msgstr "Дії"
+
+msgid "Active"
+msgstr "Активний"
+
+msgid "Active Orders"
+msgstr "Активні замовлення"
+
+msgid "Active only"
+msgstr "Лише активні"
+
+msgid "Active table checks, bartender claims, and payment history"
+msgstr "Активні чеки столів, закріплення за барменами та історія оплат"
+
+msgid "Actor"
+msgstr "Виконавець"
+
+msgid "Add"
+msgstr "Додати"
+
+msgid "Add Ingredient"
+msgstr "Додати інгредієнт"
+
+msgid "Add ingredients to preview costing."
+msgstr "Додайте інгредієнти для розрахунку калькуляції."
+
+msgid "Adjustment"
+msgstr "Інвентаризація"
+
+msgid "Admin Panel"
+msgstr "Адмін-панель"
+
+msgid "Alcoholic"
+msgstr "Алкогольний"
+
+msgid "All categories"
+msgstr "Усі категорії"
+
+msgid "All roles"
+msgstr "Усі ролі"
+
+msgid "All statuses"
+msgstr "Усі статуси"
+
+msgid "All stock levels"
+msgstr "Усі залишки"
+
+msgid "Amount"
+msgstr "Кількість"
+
+msgid "Analytics"
+msgstr "Аналітика"
+
+msgid "Are you sure you want to delete category <strong>%(name)s</strong>?"
+msgstr "Ви впевнені, що хочете видалити категорію <strong>%(name)s</strong>?"
+
+msgid "Are you sure you want to delete drink <strong>%(name)s</strong>?"
+msgstr "Ви впевнені, що хочете видалити напій <strong>%(name)s</strong>?"
+
+msgid "Are you sure you want to delete ingredient <strong>%(name)s</strong>?"
+msgstr "Ви впевнені, що хочете видалити інгредієнт <strong>%(name)s</strong>?"
+
+msgid "Are you sure you want to delete staff account <strong>%(username)s</strong>?"
+msgstr "Ви впевнені, що хочете видалити обліковий запис <strong>%(username)s</strong>?"
+
+msgid "Are you sure you want to delete supplier <strong>%(name)s</strong>?"
+msgstr "Ви впевнені, що хочете видалити постачальника <strong>%(name)s</strong>?"
+
+msgid "Ask a Manager or Owner to restock ingredients or approve Force Close."
+msgstr "Зверніться до менеджера або власника для поповнення складу чи Force Close."
+
+msgid "Assigned Orders"
+msgstr "Призначені замовлення"
+
+msgid "Audit Log"
+msgstr "Журнал аудиту"
+
+msgid "Authentication failed"
+msgstr "Помилка автентифікації"
+
+msgid "Available"
+msgstr "Доступно"
+
+msgid "Avg Check"
+msgstr "Середній чек"
+
+msgid "Avg Cost / Unit"
+msgstr "Середня ціна / од."
+
+msgid "Back to Bartenders"
+msgstr "Назад до барменів"
+
+msgid "Back to Categories"
+msgstr "Назад до категорій"
+
+msgid "Back to Dashboard"
+msgstr "Назад на панель"
+
+msgid "Back to Drinks"
+msgstr "Назад до напоїв"
+
+msgid "Back to Ingredients"
+msgstr "Назад до інгредієнтів"
+
+msgid "Back to Movements"
+msgstr "Назад до рухів"
+
+msgid "Back to Orders"
+msgstr "Назад до замовлень"
+
+msgid "Back to Suppliers"
+msgstr "Назад до постачальників"
+
+msgid "Balance After"
+msgstr "Залишок після"
+
+msgid "Bar Manager"
+msgstr "Bar Manager"
+
+msgid "Bar Manager Dashboard"
+msgstr "Панель керування баром"
+
+msgid "Bartender"
+msgstr "Бармен"
+
+msgid "Bartender Ranking"
+msgstr "Рейтинг барменів"
+
+msgid "Bartenders"
+msgstr "Бармени"
+
+msgid "Beverage distributors and partner contacts"
+msgstr "Дистриб'ютори напоїв та контакти партнерів"
+
+msgid "By"
+msgstr "Ким"
+
+msgid "COGS"
+msgstr "Собівартість"
+
+msgid "COGS Today"
+msgstr "Собівартість сьогодні"
+
+msgid "Cancel"
+msgstr "Скасувати"
+
+msgid "Cancel Order"
+msgstr "Скасувати замовлення"
+
+msgid "Cancelled"
+msgstr "Скасовано"
+
+msgid "Categories"
+msgstr "Категорії"
+
+msgid "Category"
+msgstr "Категорія"
+
+msgid "Check #%(order_id)s"
+msgstr "Чек #%(order_id)s"
+
+msgid "Check Summary"
+msgstr "Зведення чека"
+
+msgid "Close drawer"
+msgstr "Закрити панель"
+
+msgid "Closed Revenue"
+msgstr "Закрита виручка"
+
+msgid "Cocktail & Shift Hub"
+msgstr "Коктейлі та зміни"
+
+msgid "Cocktails, unit costing, Food Cost %, and real-time stop-list status"
+msgstr "Коктейлі, собівартість, Food Cost % і статус стоп-листа наживо"
+
+msgid "Cost Price"
+msgstr "Собівартість"
+
+msgid "Create Bartender"
+msgstr "Додати бармена"
+
+msgid "Create Category"
+msgstr "Створити категорію"
+
+msgid "Create Cocktail & Recipe"
+msgstr "Створити коктейль і техкарту"
+
+msgid "Create Drink"
+msgstr "Створити напій"
+
+msgid "Create Ingredient"
+msgstr "Створити інгредієнт"
+
+msgid "Create Order"
+msgstr "Створити замовлення"
+
+msgid "Create Staff Member"
+msgstr "Додати співробітника"
+
+msgid "Create Supplier"
+msgstr "Додати постачальника"
+
+msgid "Created"
+msgstr "Створено"
+
+msgid "Daily In vs Out Flow"
+msgstr "Щоденний прихід та витрати"
+
+msgid "Daily Revenue, Stock In & Losses Chart"
+msgstr "Графік виручки, приходів та втрат за день"
+
+msgid "Dashboard"
+msgstr "Дашборд"
+
+msgid "Date"
+msgstr "Дата"
+
+msgid "Delete"
+msgstr "Видалити"
+
+msgid "Delete Category"
+msgstr "Видалити категорію"
+
+msgid "Delete Drink"
+msgstr "Видалити напій"
+
+msgid "Delete Ingredient"
+msgstr "Видалити інгредієнт"
+
+msgid "Delete Staff Member"
+msgstr "Видалити співробітника"
+
+msgid "Delete Supplier"
+msgstr "Видалити постачальника"
+
+msgid "Delta"
+msgstr "Дельта"
+
+msgid "Distributor contacts and supply status"
+msgstr "Контакти дистриб'ютора та статус постачання"
+
+msgid "Drink"
+msgstr "Напій"
+
+msgid "Drink classification and alcohol status"
+msgstr "Класифікація напою та ознака алкоголю"
+
+msgid "Drinks"
+msgstr "Напої"
+
+msgid "Drinks Categories"
+msgstr "Категорії напоїв"
+
+msgid "Drinks Menu"
+msgstr "Меню напоїв"
+
+msgid "Edit"
+msgstr "Редагувати"
+
+msgid "Email"
+msgstr "Ел. пошта"
+
+msgid "Enter your username"
+msgstr "Введіть логін"
+
+msgid "Est. Volume"
+msgstr "Розрах. об'єм"
+
+msgid "Explain why stock is overridden..."
+msgstr "Вкажіть причину примусового закриття..."
+
+msgid "Export CSV"
+msgstr "Експорт CSV"
+
+msgid "Filter"
+msgstr "Фільтрувати"
+
+msgid "Filter by action (e.g. FORCE_CLOSE)"
+msgstr "Фільтр за дією (напр. FORCE_CLOSE)"
+
+msgid "First Name"
+msgstr "Ім'я"
+
+msgid "Food Cost"
+msgstr "Фудкост"
+
+msgid "Food Cost %"
+msgstr "Food Cost %"
+
+msgid "Force Close & Pay"
+msgstr "Force Close та оплата"
+
+msgid "Full Analytics"
+msgstr "Повна аналітика"
+
+msgid "Gross Margin"
+msgstr "Валова маржа"
+
+msgid "Gross Profit"
+msgstr "Валовий прибуток"
+
+msgid "ID"
+msgstr "ID"
+
+msgid "IP"
+msgstr "IP"
+
+msgid "Immutable ledger of receipts, order deductions, write-offs, and audits"
+msgstr "Незмінний журнал приходів, автосписань, втрат та інвентаризацій"
+
+msgid "In Progress"
+msgstr "У роботі"
+
+msgid "In stock"
+msgstr "У наявності"
+
+msgid "Inactive"
+msgstr "Неактивний"
+
+msgid "Ingredient"
+msgstr "Інгредієнт"
+
+msgid "Ingredients Stock"
+msgstr "Залишки складу"
+
+msgid "Inspect ingredient balances"
+msgstr "Переглянути залишки інгредієнтів"
+
+msgid "Insufficient stock for closing Order #%(order_id)s"
+msgstr "Недостатньо залишків для закриття замовлення #%(order_id)s"
+
+msgid "Inventory Adjustment"
+msgstr "Інвентаризація складу"
+
+msgid "Inventory & Supply"
+msgstr "Склад і постачання"
+
+msgid "Items"
+msgstr "Позиції"
+
+msgid "LOW"
+msgstr "МАЛО"
+
+msgid "Language"
+msgstr "Мова"
+
+msgid "Last Name"
+msgstr "Прізвище"
+
+msgid "Launch POS workspace"
+msgstr "Відкрити POS-термінал"
+
+msgid "Limiting"
+msgstr "Лімітує"
+
+msgid "Line Cost"
+msgstr "Вартість"
+
+msgid "Live Costing"
+msgstr "Live-калькуляція"
+
+msgid "Live POS workspace and atomic stock deduction"
+msgstr "Інтерактивний POS-екран та атомарне списання складу"
+
+msgid "Live cost price, Food Cost %, and stock portion calculator"
+msgstr "Калькулятор собівартості, Food Cost % і доступних порцій наживо"
+
+msgid "Live inventory balances, thresholds, and weighted average costs"
+msgstr "Поточні залишки, пороги мінімуму та середньозважена собівартість"
+
+msgid "Losses"
+msgstr "Втрати"
+
+msgid "Low stock"
+msgstr "Малий залишок"
+
+msgid "Manage menu sections and alcohol classification"
+msgstr "Керування розділами меню та типами алкоголю"
+
+msgid "Manage staff IDs, roles, and access levels"
+msgstr "Керування ID співробітників, ролями та доступом"
+
+msgid "Management"
+msgstr "Керування"
+
+msgid "Manager Force Close Reason"
+msgstr "Причина Force Close (менеджер)"
+
+msgid "Margin"
+msgstr "Маржа"
+
+msgid "Max Portions"
+msgstr "Макс. порцій"
+
+msgid "Me"
+msgstr "Я"
+
+msgid "Menu"
+msgstr "Меню"
+
+msgid "Menu Price"
+msgstr "Ціна меню"
+
+msgid "My orders only"
+msgstr "Лише мої замовлення"
+
+msgid "Name"
+msgstr "Назва"
+
+msgid "Name not specified"
+msgstr "Ім'я не вказано"
+
+msgid "Net Margin After Losses"
+msgstr "Чиста маржа після втрат"
+
+msgid "New Cocktail Recipe"
+msgstr "Новий рецепт коктейлю"
+
+msgid "Next"
+msgstr "Далі"
+
+msgid "No active drinks in the menu."
+msgstr "У меню немає активних напоїв."
+
+msgid "No audit log entries found."
+msgstr "Записів у журналі аудиту не знайдено."
+
+msgid "No closed orders for this period."
+msgstr "За цей період немає закритих замовлень."
+
+msgid "No drinks"
+msgstr "Немає напоїв"
+
+msgid "No drinks in this order yet."
+msgstr "У цьому замовленні ще немає напоїв."
+
+msgid "No ingredients specified for this drink."
+msgstr "Для цього напою не вказано інгредієнтів."
+
+msgid "No orders assigned to this bartender yet."
+msgstr "За цим барменом ще не закріплено замовлень."
+
+msgid "No paid orders for this period."
+msgstr "За цей період немає оплачених замовлень."
+
+msgid "No stock movements recorded yet."
+msgstr "Рухів складу ще не зафіксовано."
+
+msgid "Non-Alcoholic"
+msgstr "Безалкогольний"
+
+msgid "Non-alcoholic"
+msgstr "Безалкогольний"
+
+msgid "Open"
+msgstr "Відкрито"
+
+msgid "Open & in-progress checks"
+msgstr "Відкриті та активні чеки"
+
+msgid "Open New Table Order"
+msgstr "Відкрити замовлення на стіл"
+
+msgid "Open a new table check and launch POS"
+msgstr "Створити новий чек столу та відкрити POS"
+
+msgid "Open live costing calculator"
+msgstr "Відкрити live-калькулятор собівартості"
+
+msgid "Open navigation"
+msgstr "Відкрити навігацію"
+
+msgid "Operations"
+msgstr "Операції"
+
+msgid "Order"
+msgstr "Замовлення"
+
+msgid "Order #%(order_id)s (Table %(table)s)"
+msgstr "Замовлення #%(order_id)s (Стіл %(table)s)"
+
+msgid "Order Total"
+msgstr "Сума чека"
+
+msgid "Orders (POS)"
+msgstr "Замовлення (POS)"
+
+msgid "Orders Closed"
+msgstr "Закрито чеків"
+
+msgid "Out"
+msgstr "Немає"
+
+msgid "Out of Stock"
+msgstr "Немає на складі"
+
+msgid "Out of stock"
+msgstr "Немає на складі"
+
+msgid "Out of stock!"
+msgstr "Немає на складі!"
+
+msgid "Owner / Admin"
+msgstr "Власник / Адмін"
+
+msgid "Page %(current)s of %(total)s"
+msgstr "Сторінка %(current)s з %(total)s"
+
+msgid "Paid"
+msgstr "Оплачено"
+
+msgid "Password"
+msgstr "Пароль"
+
+msgid "Pay & Close"
+msgstr "Оплатити й закрити"
+
+msgid "Peak"
+msgstr "Пік"
+
+msgid "Phone"
+msgstr "Телефон"
+
+msgid "Please sign in to access this bar management section."
+msgstr "Увійдіть у систему, щоб отримати доступ до цього розділу."
+
+msgid "Portions"
+msgstr "Порції"
+
+msgid "Prev"
+msgstr "Назад"
+
+msgid "Price"
+msgstr "Ціна"
+
+msgid "Qty"
+msgstr "К-сть"
+
+msgid "Quick Action"
+msgstr "Швидка дія"
+
+msgid "Quick Add from Menu"
+msgstr "Швидке додавання з меню"
+
+msgid "Quick Shift Actions"
+msgstr "Швидкі дії зміни"
+
+msgid "Quick form drawer"
+msgstr "Бічна панель форми"
+
+msgid "Reason"
+msgstr "Причина"
+
+msgid "Recipe Amount"
+msgstr "Закладка"
+
+msgid "Recipe Ingredients"
+msgstr "Інгредієнти техкарти"
+
+msgid "Recipe Specification & Suppliers"
+msgstr "Техкарта та постачальники"
+
+msgid "Recommended Price"
+msgstr "Рекомендована ціна"
+
+msgid "Record Adjustment"
+msgstr "Провести інвентаризацію"
+
+msgid "Record Stock In"
+msgstr "Провести прихід"
+
+msgid "Record Stock Receipt"
+msgstr "Оформити прихід товару"
+
+msgid "Record Write-off"
+msgstr "Оформити списання"
+
+msgid "Recorded atomically in the immutable stock ledger"
+msgstr "Атомарно фіксується в незмінному журналі рухів"
+
+msgid "Release order"
+msgstr "Звільнити замовлення"
+
+msgid "Remove"
+msgstr "Видалити"
+
+msgid "Required"
+msgstr "Потрібно"
+
+msgid "Revenue"
+msgstr "Виручка"
+
+msgid "Revenue Today"
+msgstr "Виручка сьогодні"
+
+msgid "Role"
+msgstr "Роль"
+
+msgid "STOP"
+msgstr "СТОП"
+
+msgid "Save"
+msgstr "Зберегти"
+
+msgid "Save Category"
+msgstr "Зберегти категорію"
+
+msgid "Save Drink"
+msgstr "Зберегти напій"
+
+msgid "Save Ingredient"
+msgstr "Зберегти інгредієнт"
+
+msgid "Save Staff Member"
+msgstr "Зберегти співробітника"
+
+msgid "Save Supplier"
+msgstr "Зберегти постачальника"
+
+msgid "Search"
+msgstr "Пошук"
+
+msgid "Security events, Force Close overrides, staff changes, and stock adjustments"
+msgstr "Події безпеки, Force Close, зміни персоналу та коригування складу"
+
+msgid "Share %"
+msgstr "Частка %"
+
+msgid "Shift Assignment"
+msgstr "Закріплення за зміною"
+
+msgid "Shift Control & Inventory Overview"
+msgstr "Контроль зміни та огляд складу"
+
+msgid "Shift Ended"
+msgstr "Зміну завершено"
+
+msgid "Shift Portal"
+msgstr "Портал зміни"
+
+msgid "Shift Visits"
+msgstr "Візити зміни"
+
+msgid "Shift roster, roles, and performance links"
+msgstr "Штат зміни, ролі та показники роботи"
+
+msgid "Shortfall"
+msgstr "Дефіцит"
+
+msgid "Sign In"
+msgstr "Увійти"
+
+msgid "Sign In Again"
+msgstr "Увійти знову"
+
+msgid "Sign In to Shift"
+msgstr "Увійти в зміну"
+
+msgid "Sign In | Bar Manager"
+msgstr "Вхід | Bar Manager"
+
+msgid "Sign in to start your shift"
+msgstr "Увійдіть, щоб розпочати зміну"
+
+msgid "Sign out"
+msgstr "Вийти"
+
+msgid "Signed Out | Bar Manager"
+msgstr "Вихід | Bar Manager"
+
+msgid "Staff & Bartenders"
+msgstr "Персонал і бармени"
+
+msgid "Staff ID"
+msgstr "ID співробітника"
+
+msgid "Staff Profile"
+msgstr "Профіль співробітника"
+
+msgid "Start Time"
+msgstr "Час відкриття"
+
+msgid "Status"
+msgstr "Статус"
+
+msgid "Stock"
+msgstr "Склад"
+
+msgid "Stock Balance"
+msgstr "Залишок"
+
+msgid "Stock Capacity"
+msgstr "Запас порцій"
+
+msgid "Stock In"
+msgstr "Прихід"
+
+msgid "Stock In (Receipt)"
+msgstr "Прихід товару"
+
+msgid "Stock Limit"
+msgstr "Ліміт порцій"
+
+msgid "Stock Movements"
+msgstr "Рухи складу"
+
+msgid "Stock Storage"
+msgstr "Склад інгредієнтів"
+
+msgid "Stock Value"
+msgstr "Вартість складу"
+
+msgid "Stock Write-off"
+msgstr "Списання товару"
+
+msgid "Stock balances are modified exclusively via Stock In, Write-off, or Adjustment."
+msgstr "Залишки змінюються виключно через Прихід, Списання або Інвентаризацію."
+
+msgid "Supplier"
+msgstr "Постачальник"
+
+msgid "Suppliers"
+msgstr "Постачальники"
+
+msgid "System"
+msgstr "Система"
+
+msgid "Table"
+msgstr "Стіл"
+
+msgid "Table %(num)s"
+msgstr "Стіл %(num)s"
+
+msgid "Take checks & process payments"
+msgstr "Прийом чеків та проведення оплат"
+
+msgid "Take this order"
+msgstr "Взяти замовлення"
+
+msgid "Target"
+msgstr "Ціль"
+
+msgid "Target Price"
+msgstr "Цільова ціна"
+
+msgid "There are no bartenders in the bar yet."
+msgstr "У барі ще немає жодного бармена."
+
+msgid "There are no categories in the bar yet."
+msgstr "У барі ще немає категорій напоїв."
+
+msgid "There are no drinks in the bar yet."
+msgstr "У барі ще немає жодного напою."
+
+msgid "There are no ingredients in the bar yet."
+msgstr "На складі ще немає інгредієнтів."
+
+msgid "There are no orders in the bar for now."
+msgstr "Наразі в барі немає замовлень."
+
+msgid "There are no suppliers in the bar yet."
+msgstr "У барі ще немає постачальників."
+
+msgid "Time"
+msgstr "Час"
+
+msgid "Today Shift Financial Pulse"
+msgstr "Фінансовий пульс сьогоднішньої зміни"
+
+msgid "Top Margin Cocktails"
+msgstr "Топ маржинальних коктейлів"
+
+msgid "Total"
+msgstr "Разом"
+
+msgid "Total Cost"
+msgstr "Сума"
+
+msgid "Type"
+msgstr "Тип"
+
+msgid "Unassigned"
+msgstr "Не призначено"
+
+msgid "Unit Cost & Margin"
+msgstr "Собівартість і маржа"
+
+msgid "Update"
+msgstr "Оновити"
+
+msgid "Update Category"
+msgstr "Оновити категорію"
+
+msgid "Update Cocktail & Recipe"
+msgstr "Оновити коктейль і техкарту"
+
+msgid "Update Ingredient"
+msgstr "Оновити інгредієнт"
+
+msgid "Update Role & ID"
+msgstr "Змінити роль та ID"
+
+msgid "Update Staff Member"
+msgstr "Оновити співробітника"
+
+msgid "Update Supplier"
+msgstr "Оновити постачальника"
+
+msgid "Update stock & weighted cost"
+msgstr "Оновити залишок і середньозважену ціну"
+
+msgid "Username"
+msgstr "Логін"
+
+msgid "Volume"
+msgstr "Об'єм"
+
+msgid "Write-off"
+msgstr "Списання"
+
+msgid "Write-offs & Shortages"
+msgstr "Списання та недостачі"
+
+msgid "Yes, delete"
+msgstr "Так, видалити"
+
+msgid "You do not have permission to perform this action."
+msgstr "У вас немає прав для виконання цієї дії."
+
+msgid "You have successfully signed out of the Bar Manager portal."
+msgstr "Ви успішно вийшли з порталу Bar Manager."
+
+msgid "Your username and password didn't match. Please try again."
+msgstr "Неправильний логін або пароль. Спробуйте ще раз."

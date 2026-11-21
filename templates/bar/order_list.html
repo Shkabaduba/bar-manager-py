@@ -1,47 +1,50 @@
 {% extends "base.html" %}
+{% load i18n %}
 
 {% block content %}
-  <h1>List of Orders</h1>
+  <div class="page-header">
+    <div>
+      <h1>{% trans "Orders (POS)" %}</h1>
+      <p class="page-subtitle">{% trans "Active table checks, bartender claims, and payment history" %}</p>
+    </div>
+    <a
+      href="{% url 'bar:order-create' %}"
+      hx-get="{% url 'bar:order-create' %}"
+      hx-target="#drawer-body"
+      hx-swap="innerHTML"
+      class="btn btn-primary btn-sm"
+    >
+      + {% trans "Create Order" %}
+    </a>
+  </div>
 
-  {% if order_list %}
-    <table class="table">
-      <tr>
-        <th>ID</th>
-        <th>Table Number</th>
-        <th>Bartender</th>
-        <th>Start Time</th>
-        <th>Paid</th>
-      </tr>
-
-      {% for order in order_list %}
-        <tr>
-          <td>
-            <a href="{{ order.get_absolute_url }}" class="link link-primary font-bold">
-              #{{ order.id }}
-            </a>
-          </td>
-          <td>Table {{ order.table_number }}</td>
-          <td>
-            {% if order.bartender %}
-              <a href="{{ order.bartender.get_absolute_url }}" class="link link-hover">
-                {{ order.bartender.username }}
-              </a>
-            {% else %}
-              <span class="badge badge-ghost text-error">Unassigned</span>
-            {% endif %}
-          </td>
-          <td>{{ order.created_at|date:"Y-m-d H:i" }}</td>
-          <td>
-            {% if order.is_paid %}
-              <span class="badge badge-success">Paid</span>
-            {% else %}
-              <span class="badge badge-warning">Unpaid</span>
-            {% endif %}
-          </td>
-        </tr>
+  <form
+    method="get"
+    action=""
+    hx-get="{% url 'bar:order-list' %}"
+    hx-target="#order-list-region"
+    hx-swap="outerHTML"
+    hx-push-url="true"
+    hx-trigger="submit, change from:select, change from:input"
+    class="filter-bar"
+  >
+    <select name="status">
+      <option value="">{% trans "All statuses" %}</option>
+      <option value="ACTIVE" {% if selected_status == "ACTIVE" %}selected{% endif %}>{% trans "Active only" %}</option>
+      {% for status_code, status_label in status_choices %}
+        <option value="{{ status_code }}" {% if selected_status == status_code %}selected{% endif %}>
+          {{ status_label }}
+        </option>
       {% endfor %}
-    </table>
-  {% else %}
-    <p>There are no orders in the bar for now.</p>
-  {% endif %}
+    </select>
+    <label class="field-checkbox-row" style="padding: 0;">
+      <input type="checkbox" name="mine" value="1" {% if request.GET.mine == "1" %}checked{% endif %}>
+      <span class="field-checkbox-label">{% trans "My orders only" %}</span>
+    </label>
+    <button type="submit" class="btn btn-primary btn-sm">{% trans "Filter" %}</button>
+  </form>
+
+  {% include "bar/partials/order_table.html" %}
 {% endblock %}
+
+{% block pagination %}{% endblock %}
