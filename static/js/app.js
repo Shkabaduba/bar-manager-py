@@ -20,6 +20,16 @@
     };
   }
 
+  function syncOverlayLock() {
+    var drawerPanel = document.getElementById("drawer-panel");
+    var sidebarWrap = document.getElementById("app-sidebar-wrap");
+    var hasOpenOverlay = Boolean(
+      (drawerPanel && drawerPanel.classList.contains("is-open")) ||
+        (sidebarWrap && sidebarWrap.classList.contains("is-open"))
+    );
+    document.body.classList.toggle("is-overlay-open", hasOpenOverlay);
+  }
+
   function openDrawer() {
     var els = getDrawerElements();
     if (!els.panel || !els.backdrop) {
@@ -28,6 +38,7 @@
     els.backdrop.classList.add("is-open");
     els.panel.classList.add("is-open");
     els.panel.setAttribute("aria-hidden", "false");
+    syncOverlayLock();
   }
 
   function closeDrawer() {
@@ -38,6 +49,7 @@
     els.backdrop.classList.remove("is-open");
     els.panel.classList.remove("is-open");
     els.panel.setAttribute("aria-hidden", "true");
+    syncOverlayLock();
   }
 
   function openSidebar() {
@@ -49,6 +61,7 @@
     if (backdrop) {
       backdrop.classList.add("is-open");
     }
+    syncOverlayLock();
   }
 
   function closeSidebar() {
@@ -60,6 +73,7 @@
     if (backdrop) {
       backdrop.classList.remove("is-open");
     }
+    syncOverlayLock();
   }
 
   function showToast(level, message) {
@@ -313,6 +327,9 @@
     if (evt.target.closest("[data-sidebar-close]") || evt.target.id === "sidebar-backdrop") {
       closeSidebar();
       return;
+    }
+    if (evt.target.closest("#app-sidebar-wrap .nav-link")) {
+      closeSidebar();
     }
     var addBtn = evt.target.closest("[data-add-recipe-row]");
     if (addBtn) {

@@ -143,7 +143,6 @@ h2 {
 /* Application Shell */
 .app-shell {
   position: relative;
-  z-index: 1;
   display: flex;
   min-height: 100vh;
   gap: 1.5rem;
@@ -153,6 +152,8 @@ h2 {
 }
 
 .app-sidebar-wrap {
+  position: relative;
+  z-index: 1;
   width: 288px;
   flex-shrink: 0;
 }
@@ -172,10 +173,16 @@ h2 {
 }
 
 .app-main {
+  position: relative;
+  z-index: 1;
   flex: 1;
   min-width: 0;
   display: flex;
   flex-direction: column;
+}
+
+body.is-overlay-open {
+  overflow: hidden;
 }
 
 .main-stage {
@@ -210,6 +217,8 @@ h2 {
   inset: 0;
   background: rgba(4, 2, 12, 0.75);
   backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+  cursor: pointer;
   z-index: var(--z-backdrop);
 }
 
@@ -363,6 +372,7 @@ h2 {
     transform: translateX(-108%);
     transition: transform 0.28s var(--ease-out);
     z-index: var(--z-sidebar);
+    pointer-events: auto;
   }
 
   .app-sidebar-wrap.is-open {
@@ -373,6 +383,9 @@ h2 {
     position: static;
     height: 100%;
     max-height: none;
+    background: rgba(14, 10, 31, 0.96);
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
   }
 
   .main-stage {

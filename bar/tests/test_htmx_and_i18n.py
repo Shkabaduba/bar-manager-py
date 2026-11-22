@@ -763,6 +763,28 @@ class CyberBentoShellAndAssetsTests(TestCase):
         ):
             self.assertIn(selector, css_text)
 
+        bento_path = settings.BASE_DIR / "static" / "css" / "bento.css"
+        bento_text = bento_path.read_text(encoding="utf-8")
+        app_shell_match = re.search(
+            r"\.app-shell\s*\{([^}]*)\}",
+            bento_text,
+            flags=re.DOTALL,
+        )
+        self.assertIsNotNone(app_shell_match)
+        self.assertNotIn("z-index:", app_shell_match.group(1))
+        backdrop_match = re.search(
+            r"\.sidebar-backdrop\s*\{([^}]*)\}",
+            bento_text,
+            flags=re.DOTALL,
+        )
+        self.assertIsNotNone(backdrop_match)
+        self.assertIn("cursor: pointer;", backdrop_match.group(1))
+
+        index_html = self.client.get(reverse("bar:index")).content.decode(
+            "utf-8"
+        )
+        self.assertIn("data-sidebar-close", index_html)
+
 
 class LocalizationTests(TestCase):
     def setUp(self):
