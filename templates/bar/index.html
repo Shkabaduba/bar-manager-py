@@ -1,9 +1,22 @@
 {% extends "base.html" %}
 {% load i18n static %}
 
+{% block extra_head %}
+  <link rel="preload" as="image" href="{% static 'img/cyber_bar_bg.jpg' %}" fetchpriority="high">
+{% endblock %}
+
 {% block content %}
   <section class="cyber-hero">
-    <img src="{% static 'img/cyber_bar_bg.png' %}" alt="" class="pixel-art cyber-hero-bg" aria-hidden="true">
+    <img
+      src="{% static 'img/cyber_bar_bg.jpg' %}"
+      alt=""
+      width="960"
+      height="540"
+      fetchpriority="high"
+      decoding="async"
+      class="pixel-art cyber-hero-bg"
+      aria-hidden="true"
+    >
     <div class="cyber-hero-scrim" aria-hidden="true"></div>
 
     <div class="cyber-hero-content">
@@ -40,13 +53,37 @@
 
     <div class="hero-cocktail-strip" aria-hidden="true">
       <div class="hero-cocktail-thumb">
-        <img src="{% static 'img/cocktail_negroni.png' %}" alt="" class="pixel-art">
+        <img
+          src="{% static 'img/cocktail_negroni.jpg' %}"
+          alt=""
+          width="76"
+          height="76"
+          loading="lazy"
+          decoding="async"
+          class="pixel-art"
+        >
       </div>
       <div class="hero-cocktail-thumb">
-        <img src="{% static 'img/cocktail_whiskey_sour.png' %}" alt="" class="pixel-art">
+        <img
+          src="{% static 'img/cocktail_whiskey_sour.jpg' %}"
+          alt=""
+          width="76"
+          height="76"
+          loading="lazy"
+          decoding="async"
+          class="pixel-art"
+        >
       </div>
       <div class="hero-cocktail-thumb">
-        <img src="{% static 'img/cocktail_lemonade.png' %}" alt="" class="pixel-art">
+        <img
+          src="{% static 'img/cocktail_lemonade.jpg' %}"
+          alt=""
+          width="76"
+          height="76"
+          loading="lazy"
+          decoding="async"
+          class="pixel-art"
+        >
       </div>
     </div>
   </section>

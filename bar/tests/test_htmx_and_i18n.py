@@ -479,19 +479,21 @@ class CyberBentoShellAndAssetsTests(TestCase):
 
     def test_static_bundle_files_exist_and_findable(self):
         static_assets = (
+            "css/app.min.css",
+            "css/animations.min.css",
             "css/tokens.css",
             "css/bento.css",
             "css/components.css",
             "css/animations.css",
             "js/htmx.min.js",
             "js/app.js",
-            "img/cyber_bar_bg.png",
-            "img/pixel_bar_logo.png",
-            "img/cocktail_negroni.png",
-            "img/cocktail_whiskey_sour.png",
-            "img/cocktail_lemonade.png",
-            "img/cocktail_signature.png",
-            "img/cocktail_classic.png",
+            "img/cyber_bar_bg.jpg",
+            "img/pixel_bar_logo.jpg",
+            "img/cocktail_negroni.jpg",
+            "img/cocktail_whiskey_sour.jpg",
+            "img/cocktail_lemonade.jpg",
+            "img/cocktail_signature.jpg",
+            "img/cocktail_classic.jpg",
         )
         for asset_path in static_assets:
             disk_path = settings.BASE_DIR / "static" / asset_path
@@ -504,15 +506,16 @@ class CyberBentoShellAndAssetsTests(TestCase):
         login_html = login_resp.content.decode("utf-8")
 
         for asset_name in (
-            "css/tokens.css",
-            "css/bento.css",
-            "css/components.css",
-            "css/animations.css",
+            "css/app.min.css",
+            "css/animations.min.css",
+            "data-async-style",
+            'media="print"',
             "js/htmx.min.js",
             "js/app.js",
         ):
             self.assertIn(asset_name, login_html)
 
+        self.assertNotIn("onload=", login_html.lower())
         self.assertNotIn("cdn.tailwindcss.com", login_html)
         self.assertNotIn("cdn.jsdelivr.net", login_html)
         self.assertIn(reverse("set_language"), login_html)
@@ -728,19 +731,19 @@ class CyberBentoShellAndAssetsTests(TestCase):
         urls_with_expected = (
             (
                 reverse("bar:index"),
-                ("cyber_bar_bg.png", "pixel_bar_logo.png", "₴"),
+                ("cyber_bar_bg.jpg", "pixel_bar_logo.jpg", "₴"),
             ),
             (
                 reverse("bar:drink-list"),
-                ("cocktail_negroni.png", "360.00 ₴"),
+                ("cocktail_negroni.jpg", "360.00 ₴"),
             ),
             (
                 reverse("bar:drink-detail", args=[drink.pk]),
-                ("cocktail_negroni.png", "360.00 ₴"),
+                ("cocktail_negroni.jpg", "360.00 ₴"),
             ),
             (
                 reverse("bar:order-detail", args=[order.pk]),
-                ("cocktail_negroni.png", "360.00 ₴"),
+                ("cocktail_negroni.jpg", "360.00 ₴"),
             ),
             (reverse("bar:analytics"), ("₴",)),
         )
@@ -754,6 +757,8 @@ class CyberBentoShellAndAssetsTests(TestCase):
 
         css_path = settings.BASE_DIR / "static" / "css" / "components.css"
         css_text = css_path.read_text(encoding="utf-8")
+        min_css_path = settings.BASE_DIR / "static" / "css" / "app.min.css"
+        min_css_text = min_css_path.read_text(encoding="utf-8")
         for selector in (
             ".btn.btn-primary:hover",
             ".btn.btn-success:hover",
@@ -762,6 +767,8 @@ class CyberBentoShellAndAssetsTests(TestCase):
             ".btn.btn-info:hover",
         ):
             self.assertIn(selector, css_text)
+        self.assertIn(".btn.btn-primary:hover", min_css_text)
+        self.assertIn(".btn.btn-success:hover", min_css_text)
 
         bento_path = settings.BASE_DIR / "static" / "css" / "bento.css"
         bento_text = bento_path.read_text(encoding="utf-8")

@@ -13,7 +13,7 @@ _DRINK_ART_RULES = (
             "ruby",
             "berry",
         ),
-        "img/cocktail_negroni.png",
+        "img/cocktail_negroni.jpg",
     ),
     (
         (
@@ -25,7 +25,7 @@ _DRINK_ART_RULES = (
             "manhattan",
             "amber",
         ),
-        "img/cocktail_whiskey_sour.png",
+        "img/cocktail_whiskey_sour.jpg",
     ),
     (
         (
@@ -38,7 +38,7 @@ _DRINK_ART_RULES = (
             "tonic",
             "citrus",
         ),
-        "img/cocktail_lemonade.png",
+        "img/cocktail_lemonade.jpg",
     ),
 )
 
@@ -47,7 +47,7 @@ _DRINK_ART_RULES = (
 def drink_pixel_art(drink) -> str:
     """Return a local static pixel-art image path for a Drink instance."""
     if not drink:
-        return "img/cocktail_classic.png"
+        return "img/cocktail_classic.jpg"
 
     drink_name = str(getattr(drink, "name", "") or "").lower()
     for keywords, asset_path in _DRINK_ART_RULES:
@@ -59,12 +59,12 @@ def drink_pixel_art(drink) -> str:
     cached_category = fields_cache.get("category")
     if cached_category is not None:
         if not cached_category.is_alcohol:
-            return "img/cocktail_lemonade.png"
+            return "img/cocktail_lemonade.jpg"
         category_title = str(getattr(cached_category, "name", "")).lower()
         if "signature" in category_title:
-            return "img/cocktail_signature.png"
+            return "img/cocktail_signature.jpg"
 
     drink_pk = getattr(drink, "pk", 0) or 0
     if drink_pk % 2 == 1:
-        return "img/cocktail_signature.png"
-    return "img/cocktail_classic.png"
+        return "img/cocktail_signature.jpg"
+    return "img/cocktail_classic.jpg"

@@ -5,10 +5,23 @@
   <title>{% trans "Sign In | Bar Manager" %}</title>
 {% endblock %}
 
+{% block extra_head %}
+  <link rel="preload" as="image" href="{% static 'img/cyber_bar_bg.jpg' %}" fetchpriority="high">
+{% endblock %}
+
 {% block layout %}
   {% get_current_language as CURRENT_LANGUAGE %}
   <div class="auth-shell">
-    <img src="{% static 'img/cyber_bar_bg.png' %}" alt="" class="pixel-art auth-bg-img" aria-hidden="true">
+    <img
+      src="{% static 'img/cyber_bar_bg.jpg' %}"
+      alt=""
+      width="960"
+      height="540"
+      fetchpriority="high"
+      decoding="async"
+      class="pixel-art auth-bg-img"
+      aria-hidden="true"
+    >
     <div class="auth-bg-scrim" aria-hidden="true"></div>
 
     <div class="auth-card">
@@ -28,7 +41,14 @@
 
       <div class="auth-brand">
         <div class="auth-icon">
-          <img src="{% static 'img/pixel_bar_logo.png' %}" alt="" class="pixel-art auth-logo-img">
+          <img
+            src="{% static 'img/pixel_bar_logo.jpg' %}"
+            alt=""
+            width="64"
+            height="64"
+            decoding="async"
+            class="pixel-art auth-logo-img"
+          >
         </div>
         <h1>{% trans "Bar Manager" %}</h1>
         <p class="page-subtitle">{% trans "Sign in to start your shift" %}</p>

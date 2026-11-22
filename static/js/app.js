@@ -3,6 +3,26 @@
 
   var activeRequests = 0;
 
+  function activateAsyncStyles() {
+    var links = document.querySelectorAll("link[data-async-style]");
+    links.forEach(function (linkEl) {
+      if (linkEl.sheet) {
+        linkEl.media = "all";
+        return;
+      }
+      linkEl.addEventListener("load", function () {
+        linkEl.media = "all";
+      });
+      window.setTimeout(function () {
+        if (linkEl.media !== "all") {
+          linkEl.media = "all";
+        }
+      }, 100);
+    });
+  }
+
+  activateAsyncStyles();
+
   function getCsrfToken() {
     var meta = document.querySelector('meta[name="csrf-token"]');
     if (meta && meta.getAttribute("content")) {

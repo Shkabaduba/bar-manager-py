@@ -28,6 +28,10 @@
       <img
         src="{% static drink|drink_pixel_art %}"
         alt="{{ drink.name }}"
+        width="384"
+        height="384"
+        fetchpriority="high"
+        decoding="async"
         class="pixel-art drink-detail-art-img"
       >
     </div>

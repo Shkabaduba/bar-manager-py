@@ -124,8 +124,11 @@
                       <img
                         src="{% static order_item.drink|drink_pixel_art %}"
                         alt=""
+                        width="42"
+                        height="42"
                         class="pixel-art pos-thumb"
                         loading="lazy"
+                        decoding="async"
                       >
                       <a href="{{ order_item.drink.get_absolute_url }}" class="link-primary">
                         {{ order_item.drink.name }}
@@ -225,8 +228,11 @@
                         <img
                           src="{% static drink|drink_pixel_art %}"
                           alt=""
+                          width="42"
+                          height="42"
                           class="pixel-art pos-thumb"
                           loading="lazy"
+                          decoding="async"
                         >
                         <strong>{{ drink.name }}</strong>
                       </div>
