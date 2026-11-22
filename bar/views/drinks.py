@@ -5,6 +5,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db import transaction
 from django.shortcuts import redirect, render
 from django.urls import reverse_lazy
+from django.utils.translation import gettext_lazy as _
 from django.views import generic
 
 from bar.forms import (
@@ -56,15 +57,15 @@ class CategoryFormMixin(
     oob_target_id = "category-list-region"
     oob_context_object_name = "category_list"
     oob_event_name = "categoriesChanged"
-    success_toast_message = "Category saved."
+    success_toast_message = _("Category saved.")
 
 
 class DrinksCategoryCreateView(CategoryFormMixin, generic.CreateView):
-    drawer_title = "Create Category"
+    drawer_title = _("Create Category")
 
 
 class DrinksCategoryUpdateView(CategoryFormMixin, generic.UpdateView):
-    drawer_title = "Update Category"
+    drawer_title = _("Update Category")
 
 
 class DrinksCategoryDeleteView(

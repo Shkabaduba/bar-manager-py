@@ -7,6 +7,7 @@ from django.contrib.auth.views import redirect_to_login
 from django.db.models import Q
 from django.http import HttpResponse
 from django.shortcuts import render
+from django.utils.translation import gettext_lazy as _
 
 from bar.models import Bartender
 
@@ -24,7 +25,9 @@ ROLE_GROUP_NAMES = {
     Bartender.Role.BARTENDER: "Bartenders",
 }
 
-DEFAULT_DENIED_MESSAGE = "You do not have permission to perform this action."
+DEFAULT_DENIED_MESSAGE = _(
+    "You do not have permission to perform this action."
+)
 
 
 class StaffActionNotAllowedError(Exception):
@@ -45,18 +48,24 @@ def htmx_forbidden_response(
     message: str = DEFAULT_DENIED_MESSAGE,
 ) -> HttpResponse:
     """Return HTTP 403 tailored for HTMX toast or full HTML page."""
+    text_message = str(message)
     if getattr(request, "htmx", False):
         response = HttpResponse(
-            message,
+            text_message,
             status=403,
             content_type="text/plain; charset=utf-8",
         )
         trigger_payload = {
-            "showToast": {"level": "error", "message": message}
+            "showToast": {"level": "error", "message": text_message}
         }
         response["HX-Trigger"] = json.dumps(trigger_payload)
         return response
-    return render(request, "403.html", {"error_message": message}, status=403)
+    return render(
+        request,
+        "403.html",
+        {"error_message": text_message},
+        status=403,
+    )
 
 
 class RoleRequiredMixin(LoginRequiredMixin):

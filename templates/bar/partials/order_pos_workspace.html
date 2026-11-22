@@ -75,19 +75,21 @@
             </form>
           {% endif %}
 
-          <form
-            method="post"
-            action="{% url 'bar:order-cancel' order.id %}"
-            hx-post="{% url 'bar:order-cancel' order.id %}"
-            hx-target="#order-pos-workspace"
-            hx-swap="outerHTML"
-          >
-            {% csrf_token %}
-            <input type="hidden" name="expected_version" value="{{ order.version }}">
-            <button type="submit" class="btn btn-outline btn-sm" hx-disabled-elt="this">
-              <span>{% trans "Cancel Order" %}</span>
-            </button>
-          </form>
+          {% if can_modify_items %}
+            <form
+              method="post"
+              action="{% url 'bar:order-cancel' order.id %}"
+              hx-post="{% url 'bar:order-cancel' order.id %}"
+              hx-target="#order-pos-workspace"
+              hx-swap="outerHTML"
+            >
+              {% csrf_token %}
+              <input type="hidden" name="expected_version" value="{{ order.version }}">
+              <button type="submit" class="btn btn-outline btn-sm" hx-disabled-elt="this">
+                <span>{% trans "Cancel Order" %}</span>
+              </button>
+            </form>
+          {% endif %}
         </div>
       {% endif %}
     </div>
@@ -111,7 +113,7 @@
                 <th>{% trans "Drink" %}</th>
                 <th>{% trans "Price" %}</th>
                 <th>{% trans "Qty" %}</th>
-                {% if is_order_mutable %}
+                {% if can_modify_items %}
                   <th>{% trans "Actions" %}</th>
                 {% endif %}
               </tr>
@@ -137,7 +139,7 @@
                   </td>
                   <td class="mono-num">{{ order_item.unit_price_snapshot }} ₴</td>
                   <td class="mono-num"><strong>{{ order_item.quantity }}</strong></td>
-                  {% if is_order_mutable %}
+                  {% if can_modify_items %}
                     <td>
                       <div class="inline-actions">
                         <form
@@ -186,7 +188,7 @@
           </table>
         </div>
 
-        {% if is_order_mutable %}
+        {% if can_pay_order %}
           <form
             method="post"
             action="{% url 'bar:order-pay' order.id %}"
@@ -206,7 +208,7 @@
       {% endif %}
     </div>
 
-    {% if is_order_mutable %}
+    {% if can_modify_items %}
       <div class="bento-card">
         <h2 class="section-title">{% trans "Quick Add from Menu" %}</h2>
         {% if menu_drinks %}

@@ -1,5 +1,11 @@
 {% load i18n %}
-<div id="ingredient-list-region" {% if oob_swap %}hx-swap-oob="outerHTML:#ingredient-list-region"{% endif %}>
+<div
+  id="ingredient-list-region"
+  hx-get="{% url 'bar:ingredient-list' %}"
+  hx-trigger="stockChanged from:body"
+  hx-swap="outerHTML"
+  {% if oob_swap %}hx-swap-oob="outerHTML:#ingredient-list-region"{% endif %}
+>
   {% if ingredient_list %}
     <div class="table-wrap">
       <table class="table">

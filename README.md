@@ -102,7 +102,7 @@ A full-featured Bar Management web application built with **Django 6.1.3**, styl
   ```
 * **Start Command:**
   ```bash
-  gunicorn bar_service.wsgi:application
+  gunicorn bar_service.wsgi:application --workers 1 --threads 4
   ```
 
 ---

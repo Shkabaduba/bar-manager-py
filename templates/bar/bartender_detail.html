@@ -52,13 +52,19 @@
 
     <div class="span-4 bento-card kpi-card is-success">
       <div class="kpi-label">{% trans "Closed Revenue" %}</div>
-      <div class="kpi-value text-success mono-num" style="font-size: 1.5rem;" data-count-up>{{ bartender.total_revenue|floatformat:2 }} ₴</div>
+      {% if can_view_staff_financials %}
+        <div class="kpi-value text-success mono-num" style="font-size: 1.5rem;" data-count-up>{{ bartender.total_revenue|floatformat:2 }} ₴</div>
+      {% else %}
+        <div class="kpi-value mono-num" style="font-size: 1.5rem;">—</div>
+      {% endif %}
     </div>
   </div>
 
   <div class="bento-card">
     <h2 class="section-title">{% trans "Assigned Orders" %}</h2>
-    {% if bartender.orders.all %}
+    {% if not can_view_staff_financials %}
+      <p class="page-subtitle">{% trans "You do not have permission to perform this action." %}</p>
+    {% elif bartender.orders.all %}
       <div class="table-wrap">
         <table class="table">
           <thead>

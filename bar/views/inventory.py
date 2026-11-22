@@ -4,6 +4,7 @@ from django.contrib import messages
 from django.db.models import F
 from django.shortcuts import redirect, render
 from django.urls import reverse, reverse_lazy
+from django.utils.translation import gettext_lazy as _
 from django.views import generic
 
 from bar.forms import (
@@ -63,15 +64,15 @@ class SupplierFormMixin(
     oob_target_id = "supplier-list-region"
     oob_context_object_name = "supplier_list"
     oob_event_name = "suppliersChanged"
-    success_toast_message = "Supplier saved."
+    success_toast_message = _("Supplier saved.")
 
 
 class BarSupplierCreateView(SupplierFormMixin, generic.CreateView):
-    drawer_title = "Create Supplier"
+    drawer_title = _("Create Supplier")
 
 
 class BarSupplierUpdateView(SupplierFormMixin, generic.UpdateView):
-    drawer_title = "Update Supplier"
+    drawer_title = _("Update Supplier")
 
 
 class BarSupplierDeleteView(
@@ -126,7 +127,7 @@ class IngredientFormMixin(
     oob_target_id = "ingredient-list-region"
     oob_context_object_name = "ingredient_list"
     oob_event_name = "ingredientsChanged"
-    success_toast_message = "Ingredient saved."
+    success_toast_message = _("Ingredient saved.")
 
     def get_oob_queryset(self):
         return BarIngredient.objects.select_related("supplier")
@@ -134,12 +135,12 @@ class IngredientFormMixin(
 
 class BarIngredientCreateView(IngredientFormMixin, generic.CreateView):
     form_class = BarIngredientCreateForm
-    drawer_title = "Create Ingredient"
+    drawer_title = _("Create Ingredient")
 
 
 class BarIngredientUpdateView(IngredientFormMixin, generic.UpdateView):
     form_class = BarIngredientUpdateForm
-    drawer_title = "Update Ingredient"
+    drawer_title = _("Update Ingredient")
 
 
 class BarIngredientDeleteView(
@@ -249,7 +250,7 @@ def _handle_stock_operation_request(
                 messages.success(request, success_message)
                 return redirect("bar:stock-movement-list")
         elif htmx_partial:
-            toast_error_message = "Please correct the form errors."
+            toast_error_message = str(_("Please correct the form errors."))
 
     if htmx_partial:
         response = render(

@@ -882,3 +882,67 @@ msgstr "Ви успішно вийшли з порталу Bar Manager."
 
 msgid "Your username and password didn't match. Please try again."
 msgstr "Неправильний логін або пароль. Спробуйте ще раз."
+
+msgid "Cannot delete this item because it is referenced by other records."
+msgstr "Неможливо видалити цей запис, оскільки на нього посилаються інші записи."
+
+msgid "Category saved."
+msgstr "Категорію збережено."
+
+msgid "Deleted successfully."
+msgstr "Успішно видалено."
+
+msgid "Ingredient saved."
+msgstr "Інгредієнт збережено."
+
+msgid "Invalid drink or quantity parameter."
+msgstr "Некоректний напій або параметр кількості."
+
+msgid "Invalid order version."
+msgstr "Некоректна версія замовлення."
+
+msgid "Invalid quantity parameter."
+msgstr "Некоректний параметр кількості."
+
+msgid "Item removed from order."
+msgstr "Позицію видалено із замовлення."
+
+msgid "Only managers and owners can force-close orders with deficits."
+msgstr "Лише менеджери та власники можуть примусово закривати замовлення з дефіцитом."
+
+#, python-format
+msgid "Order #%(order_id)s assigned to you."
+msgstr "Замовлення #%(order_id)s закріплено за вами."
+
+#, python-format
+msgid "Order #%(order_id)s cancelled."
+msgstr "Замовлення #%(order_id)s скасовано."
+
+#, python-format
+msgid "Order #%(order_id)s paid and stock deducted."
+msgstr "Замовлення #%(order_id)s оплачено, запаси списано."
+
+#, python-format
+msgid "Order #%(order_id)s released."
+msgstr "Замовлення #%(order_id)s звільнено."
+
+msgid "Order has been assigned by other Bartender"
+msgstr "Замовлення вже закріплене за іншим барменом"
+
+msgid "Order item updated."
+msgstr "Позицію замовлення оновлено."
+
+msgid "Order quantity updated."
+msgstr "Кількість у замовленні оновлено."
+
+msgid "Please correct the form errors."
+msgstr "Будь ласка, виправте помилки у формі."
+
+msgid "Please provide a valid override reason."
+msgstr "Будь ласка, вкажіть коректну причину примусового списання."
+
+msgid "Saved successfully."
+msgstr "Успішно збережено."
+
+msgid "Supplier saved."
+msgstr "Постачальника збережено."

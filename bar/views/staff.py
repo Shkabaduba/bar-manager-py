@@ -67,6 +67,14 @@ class BartenderDetailView(LoginRequiredMixin, generic.DetailView):
             ),
         ).prefetch_related("orders__drinks")
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        viewer = self.request.user
+        context["can_view_staff_financials"] = (
+            viewer.can_manage_bar or viewer.pk == self.object.pk
+        )
+        return context
+
 
 class BartenderCrudMixin(RoleRequiredMixin):
     allowed_roles = OWNER_ROLES

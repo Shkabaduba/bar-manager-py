@@ -9,6 +9,7 @@ from django.db.models.functions import Coalesce
 from django.http import Http404, HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
+from django.utils.translation import gettext as _
 from django.views import generic
 from django.views.decorators.http import require_POST
 
@@ -68,6 +69,7 @@ def _order_detail_queryset():
 def _build_order_pos_context(
     order: Order,
     *,
+    actor=None,
     deficits=None,
     force_close_form: OrderForceCloseForm | None = None,
 ) -> dict:
@@ -99,6 +101,16 @@ def _build_order_pos_context(
     is_order_mutable = (
         order.status not in FINAL_ORDER_STATUSES and not order.is_paid
     )
+    can_modify_items = is_order_mutable and (
+        actor is None
+        or actor.can_manage_bar
+        or order.bartender_id in (None, actor.pk)
+    )
+    can_pay_order = is_order_mutable and (
+        actor is None
+        or actor.can_manage_bar
+        or order.bartender_id == actor.pk
+    )
     return {
         "order": order,
         "order_items": order_items,
@@ -106,6 +118,8 @@ def _build_order_pos_context(
         "menu_drinks": menu_drinks,
         "menu_costing_map": menu_costing_map,
         "is_order_mutable": is_order_mutable,
+        "can_modify_items": can_modify_items,
+        "can_pay_order": can_pay_order,
         "deficits": tuple(deficits) if deficits else (),
         "force_close_form": force_close_form
         or OrderForceCloseForm(initial={"expected_version": order.version}),
@@ -126,6 +140,7 @@ def _render_order_pos_htmx(
     order = get_object_or_404(_order_detail_queryset(), pk=order_id)
     context = _build_order_pos_context(
         order,
+        actor=request.user,
         deficits=deficits,
         force_close_form=force_close_form,
     )
@@ -239,8 +254,8 @@ def order_create_view(request):
             "bar/partials/drawer_form.html",
             {
                 "form": form,
-                "drawer_title": "Create Order",
-                "drawer_submit_label": "Create Order",
+                "drawer_title": _("Create Order"),
+                "drawer_submit_label": _("Create Order"),
                 "form_action": request.path,
             },
         )
@@ -248,7 +263,7 @@ def order_create_view(request):
             return add_htmx_toast(
                 response,
                 level="error",
-                message="Please correct the form errors.",
+                message=_("Please correct the form errors."),
             )
         return response
 
@@ -264,7 +279,9 @@ class OrderDetailView(LoginRequiredMixin, generic.DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context.update(_build_order_pos_context(self.object))
+        context.update(
+            _build_order_pos_context(self.object, actor=self.request.user)
+        )
         return context
 
 
@@ -274,7 +291,7 @@ def toggle_assign_order(request, pk):
     """Claim or release an order for the current bartender."""
     htmx_partial = is_htmx_partial(request)
     try:
-        _, outcome = toggle_assign_order_service(
+        _order, outcome = toggle_assign_order_service(
             order_id=pk,
             actor=request.user,
         )
@@ -292,7 +309,7 @@ def toggle_assign_order(request, pk):
         return redirect("bar:order-detail", pk=pk)
 
     if outcome == "taken_by_other":
-        warning_text = "Order has been assigned by other Bartender"
+        warning_text = _("Order has been assigned by other Bartender")
         if htmx_partial:
             return _render_order_pos_htmx(
                 request,
@@ -303,9 +320,9 @@ def toggle_assign_order(request, pk):
         messages.warning(request, warning_text)
     elif htmx_partial:
         toast_text = (
-            f"Order #{pk} assigned to you."
+            _("Order #%(order_id)s assigned to you.") % {"order_id": pk}
             if outcome == "assigned"
-            else f"Order #{pk} released."
+            else _("Order #%(order_id)s released.") % {"order_id": pk}
         )
         return _render_order_pos_htmx(
             request,
@@ -328,7 +345,7 @@ def order_add_item(request, pk):
             request.POST.get("expected_version")
         )
     except ValueError:
-        error_text = "Invalid drink or quantity parameter."
+        error_text = _("Invalid drink or quantity parameter.")
         if htmx_partial:
             return _render_order_pos_htmx(
                 request,
@@ -344,10 +361,13 @@ def order_add_item(request, pk):
             order_id=pk,
             drink_id=drink_id,
             delta=delta,
+            actor=request.user,
             expected_version=expected_version,
         )
     except (Order.DoesNotExist, Drink.DoesNotExist) as exc:
         raise Http404("Order or drink not found.") from exc
+    except PermissionDenied as exc:
+        return htmx_forbidden_response(request, str(exc))
     except BarServiceError as exc:
         if htmx_partial:
             return _render_order_pos_htmx(
@@ -363,7 +383,7 @@ def order_add_item(request, pk):
                 request,
                 pk,
                 toast_level="success",
-                toast_message="Order item updated.",
+                toast_message=_("Order item updated."),
             )
     return redirect("bar:order-detail", pk=pk)
 
@@ -379,7 +399,7 @@ def order_set_item(request, pk, drink_id):
             request.POST.get("expected_version")
         )
     except ValueError:
-        error_text = "Invalid quantity parameter."
+        error_text = _("Invalid quantity parameter.")
         if htmx_partial:
             return _render_order_pos_htmx(
                 request,
@@ -395,10 +415,13 @@ def order_set_item(request, pk, drink_id):
             order_id=pk,
             drink_id=drink_id,
             quantity=quantity,
+            actor=request.user,
             expected_version=expected_version,
         )
     except (Order.DoesNotExist, Drink.DoesNotExist) as exc:
         raise Http404("Order or drink not found.") from exc
+    except PermissionDenied as exc:
+        return htmx_forbidden_response(request, str(exc))
     except BarServiceError as exc:
         if htmx_partial:
             return _render_order_pos_htmx(
@@ -414,7 +437,7 @@ def order_set_item(request, pk, drink_id):
                 request,
                 pk,
                 toast_level="success",
-                toast_message="Order quantity updated.",
+                toast_message=_("Order quantity updated."),
             )
     return redirect("bar:order-detail", pk=pk)
 
@@ -429,7 +452,7 @@ def order_remove_item(request, pk, drink_id):
             request.POST.get("expected_version")
         )
     except ValueError:
-        error_text = "Invalid order version."
+        error_text = _("Invalid order version.")
         if htmx_partial:
             return _render_order_pos_htmx(
                 request,
@@ -444,10 +467,13 @@ def order_remove_item(request, pk, drink_id):
         remove_order_item(
             order_id=pk,
             drink_id=drink_id,
+            actor=request.user,
             expected_version=expected_version,
         )
     except Order.DoesNotExist as exc:
         raise Http404("Order not found.") from exc
+    except PermissionDenied as exc:
+        return htmx_forbidden_response(request, str(exc))
     except BarServiceError as exc:
         if htmx_partial:
             return _render_order_pos_htmx(
@@ -463,7 +489,7 @@ def order_remove_item(request, pk, drink_id):
                 request,
                 pk,
                 toast_level="success",
-                toast_message="Item removed from order.",
+                toast_message=_("Item removed from order."),
             )
     return redirect("bar:order-detail", pk=pk)
 
@@ -484,7 +510,7 @@ def order_pay(request, pk):
             request.POST.get("expected_version")
         )
     except ValueError:
-        error_text = "Invalid order version."
+        error_text = _("Invalid order version.")
         if htmx_partial:
             return _render_order_pos_htmx(
                 request,
@@ -500,12 +526,14 @@ def order_pay(request, pk):
         if not request.user.can_force_close:
             return htmx_forbidden_response(
                 request,
-                "Only managers and owners can force-close orders "
-                "with deficits.",
+                _(
+                    "Only managers and owners can force-close orders "
+                    "with deficits."
+                ),
             )
         force_form = OrderForceCloseForm(request.POST)
         if not force_form.is_valid():
-            reason_error = "Please provide a valid override reason."
+            reason_error = _("Please provide a valid override reason.")
             if htmx_partial:
                 return _render_order_pos_htmx(
                     request,
@@ -519,6 +547,7 @@ def order_pay(request, pk):
             messages.error(request, reason_error)
             context = _build_order_pos_context(
                 order,
+                actor=request.user,
                 force_close_form=force_form,
             )
             return render(
@@ -556,7 +585,11 @@ def order_pay(request, pk):
             )
         order = get_object_or_404(_order_detail_queryset(), pk=pk)
         messages.warning(request, str(exc))
-        context = _build_order_pos_context(order, deficits=exc.deficits)
+        context = _build_order_pos_context(
+            order,
+            actor=request.user,
+            deficits=exc.deficits,
+        )
         response = render(
             request,
             "bar/order_detail.html",
@@ -581,7 +614,9 @@ def order_pay(request, pk):
         messages.error(request, str(exc))
         return redirect("bar:order-detail", pk=pk)
 
-    success_message = f"Order #{pk} paid and stock deducted."
+    success_message = _("Order #%(order_id)s paid and stock deducted.") % {
+        "order_id": pk
+    }
     if htmx_partial:
         return _render_order_pos_htmx(
             request,
@@ -604,7 +639,7 @@ def order_cancel(request, pk):
             request.POST.get("expected_version")
         )
     except ValueError:
-        error_text = "Invalid order version."
+        error_text = _("Invalid order version.")
         if htmx_partial:
             return _render_order_pos_htmx(
                 request,
@@ -637,7 +672,9 @@ def order_cancel(request, pk):
             )
         messages.error(request, str(exc))
     else:
-        success_message = f"Order #{pk} cancelled."
+        success_message = _("Order #%(order_id)s cancelled.") % {
+            "order_id": pk
+        }
         if htmx_partial:
             return _render_order_pos_htmx(
                 request,

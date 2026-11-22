@@ -40,11 +40,21 @@ DEFAULT_PERMISSIONS_POLICY = (
 
 
 def get_client_ip(request) -> str:
-    """Return client IP, trusting X-Forwarded-For only when configured."""
+    """Return client IP, using rightmost trusted proxy hop when enabled."""
     if getattr(settings, "RATE_LIMIT_TRUST_X_FORWARDED_FOR", False):
         forwarded_for = request.META.get("HTTP_X_FORWARDED_FOR", "")
-        if forwarded_for:
-            return forwarded_for.split(",")[0].strip()
+        hops = [
+            hop.strip()
+            for hop in forwarded_for.split(",")
+            if hop.strip()
+        ]
+        if hops:
+            proxy_depth = max(
+                1,
+                int(getattr(settings, "RATE_LIMIT_PROXY_DEPTH", 1)),
+            )
+            hop_index = max(0, len(hops) - proxy_depth)
+            return hops[hop_index]
     return request.META.get("REMOTE_ADDR", "unknown")
 
 
@@ -125,6 +135,54 @@ class SecurityHeadersMiddleware:
         return response
 
 
+def _resolve_rate_limit_rule(
+    request,
+    client_ip: str,
+) -> tuple[str, str, int, int]:
+    login_path = getattr(settings, "LOGIN_URL", "/accounts/login/")
+    normalized_path = request.path.rstrip("/")
+    login_paths = {login_path.rstrip("/"), "/admin/login"}
+    if normalized_path in login_paths:
+        return (
+            "login",
+            f"rl:login:{client_ip}",
+            getattr(settings, "RATE_LIMIT_LOGIN_MAX", 10),
+            getattr(settings, "RATE_LIMIT_LOGIN_WINDOW", 300),
+        )
+    if hasattr(request, "user") and request.user.is_authenticated:
+        cache_key = f"rl:mutation:user:{request.user.pk}"
+    else:
+        cache_key = f"rl:mutation:ip:{client_ip}"
+    return (
+        "mutation",
+        cache_key,
+        getattr(settings, "RATE_LIMIT_MUTATION_MAX", 60),
+        getattr(settings, "RATE_LIMIT_MUTATION_WINDOW", 60),
+    )
+
+
+def _build_rate_limit_response(
+    window_seconds: int,
+    *,
+    is_htmx_request: bool,
+) -> HttpResponse:
+    response = HttpResponse(
+        "Too many requests. Please try again later.",
+        status=429,
+        content_type="text/plain; charset=utf-8",
+    )
+    response["Retry-After"] = str(window_seconds)
+    if is_htmx_request:
+        trigger_payload = {
+            "showToast": {
+                "level": "error",
+                "message": "Too many requests. Please wait and try again.",
+            }
+        }
+        response["HX-Trigger"] = json.dumps(trigger_payload)
+    return response
+
+
 class RateLimitMiddleware:
     """Protect login and mutating endpoints from brute-force and bursts."""
 
@@ -138,26 +196,11 @@ class RateLimitMiddleware:
         ):
             return self.get_response(request)
 
-        login_path = getattr(settings, "LOGIN_URL", "/accounts/login/")
         client_ip = get_client_ip(request)
-
-        if request.path.rstrip("/") == login_path.rstrip("/"):
-            scope = "login"
-            cache_key = f"rl:login:{client_ip}"
-            limit = getattr(settings, "RATE_LIMIT_LOGIN_MAX", 10)
-            window_seconds = getattr(settings, "RATE_LIMIT_LOGIN_WINDOW", 300)
-        else:
-            scope = "mutation"
-            if hasattr(request, "user") and request.user.is_authenticated:
-                cache_key = f"rl:mutation:user:{request.user.pk}"
-            else:
-                cache_key = f"rl:mutation:ip:{client_ip}"
-            limit = getattr(settings, "RATE_LIMIT_MUTATION_MAX", 60)
-            window_seconds = getattr(
-                settings,
-                "RATE_LIMIT_MUTATION_WINDOW",
-                60,
-            )
+        scope, cache_key, limit, window_seconds = _resolve_rate_limit_rule(
+            request,
+            client_ip,
+        )
 
         attempt_count = _increment_counter(cache_key, window_seconds)
         if attempt_count > limit:
@@ -169,22 +212,17 @@ class RateLimitMiddleware:
             )
             if scope == "login":
                 _record_login_blocked(client_ip, request.path, attempt_count)
-            response = HttpResponse(
-                "Too many requests. Please try again later.",
-                status=429,
-                content_type="text/plain; charset=utf-8",
+            return _build_rate_limit_response(
+                window_seconds,
+                is_htmx_request=bool(getattr(request, "htmx", False)),
             )
-            response["Retry-After"] = str(window_seconds)
-            if getattr(request, "htmx", False):
-                trigger_payload = {
-                    "showToast": {
-                        "level": "error",
-                        "message": (
-                            "Too many requests. Please wait and try again."
-                        ),
-                    }
-                }
-                response["HX-Trigger"] = json.dumps(trigger_payload)
-            return response
 
-        return self.get_response(request)
+        response = self.get_response(request)
+        request_user = getattr(request, "user", None)
+        if (
+            scope == "login"
+            and response.status_code in (301, 302, 303)
+            and getattr(request_user, "is_authenticated", False)
+        ):
+            cache.delete(cache_key)
+        return response

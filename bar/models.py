@@ -1,4 +1,5 @@
 from decimal import Decimal
+import re
 
 from django.conf import settings
 from django.contrib.auth.models import AbstractUser
@@ -126,6 +127,8 @@ class Bartender(AbstractUser):
         db_index=True,
     )
 
+    REQUIRED_FIELDS = ["email", "staff_id"]
+
     class Meta:
         verbose_name = "bartender"
         verbose_name_plural = "bartenders"
@@ -164,6 +167,22 @@ class Bartender(AbstractUser):
 
     def get_absolute_url(self):
         return reverse("bar:bartender-detail", kwargs={"pk": self.pk})
+
+    def save(self, *args, **kwargs):
+        if self.is_superuser:
+            if not self.pk and self.role == self.Role.BARTENDER:
+                self.role = self.Role.OWNER
+            if not (self.staff_id or "").strip():
+                clean_user = re.sub(
+                    r"[^A-Za-z0-9_-]",
+                    "",
+                    str(self.username or "ADMIN"),
+                )
+                candidate = f"OWN_{clean_user[:11].upper()}"
+                if len(candidate) < 8:
+                    candidate = f"{candidate}_0001"[:15]
+                self.staff_id = candidate
+        super().save(*args, **kwargs)
 
 
 class Drink(models.Model):

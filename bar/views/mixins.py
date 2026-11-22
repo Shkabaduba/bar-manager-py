@@ -6,6 +6,7 @@ from django.core.paginator import Paginator
 from django.db.models import ProtectedError
 from django.http import HttpResponse
 from django.shortcuts import redirect, render
+from django.utils.translation import gettext_lazy as _
 from django.views import generic
 
 from bar.services.analytics import get_dashboard_snapshot
@@ -41,7 +42,7 @@ def add_htmx_toast(
         except ValueError:
             payload = {}
 
-    payload["showToast"] = {"level": level, "message": message}
+    payload["showToast"] = {"level": level, "message": str(message)}
     if extra_triggers:
         payload.update(extra_triggers)
     response["HX-Trigger"] = json.dumps(payload)
@@ -91,7 +92,7 @@ def render_oob_list_response(
     return add_htmx_toast(
         response,
         level=toast_level,
-        message=toast_message,
+        message=str(toast_message),
         extra_triggers=triggers,
     )
 
@@ -153,13 +154,13 @@ class HtmxDrawerFormMixin:
 
     drawer_template_name = "bar/partials/drawer_form.html"
     drawer_title = ""
-    drawer_submit_label = "Save"
+    drawer_submit_label = _("Save")
     oob_table_template: str | None = None
     oob_target_id: str | None = None
     oob_context_object_name = "object_list"
     oob_paginate_by = 10
     oob_event_name: str | None = None
-    success_toast_message = "Saved successfully."
+    success_toast_message = _("Saved successfully.")
 
     def get_template_names(self):
         if is_htmx_partial(self.request):
@@ -209,7 +210,7 @@ class HtmxDrawerFormMixin:
             return add_htmx_toast(
                 response,
                 level="error",
-                message="Please correct the form errors.",
+                message=_("Please correct the form errors."),
             )
         return response
 
@@ -217,7 +218,7 @@ class HtmxDrawerFormMixin:
 class ProtectedDeleteMixin:
     """Catch ProtectedError on delete and respond with toast or redirect."""
 
-    protected_error_message = (
+    protected_error_message = _(
         "Cannot delete this item because it is referenced by other records."
     )
     oob_table_template: str | None = None
@@ -233,17 +234,18 @@ class ProtectedDeleteMixin:
         try:
             response = super().form_valid(form)
         except ProtectedError:
-            messages.error(self.request, self.protected_error_message)
+            error_msg = str(self.protected_error_message)
+            messages.error(self.request, error_msg)
             if is_htmx(self.request):
                 error_response = HttpResponse(
-                    self.protected_error_message,
+                    error_msg,
                     status=409,
                     content_type="text/plain; charset=utf-8",
                 )
                 return add_htmx_toast(
                     error_response,
                     level="error",
-                    message=self.protected_error_message,
+                    message=error_msg,
                 )
             return redirect(self.success_url)
 
@@ -264,7 +266,7 @@ class ProtectedDeleteMixin:
                 queryset=self.get_oob_queryset(),
                 paginate_by=self.oob_paginate_by,
                 base_url=self.success_url,
-                toast_message="Deleted successfully.",
+                toast_message=_("Deleted successfully."),
                 extra_triggers=extra_triggers,
             )
         return response

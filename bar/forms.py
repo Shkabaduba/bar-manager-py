@@ -24,17 +24,6 @@ def _clean_required_text(raw_text: str, field_label: str) -> str:
     return cleaned
 
 
-class DrinkForm(forms.ModelForm):
-    ingredients = forms.ModelMultipleChoiceField(
-        queryset=BarIngredient.objects.all(),
-        widget=forms.CheckboxSelectMultiple,
-    )
-
-    class Meta:
-        model = Drink
-        fields = ["name", "price", "volume_ml", "category", "ingredients"]
-
-
 class BartenderCreationForm(UserCreationForm):
     class Meta(UserCreationForm.Meta):
         model = Bartender
@@ -229,11 +218,13 @@ class StockInForm(forms.Form):
         max_digits=12,
         decimal_places=2,
         min_value=Decimal("0.01"),
+        max_value=Decimal("1000000.00"),
     )
     unit_cost = forms.DecimalField(
         max_digits=10,
         decimal_places=4,
         min_value=Decimal("0.0000"),
+        max_value=Decimal("1000000.00"),
     )
     reason = forms.CharField(max_length=255, required=False)
 
@@ -248,6 +239,7 @@ class StockWriteoffForm(forms.Form):
         max_digits=12,
         decimal_places=2,
         min_value=Decimal("0.01"),
+        max_value=Decimal("1000000.00"),
     )
     reason = forms.CharField(max_length=255, required=True)
 
@@ -265,6 +257,7 @@ class StockAdjustmentForm(forms.Form):
         max_digits=12,
         decimal_places=2,
         min_value=Decimal("0.00"),
+        max_value=Decimal("1000000.00"),
     )
     reason = forms.CharField(max_length=255, required=True)
 

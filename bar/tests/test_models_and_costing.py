@@ -202,6 +202,16 @@ class ModelConstraintsAndRolesTests(TestCase):
         self.assertFalse(superuser.is_bartender)
         self.assertTrue(superuser.can_manage_staff)
 
+    def test_create_superuser_assigns_owner_role_and_staff_id(self):
+        auto_owner = Bartender.objects.create_superuser(
+            username="auto_owner",
+            password="test_password123",
+        )
+        auto_owner.full_clean()
+        self.assertEqual(auto_owner.role, Bartender.Role.OWNER)
+        self.assertTrue(auto_owner.is_owner)
+        self.assertTrue(auto_owner.staff_id.startswith("OWN_"))
+
     def test_staff_id_and_phone_model_validators(self):
         valid_supplier = BarSupplier(
             name="Valid Spirits",

@@ -73,6 +73,16 @@ def _upsert_or_delete_order_item(
     drink = Drink.objects.prefetch_related("recipe_items__ingredient").get(
         pk=drink_id
     )
+    existing_qty = (
+        OrderItem.objects.filter(order=order, drink=drink)
+        .values_list("quantity", flat=True)
+        .first()
+        or 0
+    )
+    if not drink.is_active and new_quantity > existing_qty:
+        raise OrderStateError(
+            f"Drink '{drink.name}' is inactive and cannot be ordered."
+        )
     unit_cost = calculate_drink_unit_cost(drink)
     order_item, _ = OrderItem.objects.update_or_create(
         order=order,
@@ -87,6 +97,20 @@ def _upsert_or_delete_order_item(
     order.save(update_fields=["version"])
     schedule_analytics_cache_invalidation()
     return order_item
+
+
+def _validate_item_mutation_permissions(
+    order: Order,
+    actor: Bartender | None,
+) -> None:
+    if (
+        actor is not None
+        and not actor.can_manage_bar
+        and order.bartender_id not in (None, actor.pk)
+    ):
+        raise PermissionDenied(
+            "You can only modify your own or unassigned orders."
+        )
 
 
 def create_order(
@@ -122,6 +146,7 @@ def set_order_item(
     order_id: int,
     drink_id: int,
     quantity: int,
+    actor: Bartender | None = None,
     expected_version: int | None = None,
 ) -> OrderItem | None:
     """Set exact quantity for a drink in an order, or delete if 0."""
@@ -137,6 +162,7 @@ def set_order_item(
             order_id,
             expected_version=expected_version,
         )
+        _validate_item_mutation_permissions(order, actor)
         return _upsert_or_delete_order_item(order, drink_id, quantity)
 
 
@@ -145,6 +171,7 @@ def add_order_item(
     order_id: int,
     drink_id: int,
     delta: int = 1,
+    actor: Bartender | None = None,
     expected_version: int | None = None,
 ) -> OrderItem | None:
     """Adjust drink quantity in an order by delta (delete when <= 0)."""
@@ -160,6 +187,7 @@ def add_order_item(
             order_id,
             expected_version=expected_version,
         )
+        _validate_item_mutation_permissions(order, actor)
         existing = OrderItem.objects.filter(
             order=order,
             drink_id=drink_id,
@@ -176,6 +204,7 @@ def remove_order_item(
     *,
     order_id: int,
     drink_id: int,
+    actor: Bartender | None = None,
     expected_version: int | None = None,
 ) -> bool:
     """Remove a drink line from an order and bump version if removed."""
@@ -184,6 +213,7 @@ def remove_order_item(
             order_id,
             expected_version=expected_version,
         )
+        _validate_item_mutation_permissions(order, actor)
         deleted_count, _ = OrderItem.objects.filter(
             order=order,
             drink_id=drink_id,

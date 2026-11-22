@@ -4,8 +4,10 @@ import json
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import AnonymousUser, Group
 from django.core.cache import cache
+from django.db import connection
 from django.http import HttpResponse
 from django.test import RequestFactory, TestCase, override_settings
+from django.test.utils import CaptureQueriesContext
 from django.urls import reverse
 
 from bar.models import (
@@ -181,6 +183,94 @@ class SecurityMiddlewareTests(TestCase):
                 HTTP_X_FORWARDED_FOR="2.2.2.2",
             )
             self.assertNotEqual(second_response.status_code, 429)
+
+        cache.clear()
+        with override_settings(
+            RATE_LIMIT_LOGIN_MAX=1,
+            RATE_LIMIT_LOGIN_WINDOW=60,
+            RATE_LIMIT_TRUST_X_FORWARDED_FOR=True,
+            RATE_LIMIT_PROXY_DEPTH=1,
+        ):
+            first_xff = self.client.post(
+                login_url,
+                {"username": "nobody", "password": "wrong"},
+                HTTP_X_FORWARDED_FOR="9.9.9.9, 1.2.3.4",
+            )
+            self.assertNotEqual(first_xff.status_code, 429)
+            with self.assertLogs("bar.middleware", level="WARNING"):
+                spoofed_xff = self.client.post(
+                    login_url,
+                    {"username": "nobody", "password": "wrong"},
+                    HTTP_X_FORWARDED_FOR="8.8.8.8, 1.2.3.4",
+                )
+            self.assertEqual(spoofed_xff.status_code, 429)
+
+        cache.clear()
+        before_blocks = AuditLog.objects.filter(
+            action="LOGIN_BLOCKED"
+        ).count()
+        with override_settings(
+            RATE_LIMIT_LOGIN_MAX=1,
+            RATE_LIMIT_LOGIN_WINDOW=60,
+        ):
+            admin_first = self.client.post(
+                "/admin/login/",
+                {"username": "nobody", "password": "wrong"},
+            )
+            self.assertNotEqual(admin_first.status_code, 429)
+            with self.assertLogs("bar.middleware", level="WARNING"):
+                admin_blocked = self.client.post(
+                    "/admin/login/",
+                    {"username": "nobody", "password": "wrong"},
+                )
+            self.assertEqual(admin_blocked.status_code, 429)
+        self.assertEqual(
+            AuditLog.objects.filter(action="LOGIN_BLOCKED").count(),
+            before_blocks + 1,
+        )
+
+        cache.clear()
+        login_user = Bartender.objects.create_user(
+            username="rl_reset_user",
+            password="test_password123",
+            staff_id="RL_RST1",
+            role=Bartender.Role.BARTENDER,
+        )
+        with override_settings(
+            RATE_LIMIT_LOGIN_MAX=2,
+            RATE_LIMIT_LOGIN_WINDOW=60,
+        ):
+            first_fail = self.client.post(
+                login_url,
+                {"username": login_user.username, "password": "wrong"},
+            )
+            self.assertEqual(first_fail.status_code, 200)
+            valid_login = self.client.post(
+                login_url,
+                {
+                    "username": login_user.username,
+                    "password": "test_password123",
+                },
+            )
+            self.assertEqual(valid_login.status_code, 302)
+            self.client.logout()
+
+            after_reset_1 = self.client.post(
+                login_url,
+                {"username": login_user.username, "password": "wrong"},
+            )
+            after_reset_2 = self.client.post(
+                login_url,
+                {"username": login_user.username, "password": "wrong"},
+            )
+            with self.assertLogs("bar.middleware", level="WARNING"):
+                after_reset_3 = self.client.post(
+                    login_url,
+                    {"username": login_user.username, "password": "wrong"},
+                )
+            self.assertEqual(after_reset_1.status_code, 200)
+            self.assertEqual(after_reset_2.status_code, 200)
+            self.assertEqual(after_reset_3.status_code, 429)
 
 
 class RBACPermissionsTests(TestCase):
@@ -454,3 +544,51 @@ class RBACPermissionsTests(TestCase):
         self.assertIsNotNone(audit_entry)
         self.assertIsNone(audit_entry.ip_address)
         self.assertEqual(audit_entry.metadata["raw_ip"], "not-an-ip")
+
+    def test_bartender_detail_hides_other_staff_financials(self):
+        other_bartender = Bartender.objects.create_user(
+            username="rbac_other_bartender",
+            password="test_password123",
+            staff_id="RBAC_BAR2",
+            role=Bartender.Role.BARTENDER,
+        )
+        paid_order = Order.objects.create(
+            table_number=77,
+            bartender=other_bartender,
+            status=Order.Status.PAID,
+            total_revenue_snapshot=Decimal("345.00"),
+        )
+        detail_url = reverse(
+            "bar:bartender-detail", args=[other_bartender.pk]
+        )
+        order_url = paid_order.get_absolute_url()
+
+        self.client.force_login(self.bartender)
+        with CaptureQueriesContext(connection) as other_queries:
+            other_resp = self.client.get(detail_url)
+        self.assertEqual(other_resp.status_code, 200)
+        self.assertFalse(other_resp.context["can_view_staff_financials"])
+        self.assertNotContains(other_resp, "345.00")
+        self.assertNotContains(other_resp, order_url)
+
+        self.client.force_login(other_bartender)
+        self_resp = self.client.get(detail_url)
+        self.assertEqual(self_resp.status_code, 200)
+        self.assertTrue(self_resp.context["can_view_staff_financials"])
+        self.assertContains(self_resp, "345.00")
+        self.assertContains(self_resp, order_url)
+
+        self.client.force_login(self.manager)
+        with CaptureQueriesContext(connection) as mgr_queries:
+            mgr_resp = self.client.get(detail_url)
+        self.assertEqual(mgr_resp.status_code, 200)
+        self.assertTrue(mgr_resp.context["can_view_staff_financials"])
+        self.assertContains(mgr_resp, "345.00")
+        self.assertContains(mgr_resp, order_url)
+
+        self.client.force_login(self.owner)
+        owner_resp = self.client.get(detail_url)
+        self.assertEqual(owner_resp.status_code, 200)
+        self.assertTrue(owner_resp.context["can_view_staff_financials"])
+        self.assertContains(owner_resp, "345.00")
+        self.assertLessEqual(len(other_queries), len(mgr_queries) + 1)

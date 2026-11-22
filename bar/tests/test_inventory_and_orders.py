@@ -1,4 +1,5 @@
 from decimal import Decimal
+import json
 
 from django.contrib.auth import get_user_model
 from django.core.cache import cache
@@ -29,6 +30,7 @@ from bar.services.exceptions import (
     InvalidQuantityError,
     OptimisticLockError,
     OrderAlreadyClosedError,
+    OrderStateError,
 )
 from bar.services.inventory import (
     record_adjustment,
@@ -1301,3 +1303,89 @@ class ModularViewsAndEndpointsTests(TestCase):
         staff_obj = staff_detail.context["object"]
         self.assertEqual(staff_obj.paid_orders_count, 1)
         self.assertEqual(staff_obj.total_revenue, Decimal("200.00"))
+
+    def test_order_idor_and_inactive_drink_blocked(self):
+        order = create_order(
+            table_number=19,
+            bartender=self.bartender_one,
+        )
+        add_order_item(
+            order_id=order.pk,
+            drink_id=self.straight_gin.pk,
+            delta=1,
+            actor=self.bartender_one,
+        )
+        initial_status = order.status
+
+        self.client.force_login(self.bartender_two)
+        detail_resp = self.client.get(
+            reverse("bar:order-detail", args=[order.pk])
+        )
+        self.assertEqual(detail_resp.status_code, 200)
+        self.assertFalse(detail_resp.context["can_modify_items"])
+        self.assertFalse(detail_resp.context["can_pay_order"])
+        add_url = reverse("bar:order-add-item", args=[order.pk])
+        cancel_url = reverse("bar:order-cancel", args=[order.pk])
+        self.assertNotContains(detail_resp, add_url)
+        self.assertNotContains(detail_resp, cancel_url)
+
+        for_add = self.client.post(
+            add_url,
+            data={"drink_id": self.straight_gin.pk, "delta": 1},
+        )
+        self.assertEqual(for_add.status_code, 403)
+        for_set = self.client.post(
+            reverse(
+                "bar:order-set-item",
+                args=[order.pk, self.straight_gin.pk],
+            ),
+            data={"quantity": 3},
+        )
+        self.assertEqual(for_set.status_code, 403)
+        for_remove = self.client.post(
+            reverse(
+                "bar:order-remove-item",
+                args=[order.pk, self.straight_gin.pk],
+            )
+        )
+        self.assertEqual(for_remove.status_code, 403)
+        for_cancel = self.client.post(cancel_url)
+        self.assertEqual(for_cancel.status_code, 403)
+
+        order_item = OrderItem.objects.get(
+            order=order, drink=self.straight_gin
+        )
+        self.assertEqual(order_item.quantity, 1)
+        order.refresh_from_db()
+        self.assertEqual(order.status, initial_status)
+
+        inactive_drink = Drink.objects.create(
+            name="Stopped Negroni",
+            price=Decimal("220.00"),
+            volume_ml=120,
+            target_food_cost_pct=Decimal("25.00"),
+            category=self.category,
+            is_active=False,
+        )
+        with self.assertRaises(OrderStateError):
+            add_order_item(
+                order_id=order.pk,
+                drink_id=inactive_drink.pk,
+                delta=1,
+                actor=self.bartender_one,
+            )
+
+        self.client.force_login(self.bartender_one)
+        htmx_inactive = self.client.post(
+            add_url,
+            data={"drink_id": inactive_drink.pk, "delta": 1},
+            HTTP_HX_REQUEST="true",
+        )
+        self.assertEqual(htmx_inactive.status_code, 200)
+        trigger_payload = json.loads(htmx_inactive["HX-Trigger"])
+        self.assertEqual(trigger_payload["showToast"]["level"], "error")
+        self.assertFalse(
+            OrderItem.objects.filter(
+                order=order, drink=inactive_drink
+            ).exists()
+        )
