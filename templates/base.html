@@ -14,45 +14,36 @@
   <link rel="stylesheet" href="{% static 'css/animations.min.css' %}" media="print" data-async-style>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Silkscreen:wght@400;700&display=swap" rel="stylesheet" media="print" data-async-style>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&family=Syne:wght@600;700;800&display=swap" rel="stylesheet" media="print" data-async-style>
   <noscript>
     <link rel="stylesheet" href="{% static 'css/animations.min.css' %}">
-    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Silkscreen:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&family=Syne:wght@600;700;800&display=swap" rel="stylesheet">
   </noscript>
   <script src="{% static 'js/htmx.min.js' %}" defer></script>
   <script src="{% static 'js/app.js' %}" defer></script>
 </head>
 <body>
-  <div class="cyber-backdrop" aria-hidden="true">
-    <div class="cyber-grid-layer"></div>
-    <div class="cyber-orb orb-magenta"></div>
-    <div class="cyber-orb orb-cyan"></div>
-    <div class="cyber-orb orb-violet"></div>
-    <div class="cyber-scanlines"></div>
+  <div class="kinetic-backdrop" aria-hidden="true">
+    <canvas id="kinetic-field-canvas" class="kinetic-field-canvas" data-kinetic-canvas></canvas>
+    <div class="kinetic-grid-lines"></div>
   </div>
+  <div id="kinetic-cursor" class="kinetic-cursor" aria-hidden="true"></div>
 
   <div id="htmx-progress-bar" aria-hidden="true"></div>
 
   {% block layout %}
-    <header class="mobile-topbar">
-      <button type="button" class="btn btn-outline btn-sm" data-sidebar-toggle aria-label="{% trans 'Open navigation' %}">
-        ☰ {% trans "Menu" %}
-      </button>
-      <span class="brand-title">{% trans "Bar Manager" %}</span>
-      <span class="pulse-dot" aria-hidden="true"></span>
-    </header>
+    {% include "includes/header.html" %}
 
     <div id="sidebar-backdrop" class="sidebar-backdrop"></div>
+    <aside id="app-sidebar-wrap" class="app-sidebar-wrap">
+      <div class="app-sidebar">
+        {% block sidebar %}
+          {% include "includes/sidebar.html" %}
+        {% endblock %}
+      </div>
+    </aside>
 
     <div class="app-shell">
-      <aside id="app-sidebar-wrap" class="app-sidebar-wrap">
-        <div class="app-sidebar">
-          {% block sidebar %}
-            {% include "includes/sidebar.html" %}
-          {% endblock %}
-        </div>
-      </aside>
-
       <main class="app-main">
         <div class="main-stage">
           {% for message in messages %}
@@ -69,6 +60,8 @@
         </div>
       </main>
     </div>
+
+    {% include "includes/footer.html" %}
   {% endblock layout %}
 
   <div id="toast-stack" class="toast-stack" aria-live="polite" aria-atomic="true"></div>
@@ -78,7 +71,10 @@
     <div class="drawer-header">
       <span class="kpi-label">{% trans "Quick Action" %}</span>
       <button type="button" class="btn btn-ghost btn-sm" data-drawer-close aria-label="{% trans 'Close drawer' %}">
-        ✕
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <line x1="18" y1="6" x2="6" y2="18"/>
+          <line x1="6" y1="6" x2="18" y2="18"/>
+        </svg>
       </button>
     </div>
     <div id="drawer-body" class="drawer-body" aria-live="polite"></div>

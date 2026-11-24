@@ -42,11 +42,16 @@
           hx-target="#drawer-body"
           hx-swap="innerHTML"
           class="btn btn-primary btn-sm"
+          data-magnetic
         >
-          <span>+ {% trans "Open New Table Order" %}</span>
+          <span class="kinetic-clip">
+            <span class="kinetic-inner" data-kinetic-label="+ {% trans 'Open New Table Order' %}">+ {% trans "Open New Table Order" %}</span>
+          </span>
         </a>
         <a href="{% url 'bar:drink-list' %}" class="btn btn-outline btn-sm">
-          <span>{% trans "Drinks Menu" %} →</span>
+          <span class="kinetic-clip">
+            <span class="kinetic-inner" data-kinetic-label="{% trans 'Drinks Menu' %} →">{% trans "Drinks Menu" %} →</span>
+          </span>
         </a>
       </div>
     </div>

@@ -21,7 +21,12 @@
         </a>
       {% endfor %}
       <a href="{% url 'bar:analytics-export' %}?period={{ period }}" class="btn btn-success btn-sm">
-        ⬇ {% trans "Export CSV" %}
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+          <polyline points="7 10 12 15 17 10"/>
+          <line x1="12" y1="15" x2="12" y2="3"/>
+        </svg>
+        <span>{% trans "Export CSV" %}</span>
       </a>
     </div>
   </div>
@@ -129,7 +134,14 @@
     </div>
 
     <div class="span-6 bento-card">
-      <h2 class="section-title">🍸 {% trans "Top Margin Cocktails" %}</h2>
+      <h2 class="section-title">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M8 22h8"/>
+          <path d="M12 11v11"/>
+          <path d="m19 3-7 8-7-8Z"/>
+        </svg>
+        <span>{% trans "Top Margin Cocktails" %}</span>
+      </h2>
       {% if report.top_drinks %}
         <div class="table-wrap">
           <table class="table">
@@ -162,7 +174,14 @@
     </div>
 
     <div class="span-6 bento-card">
-      <h2 class="section-title">🏆 {% trans "Bartender Ranking" %}</h2>
+      <h2 class="section-title">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <line x1="18" y1="20" x2="18" y2="10"/>
+          <line x1="12" y1="20" x2="12" y2="4"/>
+          <line x1="6" y1="20" x2="6" y2="14"/>
+        </svg>
+        <span>{% trans "Bartender Ranking" %}</span>
+      </h2>
       {% if report.bartender_ranking %}
         <div class="table-wrap">
           <table class="table">

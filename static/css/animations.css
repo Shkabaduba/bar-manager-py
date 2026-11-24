@@ -2,146 +2,186 @@
   navigation: auto;
 }
 
-/* Top Neon HTMX Progress Bar */
+/* Top Monochrome HTMX Progress Hairline */
 #htmx-progress-bar {
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
-  height: 3px;
-  background: var(--grad-neon-bar);
+  height: 2px;
+  background: var(--text-primary);
   transform: scaleX(0);
   transform-origin: left center;
   opacity: 0;
   z-index: var(--z-progress);
   pointer-events: none;
-  box-shadow: 0 0 12px rgba(236, 72, 153, 0.75);
-  transition: transform 0.28s var(--ease-out), opacity 0.2s ease;
+  transition: transform 0.28s var(--ease-expo), opacity 0.2s ease;
 }
 
 #htmx-progress-bar.is-loading {
   opacity: 1;
-  transform: scaleX(0.84);
+  transform: scaleX(0.86);
 }
 
-/* Floating Cyberpunk Ambient Orbs */
-@keyframes cyberOrbDrift {
-  0%,
-  100% {
-    transform: translate3d(0, 0, 0) scale(1);
+/* Optical-Inversion Kinetic Cursor (Desktop Fine Pointer) */
+.kinetic-cursor {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 18px;
+  height: 18px;
+  border-radius: 9999px;
+  background: #f4f2ec;
+  mix-blend-mode: difference;
+  pointer-events: none;
+  z-index: var(--z-cursor);
+  opacity: 0;
+  transform: translate3d(-100px, -100px, 0) translate(-50%, -50%) scale(1);
+  transition:
+    width 0.28s var(--ease-expo),
+    height 0.28s var(--ease-expo),
+    opacity 0.2s ease,
+    border-radius 0.28s var(--ease-expo);
+  will-change: transform, width, height;
+}
+
+.kinetic-cursor.is-visible {
+  opacity: 1;
+}
+
+.kinetic-cursor.is-hover {
+  width: 48px;
+  height: 48px;
+}
+
+@media (hover: none), (pointer: coarse) {
+  .kinetic-cursor {
+    display: none !important;
   }
-
-  50% {
-    transform: translate3d(38px, -28px, 0) scale(1.08);
-  }
 }
 
-.orb-magenta {
-  animation: cyberOrbDrift 18s ease-in-out infinite;
-}
-
-.orb-cyan {
-  animation: cyberOrbDrift 22s ease-in-out infinite reverse;
-}
-
-.orb-violet {
-  animation: cyberOrbDrift 15s ease-in-out 2s infinite;
-}
-
-/* Crisp Staggered Bento / Card Entrance */
-@keyframes bentoFadeUp {
+/* Geometric Clip-Path Wipe Reveals */
+@keyframes clipWipeIn {
   from {
     opacity: 0;
-    transform: translateY(22px) scale(0.96);
+    clip-path: inset(0 0 100% 0);
+    transform: translateY(14px);
   }
 
   to {
     opacity: 1;
-    transform: translateY(0) scale(1);
+    clip-path: inset(0 0 0% 0);
+    transform: translateY(0);
   }
 }
 
 .bento-stagger > * {
-  animation: bentoFadeUp 0.48s var(--ease-spring) both;
+  animation: clipWipeIn 0.52s var(--ease-expo) both;
 }
 
 .bento-stagger > *:nth-child(2) {
-  animation-delay: 0.05s;
+  animation-delay: 0.04s;
 }
 
 .bento-stagger > *:nth-child(3) {
-  animation-delay: 0.1s;
+  animation-delay: 0.08s;
 }
 
 .bento-stagger > *:nth-child(4) {
-  animation-delay: 0.15s;
+  animation-delay: 0.12s;
 }
 
 .bento-stagger > *:nth-child(5) {
-  animation-delay: 0.2s;
+  animation-delay: 0.16s;
 }
 
 .bento-stagger > *:nth-child(6) {
-  animation-delay: 0.25s;
+  animation-delay: 0.2s;
 }
 
 .bento-stagger > *:nth-child(7) {
-  animation-delay: 0.3s;
+  animation-delay: 0.24s;
 }
 
 .bento-stagger > *:nth-child(8) {
-  animation-delay: 0.34s;
+  animation-delay: 0.28s;
 }
 
 .bento-stagger > *:nth-child(9) {
-  animation-delay: 0.38s;
+  animation-delay: 0.32s;
 }
 
 .bento-stagger > *:nth-child(10) {
-  animation-delay: 0.42s;
+  animation-delay: 0.36s;
 }
 
 .bento-stagger > *:nth-child(11) {
-  animation-delay: 0.46s;
+  animation-delay: 0.4s;
 }
 
 .bento-stagger > *:nth-child(12) {
-  animation-delay: 0.5s;
+  animation-delay: 0.44s;
 }
 
-/* Gentle Pixel Emblem Float */
-@keyframes pixelFloat {
-  0%,
-  100% {
-    transform: translateY(0);
+.auth-kinetic-stage,
+.auth-card {
+  animation: clipWipeIn 0.62s var(--ease-expo) both;
+}
+
+.auth-card {
+  animation-delay: 0.08s;
+}
+
+/* Kinetic Vertical Slot-Roll Text on Hover */
+.kinetic-clip {
+  display: inline-flex;
+  overflow: hidden;
+  line-height: 1.2;
+  vertical-align: middle;
+}
+
+.kinetic-inner {
+  position: relative;
+  display: inline-block;
+  transition: transform 0.36s var(--ease-expo);
+}
+
+.kinetic-inner::after {
+  content: attr(data-kinetic-label);
+  position: absolute;
+  left: 0;
+  top: 100%;
+  width: 100%;
+  white-space: nowrap;
+}
+
+a:hover .kinetic-inner,
+button:hover .kinetic-inner,
+a:focus-visible .kinetic-inner,
+button:focus-visible .kinetic-inner {
+  transform: translateY(-100%);
+}
+
+/* Marquee Infinite Loop Fallback (Enhanced by JS Scroll Velocity) */
+@keyframes marqueeLoop {
+  from {
+    transform: translate3d(0, 0, 0);
   }
 
-  50% {
-    transform: translateY(-5px);
+  to {
+    transform: translate3d(-50%, 0, 0);
   }
 }
 
-.auth-icon {
-  animation: pixelFloat 3.6s ease-in-out infinite;
-}
-
-.hero-cocktail-thumb {
-  animation: pixelFloat 4.2s ease-in-out infinite;
-}
-
-.hero-cocktail-thumb:nth-child(2) {
-  animation-delay: 0.55s;
-}
-
-.hero-cocktail-thumb:nth-child(3) {
-  animation-delay: 1.1s;
+.marquee-track {
+  animation: marqueeLoop 28s linear infinite;
 }
 
 /* Animated Analytics SVG Chart Bars */
 @keyframes barRise {
   from {
     transform: scaleY(0);
-    opacity: 0.25;
+    opacity: 0.2;
   }
 
   to {
@@ -155,66 +195,53 @@
 .bar-loss {
   transform-box: fill-box;
   transform-origin: bottom;
-  animation: barRise 0.62s var(--ease-spring) both;
-}
-
-/* Button Hover Neon Sheen */
-@keyframes sheenSweep {
-  from {
-    transform: translateX(-140%) skewX(-22deg);
-  }
-
-  to {
-    transform: translateX(240%) skewX(-22deg);
-  }
-}
-
-.btn:hover::after {
-  animation: sheenSweep 0.62s ease forwards;
+  animation: barRise 0.58s var(--ease-expo) both;
 }
 
 /* Toast Entrance */
 @keyframes toastSpringIn {
   from {
     opacity: 0;
-    transform: translateY(14px) scale(0.95);
+    clip-path: inset(100% 0 0 0);
+    transform: translateY(10px);
   }
 
   to {
     opacity: 1;
-    transform: translateY(0) scale(1);
+    clip-path: inset(0 0 0 0);
+    transform: translateY(0);
   }
 }
 
 /* Shift Active Indicator */
-@keyframes pulseGlow {
+@keyframes pulseBeacon {
   0%,
   100% {
-    box-shadow: 0 0 0 0 rgba(34, 211, 238, 0.7);
+    box-shadow: 0 0 0 0 rgba(244, 242, 236, 0.65);
   }
 
   50% {
-    box-shadow: 0 0 0 7px rgba(34, 211, 238, 0);
+    box-shadow: 0 0 0 6px rgba(244, 242, 236, 0);
   }
 }
 
 .pulse-dot {
   display: inline-block;
-  width: 8px;
-  height: 8px;
+  width: 7px;
+  height: 7px;
   border-radius: var(--radius-full);
-  background: var(--accent-cyan-bright);
-  animation: pulseGlow 2s infinite;
+  background: var(--text-primary);
+  animation: pulseBeacon 2.2s infinite;
 }
 
 /* HTMX Swap Transitions */
 .htmx-swapping {
-  opacity: 0.6;
+  opacity: 0.55;
   transition: opacity 0.14s ease;
 }
 
 .htmx-added {
-  animation: bentoFadeUp 0.28s var(--ease-spring) both;
+  animation: clipWipeIn 0.34s var(--ease-expo) both;
 }
 
 /* Skeleton Loader */
@@ -240,6 +267,10 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .kinetic-cursor {
+    display: none !important;
+  }
+
   *,
   *::before,
   *::after {

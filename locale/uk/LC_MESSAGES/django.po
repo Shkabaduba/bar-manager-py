@@ -946,3 +946,16 @@ msgstr "Успішно збережено."
 
 msgid "Supplier saved."
 msgstr "Постачальника збережено."
+
+msgid "Focus search"
+msgstr "Перейти до пошуку"
+
+msgid "Precision Bar Operations"
+msgstr "Точне керування баром"
+
+msgid "Quick Navigation"
+msgstr "Швидка навігація"
+
+msgid "System Status"
+msgstr "Стан системи"
+

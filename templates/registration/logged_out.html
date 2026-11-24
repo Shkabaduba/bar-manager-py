@@ -7,18 +7,28 @@
 
 {% block layout %}
   <div class="auth-shell">
-    <div class="auth-card" style="text-align: center;">
-      <div class="auth-icon" style="border-color: rgba(16, 185, 129, 0.45); background: rgba(16, 185, 129, 0.16); color: #6ee7b7;">
-        ✓
-      </div>
-      <h1>{% trans "Shift Ended" %}</h1>
-      <p class="page-subtitle mb-6">
-        {% trans "You have successfully signed out of the Bar Manager portal." %}
-      </p>
+    <main class="auth-portal-wrap">
+      <div class="auth-card" style="text-align: center;">
+        <div class="auth-icon auth-icon-success">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <polyline points="20 6 9 17 4 12"/>
+          </svg>
+        </div>
+        <h1>{% trans "Shift Ended" %}</h1>
+        <p class="page-subtitle mb-6">
+          {% trans "You have successfully signed out of the Bar Manager portal." %}
+        </p>
 
-      <a href="{% url 'login' %}" class="btn btn-primary btn-block">
-        {% trans "Sign In Again" %} →
-      </a>
-    </div>
+        <a href="{% url 'login' %}" class="btn btn-primary btn-block" data-magnetic>
+          <span class="kinetic-clip">
+            <span class="kinetic-inner" data-kinetic-label="{% trans 'Sign In Again' %}">{% trans "Sign In Again" %}</span>
+          </span>
+          <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <line x1="5" y1="12" x2="19" y2="12"/>
+            <polyline points="12 5 19 12 12 19"/>
+          </svg>
+        </a>
+      </div>
+    </main>
   </div>
 {% endblock layout %}

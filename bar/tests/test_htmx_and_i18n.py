@@ -791,6 +791,29 @@ class CyberBentoShellAndAssetsTests(TestCase):
             "utf-8"
         )
         self.assertIn("data-sidebar-close", index_html)
+        self.assertIn('<header class="site-header">', index_html)
+        self.assertIn('<footer class="site-footer">', index_html)
+
+        anon_client = self.client_class()
+        login_resp = anon_client.get(reverse("login"))
+        self.assertEqual(login_resp.status_code, 200)
+        login_html = login_resp.content.decode("utf-8")
+        self.assertIn("data-login-canvas", login_html)
+
+        forbidden_symbols = ("🍸", "🏆", "🧮", "⬇", "⚠", "☰", "✕", "✓")
+        for target_url in (
+            reverse("bar:index"),
+            reverse("bar:analytics"),
+            reverse("bar:drink-create"),
+            reverse("bar:order-detail", args=[order.pk]),
+        ):
+            page_html = self.client.get(target_url).content.decode("utf-8")
+            for symbol in forbidden_symbols:
+                self.assertNotIn(
+                    symbol,
+                    page_html,
+                    f"Unexpected symbol {symbol!r} in {target_url}",
+                )
 
 
 class LocalizationTests(TestCase):
