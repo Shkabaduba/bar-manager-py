@@ -645,8 +645,8 @@ class CyberBentoShellAndAssetsTests(TestCase):
         empty_analytics = self.client.get(reverse("bar:analytics"))
         self.assertEqual(empty_analytics.status_code, 200)
         empty_html = empty_analytics.content.decode("utf-8")
-        self.assertIn("<svg", empty_html)
-        self.assertNotIn('class="bar-revenue"', empty_html)
+        self.assertNotIn("chart-svg", empty_html)
+        self.assertNotIn("data-daily-flow-table", empty_html)
 
         with self.captureOnCommitCallbacks(execute=True):
             close_and_pay_order(order_id=order.pk, actor=self.bartender)
@@ -656,8 +656,9 @@ class CyberBentoShellAndAssetsTests(TestCase):
         )
         self.assertEqual(paid_analytics.status_code, 200)
         paid_html = paid_analytics.content.decode("utf-8")
-        self.assertIn("<svg", paid_html)
-        self.assertIn('class="bar-revenue"', paid_html)
+        self.assertNotIn("chart-svg", paid_html)
+        self.assertIn("data-daily-flow-table", paid_html)
+        self.assertIn("240.00 ₴", paid_html)
 
         calc_resp = self.client.get(reverse("bar:drink-create"))
         self.assertEqual(calc_resp.status_code, 200)

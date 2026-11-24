@@ -177,27 +177,6 @@ button:focus-visible .kinetic-inner {
   animation: marqueeLoop 28s linear infinite;
 }
 
-/* Animated Analytics SVG Chart Bars */
-@keyframes barRise {
-  from {
-    transform: scaleY(0);
-    opacity: 0.2;
-  }
-
-  to {
-    transform: scaleY(1);
-    opacity: 1;
-  }
-}
-
-.bar-revenue,
-.bar-stock-in,
-.bar-loss {
-  transform-box: fill-box;
-  transform-origin: bottom;
-  animation: barRise 0.58s var(--ease-expo) both;
-}
-
 /* Toast Entrance */
 @keyframes toastSpringIn {
   from {

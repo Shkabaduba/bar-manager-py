@@ -63,74 +63,55 @@
     <div class="span-12 bento-card">
       <div class="flex items-center justify-between mb-4">
         <h2 class="section-title" style="margin-bottom: 0;">{% trans "Daily In vs Out Flow" %}</h2>
-        <span class="badge badge-neutral mono-num">
-          {% trans "Peak" %}: {{ chart_data.peak_amount }} ₴
-        </span>
       </div>
 
-      <div class="chart-wrap">
-        <svg viewBox="{{ chart_data.viewbox }}" class="chart-svg" role="img" aria-label="{% trans 'Daily Revenue, Stock In & Losses Chart' %}">
-          <line x1="16" y1="{{ chart_data.baseline_y }}" x2="624" y2="{{ chart_data.baseline_y }}" class="chart-axis-line" />
-          {% for bar_group in chart_data.bars %}
-            {% if bar_group.revenue_bar.height %}
-              <rect
-                x="{{ bar_group.revenue_bar.x }}"
-                y="{{ bar_group.revenue_bar.y }}"
-                width="{{ bar_group.revenue_bar.width }}"
-                height="{{ bar_group.revenue_bar.height }}"
-                rx="2"
-                class="bar-revenue"
-              >
-                <title>{{ bar_group.label }} Revenue: {{ bar_group.revenue_bar.amount }} ₴</title>
-              </rect>
-            {% endif %}
-            {% if bar_group.stock_in_bar.height %}
-              <rect
-                x="{{ bar_group.stock_in_bar.x }}"
-                y="{{ bar_group.stock_in_bar.y }}"
-                width="{{ bar_group.stock_in_bar.width }}"
-                height="{{ bar_group.stock_in_bar.height }}"
-                rx="2"
-                class="bar-stock-in"
-              >
-                <title>{{ bar_group.label }} Stock In: {{ bar_group.stock_in_bar.amount }} ₴</title>
-              </rect>
-            {% endif %}
-            {% if bar_group.loss_bar.height %}
-              <rect
-                x="{{ bar_group.loss_bar.x }}"
-                y="{{ bar_group.loss_bar.y }}"
-                width="{{ bar_group.loss_bar.width }}"
-                height="{{ bar_group.loss_bar.height }}"
-                rx="2"
-                class="bar-loss"
-              >
-                <title>{{ bar_group.label }} Losses: {{ bar_group.loss_bar.amount }} ₴</title>
-              </rect>
-            {% endif %}
-            {% if bar_group.show_label %}
-              <text x="{{ bar_group.label_x }}" y="190" text-anchor="middle" class="chart-axis-label">
-                {{ bar_group.label }}
-              </text>
-            {% endif %}
-          {% endfor %}
-        </svg>
+      <div class="bento-grid">
+        <div class="span-3 bg-base-300">
+          <div class="kpi-label">{% trans "Stock In" %}</div>
+          <div class="kpi-value text-success mono-num" style="font-size: 1.35rem;">{{ report.stock_in_cost }} ₴</div>
+        </div>
+        <div class="span-3 bg-base-300">
+          <div class="kpi-label">{% trans "COGS" %}</div>
+          <div class="kpi-value mono-num" style="font-size: 1.35rem;">{{ report.stock_out_order_cost }} ₴</div>
+        </div>
+        <div class="span-3 bg-base-300">
+          <div class="kpi-label">{% trans "Write-offs & Shortages" %}</div>
+          <div class="kpi-value {% if report.total_losses %}text-error{% endif %} mono-num" style="font-size: 1.35rem;">{{ report.total_losses }} ₴</div>
+        </div>
+        <div class="span-3 bg-base-300">
+          <div class="kpi-label">{% trans "Stock Value" %}</div>
+          <div class="kpi-value mono-num" style="font-size: 1.35rem;">{{ report.current_stock_value }} ₴</div>
+        </div>
       </div>
 
-      <div class="chart-legend">
-        <span class="legend-item">
-          <span class="legend-dot is-indigo"></span>
-          {% trans "Revenue" %}
-        </span>
-        <span class="legend-item">
-          <span class="legend-dot is-emerald"></span>
-          {% trans "Stock In" %}
-        </span>
-        <span class="legend-item">
-          <span class="legend-dot is-rose"></span>
-          {% trans "Write-offs & Shortages" %}
-        </span>
-      </div>
+      {% if active_days %}
+        <div class="table-wrap mt-4">
+          <table class="table" data-daily-flow-table>
+            <thead>
+              <tr>
+                <th>{% trans "Date" %}</th>
+                <th>{% trans "Orders Closed" %}</th>
+                <th>{% trans "Revenue" %}</th>
+                <th>{% trans "Stock In" %}</th>
+                <th>{% trans "Losses" %}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for day_point in active_days %}
+                <tr>
+                  <td class="mono-num"><strong>{{ day_point.day|date:"Y-m-d" }}</strong></td>
+                  <td class="mono-num">{{ day_point.orders_count }}</td>
+                  <td class="mono-num">{{ day_point.revenue }} ₴</td>
+                  <td class="mono-num">{{ day_point.stock_in_cost }} ₴</td>
+                  <td class="mono-num">{{ day_point.loss_cost }} ₴</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      {% else %}
+        <p class="page-subtitle mt-4">{% trans "No paid orders for this period." %}</p>
+      {% endif %}
     </div>
 
     <div class="span-6 bento-card">
