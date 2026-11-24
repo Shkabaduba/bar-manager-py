@@ -1,0 +1,292 @@
+{% load i18n static bar_extras %}
+<div id="order-pos-workspace">
+  <div class="bento-grid mb-6">
+    <div class="span-6 bento-card">
+      <div class="kpi-label mb-4">{% trans "Check Summary" %}</div>
+      <div class="flex flex-col gap-2">
+        <div class="flex justify-between">
+          <span class="page-subtitle">{% trans "Table" %}</span>
+          <strong class="mono-num">{% blocktrans with num=order.table_number %}Table {{ num }}{% endblocktrans %}</strong>
+        </div>
+        <div class="flex justify-between">
+          <span class="page-subtitle">{% trans "Created" %}</span>
+          <span class="mono-num">{{ order.created_at|date:"Y-m-d H:i" }}</span>
+        </div>
+        <div class="flex justify-between items-center">
+          <span class="page-subtitle">{% trans "Status" %}</span>
+          <span>
+            {% if order.status == "PAID" %}
+              <span class="badge badge-success">{% trans "Paid" %}</span>
+            {% elif order.status == "CANCELLED" %}
+              <span class="badge badge-error">{% trans "Cancelled" %}</span>
+            {% else %}
+              <span class="badge badge-warning">{{ order.get_status_display }}</span>
+            {% endif %}
+            <span class="badge badge-neutral mono-num">v{{ order.version }}</span>
+          </span>
+        </div>
+        <div class="flex justify-between items-center">
+          <span class="page-subtitle">{% trans "Order Total" %}</span>
+          <span class="kpi-value text-success mono-num" style="font-size: 1.4rem;">{{ order_total }} ₴</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="span-6 bento-card">
+      <div class="kpi-label mb-4">{% trans "Shift Assignment" %}</div>
+      <div class="mb-4">
+        {% if order.bartender %}
+          <span class="badge badge-primary badge-lg">{{ order.bartender.username }}</span>
+          {% if order.bartender.first_name or order.bartender.last_name %}
+            <span class="page-subtitle">({{ order.bartender.first_name }} {{ order.bartender.last_name }})</span>
+          {% endif %}
+        {% else %}
+          <span class="badge badge-error">{% trans "Unassigned" %}</span>
+        {% endif %}
+      </div>
+
+      {% if is_order_mutable %}
+        <div class="inline-actions">
+          {% if order.bartender == user %}
+            <form
+              method="post"
+              action="{% url 'bar:toggle-assign-order' order.id %}"
+              hx-post="{% url 'bar:toggle-assign-order' order.id %}"
+              hx-target="#order-pos-workspace"
+              hx-swap="outerHTML"
+            >
+              {% csrf_token %}
+              <button type="submit" class="btn btn-warning btn-sm" hx-disabled-elt="this">
+                <span>{% trans "Release order" %}</span>
+              </button>
+            </form>
+          {% elif order.bartender is None %}
+            <form
+              method="post"
+              action="{% url 'bar:toggle-assign-order' order.id %}"
+              hx-post="{% url 'bar:toggle-assign-order' order.id %}"
+              hx-target="#order-pos-workspace"
+              hx-swap="outerHTML"
+            >
+              {% csrf_token %}
+              <button type="submit" class="btn btn-success btn-sm" hx-disabled-elt="this">
+                <span>{% trans "Take this order" %}</span>
+              </button>
+            </form>
+          {% endif %}
+
+          {% if can_modify_items %}
+            <form
+              method="post"
+              action="{% url 'bar:order-cancel' order.id %}"
+              hx-post="{% url 'bar:order-cancel' order.id %}"
+              hx-target="#order-pos-workspace"
+              hx-swap="outerHTML"
+            >
+              {% csrf_token %}
+              <input type="hidden" name="expected_version" value="{{ order.version }}">
+              <button type="submit" class="btn btn-outline btn-sm" hx-disabled-elt="this">
+                <span>{% trans "Cancel Order" %}</span>
+              </button>
+            </form>
+          {% endif %}
+        </div>
+      {% endif %}
+    </div>
+  </div>
+
+  {% if deficits or force_close_form.errors %}
+    {% include "bar/partials/order_deficit_panel.html" %}
+  {% endif %}
+
+  <div class="pos-grid">
+    <div class="bento-card">
+      <h2 class="section-title">
+        {% blocktrans with order_id=order.id %}Check #{{ order_id }}{% endblocktrans %}
+      </h2>
+
+      {% if order_items %}
+        <div class="table-wrap mb-4">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>{% trans "Drink" %}</th>
+                <th>{% trans "Price" %}</th>
+                <th>{% trans "Qty" %}</th>
+                {% if can_modify_items %}
+                  <th>{% trans "Actions" %}</th>
+                {% endif %}
+              </tr>
+            </thead>
+            <tbody>
+              {% for order_item in order_items %}
+                <tr>
+                  <td>
+                    <div class="pos-drink-cell">
+                      <img
+                        src="{% static order_item.drink|drink_pixel_art %}"
+                        alt=""
+                        width="42"
+                        height="42"
+                        class="pixel-art pos-thumb"
+                        loading="lazy"
+                        decoding="async"
+                      >
+                      <a href="{{ order_item.drink.get_absolute_url }}" class="link-primary">
+                        {{ order_item.drink.name }}
+                      </a>
+                    </div>
+                  </td>
+                  <td class="mono-num">{{ order_item.unit_price_snapshot }} ₴</td>
+                  <td class="mono-num"><strong>{{ order_item.quantity }}</strong></td>
+                  {% if can_modify_items %}
+                    <td>
+                      <div class="inline-actions">
+                        <form
+                          method="post"
+                          action="{% url 'bar:order-add-item' order.id %}"
+                          hx-post="{% url 'bar:order-add-item' order.id %}"
+                          hx-target="#order-pos-workspace"
+                          hx-swap="outerHTML"
+                        >
+                          {% csrf_token %}
+                          <input type="hidden" name="drink_id" value="{{ order_item.drink_id }}">
+                          <input type="hidden" name="delta" value="-1">
+                          <input type="hidden" name="expected_version" value="{{ order.version }}">
+                          <button type="submit" class="btn btn-xs btn-outline mono-num" hx-disabled-elt="this">-</button>
+                        </form>
+                        <form
+                          method="post"
+                          action="{% url 'bar:order-add-item' order.id %}"
+                          hx-post="{% url 'bar:order-add-item' order.id %}"
+                          hx-target="#order-pos-workspace"
+                          hx-swap="outerHTML"
+                        >
+                          {% csrf_token %}
+                          <input type="hidden" name="drink_id" value="{{ order_item.drink_id }}">
+                          <input type="hidden" name="delta" value="1">
+                          <input type="hidden" name="expected_version" value="{{ order.version }}">
+                          <button type="submit" class="btn btn-xs btn-outline mono-num" hx-disabled-elt="this">+</button>
+                        </form>
+                        <form
+                          method="post"
+                          action="{% url 'bar:order-remove-item' order.id order_item.drink_id %}"
+                          hx-post="{% url 'bar:order-remove-item' order.id order_item.drink_id %}"
+                          hx-target="#order-pos-workspace"
+                          hx-swap="outerHTML"
+                        >
+                          {% csrf_token %}
+                          <input type="hidden" name="expected_version" value="{{ order.version }}">
+                          <button type="submit" class="btn btn-xs btn-error" hx-disabled-elt="this" aria-label="{% trans 'Remove' %}">
+                            <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                              <line x1="18" y1="6" x2="6" y2="18"/>
+                              <line x1="6" y1="6" x2="18" y2="18"/>
+                            </svg>
+                          </button>
+                        </form>
+                      </div>
+                    </td>
+                  {% endif %}
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+
+        {% if can_pay_order %}
+          <form
+            method="post"
+            action="{% url 'bar:order-pay' order.id %}"
+            hx-post="{% url 'bar:order-pay' order.id %}"
+            hx-target="#order-pos-workspace"
+            hx-swap="outerHTML"
+          >
+            {% csrf_token %}
+            <input type="hidden" name="expected_version" value="{{ order.version }}">
+            <button type="submit" class="btn btn-success btn-block" hx-disabled-elt="this">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <polyline points="20 6 9 17 4 12"/>
+              </svg>
+              <span>{% trans "Pay & Close" %} ({{ order_total }} ₴)</span>
+            </button>
+          </form>
+        {% endif %}
+      {% else %}
+        <p class="page-subtitle">{% trans "No drinks in this order yet." %}</p>
+      {% endif %}
+    </div>
+
+    {% if can_modify_items %}
+      <div class="bento-card">
+        <h2 class="section-title">{% trans "Quick Add from Menu" %}</h2>
+        {% if menu_drinks %}
+          <div class="table-wrap">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>{% trans "Drink" %}</th>
+                  <th>{% trans "Price" %}</th>
+                  <th>{% trans "Stock" %}</th>
+                  <th>{% trans "Add" %}</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for drink in menu_drinks %}
+                  <tr>
+                    <td>
+                      <div class="pos-drink-cell">
+                        <img
+                          src="{% static drink|drink_pixel_art %}"
+                          alt=""
+                          width="42"
+                          height="42"
+                          class="pixel-art pos-thumb"
+                          loading="lazy"
+                          decoding="async"
+                        >
+                        <strong>{{ drink.name }}</strong>
+                      </div>
+                    </td>
+                    <td class="mono-num">{{ drink.price }} ₴</td>
+                    <td class="mono-num">
+                      {% if drink.costing.max_portions is not None %}
+                        {% if drink.costing.availability_status == "STOP_LIST" %}
+                          <span class="badge badge-stop">{% trans "STOP" %}</span>
+                        {% elif drink.costing.availability_status == "LOW_STOCK" %}
+                          <span class="badge badge-warning">{{ drink.costing.max_portions }}</span>
+                        {% else %}
+                          <span class="badge badge-success">{{ drink.costing.max_portions }}</span>
+                        {% endif %}
+                      {% else %}
+                        —
+                      {% endif %}
+                    </td>
+                    <td>
+                      <form
+                        method="post"
+                        action="{% url 'bar:order-add-item' order.id %}"
+                        hx-post="{% url 'bar:order-add-item' order.id %}"
+                        hx-target="#order-pos-workspace"
+                        hx-swap="outerHTML"
+                      >
+                        {% csrf_token %}
+                        <input type="hidden" name="drink_id" value="{{ drink.id }}">
+                        <input type="hidden" name="delta" value="1">
+                        <input type="hidden" name="expected_version" value="{{ order.version }}">
+                        <button type="submit" class="btn btn-xs btn-primary" hx-disabled-elt="this">
+                          <span>+ {% trans "Add" %}</span>
+                        </button>
+                      </form>
+                    </td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        {% else %}
+          <p class="page-subtitle">{% trans "No active drinks in the menu." %}</p>
+        {% endif %}
+      </div>
+    {% endif %}
+  </div>
+</div>

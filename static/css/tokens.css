@@ -1,0 +1,78 @@
+:root {
+  /* Resn-Inspired Obsidian Monochrome Palette */
+  --bg-canvas: #070707;
+  --bg-surface-1: #0e0e0e;
+  --bg-surface-2: #151514;
+  --bg-surface-3: #1e1e1c;
+  --bg-glass: rgba(12, 12, 12, 0.92);
+  --bg-glass-hover: rgba(22, 22, 20, 0.96);
+  --bg-input: #0a0a0a;
+
+  /* Architectural Borders */
+  --border-subtle: rgba(244, 242, 236, 0.13);
+  --border-bright: rgba(244, 242, 236, 0.34);
+  --border-focus: #f4f2ec;
+
+  /* Typography Ink & Inverse */
+  --text-primary: #f4f2ec;
+  --text-secondary: #c8c5bd;
+  --text-muted: #8a8780;
+  --text-dim: #63605b;
+  --text-inverse: #070707;
+
+  /* Monochrome Chrome + Desaturated Semantic Status */
+  --accent-bone: #f4f2ec;
+  --accent-indigo: #f4f2ec;
+  --accent-indigo-bright: #ffffff;
+  --accent-indigo-glow: rgba(244, 242, 236, 0.16);
+  --accent-magenta: #c8c5bd;
+  --accent-magenta-bright: #f4f2ec;
+  --accent-magenta-glow: rgba(244, 242, 236, 0.14);
+  --accent-cyan: #b8b5ad;
+  --accent-cyan-bright: #f4f2ec;
+  --accent-cyan-soft: rgba(244, 242, 236, 0.1);
+  --accent-emerald: #7ab8ad;
+  --accent-emerald-bright: #93c9bf;
+  --accent-emerald-soft: rgba(122, 184, 173, 0.14);
+  --accent-emerald-glow: rgba(122, 184, 173, 0.18);
+  --accent-amber: #d49b4b;
+  --accent-amber-soft: rgba(212, 155, 75, 0.14);
+  --accent-rose: #d94e4e;
+  --accent-rose-soft: rgba(217, 78, 78, 0.14);
+
+  /* Monochrome Surface Gradients */
+  --grad-indigo: linear-gradient(135deg, #f4f2ec 0%, #dedad0 100%);
+  --grad-emerald: linear-gradient(135deg, #7ab8ad 0%, #93c9bf 100%);
+  --grad-cyber: linear-gradient(135deg, #f4f2ec 0%, #a8a49c 100%);
+  --grad-neon-bar: linear-gradient(90deg, #63605b 0%, #f4f2ec 50%, #63605b 100%);
+
+  /* Typography */
+  --font-display: "Syne", "Space Grotesk", sans-serif;
+  --font-sans: "Space Grotesk", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  --font-pixel: "JetBrains Mono", monospace;
+
+  /* Motion & Radii */
+  --ease-expo: cubic-bezier(0.19, 1, 0.22, 1);
+  --ease-spring: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --radius-sm: 2px;
+  --radius-md: 4px;
+  --radius-lg: 6px;
+  --radius-xl: 8px;
+  --radius-full: 9999px;
+
+  /* Structural Shadows & Z-Layers */
+  --shadow-card: 0 18px 42px -24px rgba(0, 0, 0, 0.95), 0 0 0 1px rgba(244, 242, 236, 0.04);
+  --shadow-glow-indigo: 0 10px 26px -14px rgba(244, 242, 236, 0.28);
+  --shadow-glow-magenta: 0 10px 26px -14px rgba(244, 242, 236, 0.22);
+  --shadow-glow-cyan: 0 10px 26px -14px rgba(244, 242, 236, 0.22);
+  --shadow-glow-emerald: 0 10px 26px -14px rgba(122, 184, 173, 0.28);
+  --z-header: 35;
+  --z-backdrop: 40;
+  --z-sidebar: 45;
+  --z-drawer: 50;
+  --z-toast: 60;
+  --z-progress: 70;
+  --z-cursor: 80;
+}

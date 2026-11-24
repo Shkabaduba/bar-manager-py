@@ -1,0 +1,94 @@
+{% load i18n static bar_extras %}
+<div id="drink-list-region" {% if oob_swap %}hx-swap-oob="outerHTML:#drink-list-region"{% endif %}>
+  {% if drink_list %}
+    <div class="drink-gallery bento-stagger">
+      {% for drink in drink_list %}
+        <article class="drink-card">
+          <div class="drink-card-media">
+            <a href="{{ drink.get_absolute_url }}">
+              <img
+                src="{% static drink|drink_pixel_art %}"
+                alt="{{ drink.name }}"
+                width="384"
+                height="384"
+                class="pixel-art drink-card-img"
+                loading="lazy"
+                decoding="async"
+              >
+            </a>
+
+            <div class="drink-card-badges-top">
+              {% if drink.costing and drink.costing.max_portions is not None %}
+                {% if drink.costing.availability_status == "STOP_LIST" %}
+                  <span class="badge badge-stop">{{ drink.costing.max_portions }} — {% trans "STOP" %}</span>
+                {% elif drink.costing.availability_status == "LOW_STOCK" %}
+                  <span class="badge badge-warning">{{ drink.costing.max_portions }} — {% trans "LOW" %}</span>
+                {% else %}
+                  <span class="badge badge-success">{{ drink.costing.max_portions }}</span>
+                {% endif %}
+              {% else %}
+                <span></span>
+              {% endif %}
+
+              {% if not drink.is_active %}
+                <span class="badge badge-neutral">{% trans "Inactive" %}</span>
+              {% endif %}
+            </div>
+
+            <div class="drink-card-price">{{ drink.price }} ₴</div>
+          </div>
+
+          <div class="drink-card-body">
+            <div class="flex items-center justify-between gap-2">
+              <span class="badge badge-primary">{{ drink.category.name }}</span>
+              <span class="badge badge-neutral mono-num">{{ drink.volume_ml }} ml</span>
+            </div>
+
+            <div>
+              <a href="{{ drink.get_absolute_url }}" class="drink-card-title">
+                {{ drink.name }}
+              </a>
+            </div>
+
+            <div class="drink-card-metrics">
+              <span class="page-subtitle">
+                {% trans "Food Cost" %}:
+                <strong class="mono-num">
+                  {% if drink.costing %}{{ drink.costing.cost_price }} ₴{% else %}—{% endif %}
+                </strong>
+              </span>
+              {% if drink.costing %}
+                {% if drink.costing.food_cost_zone == "OPTIMAL" %}
+                  <span class="badge badge-food-optimal mono-num">{{ drink.costing.food_cost_pct }}%</span>
+                {% elif drink.costing.food_cost_zone == "MODERATE" %}
+                  <span class="badge badge-food-moderate mono-num">{{ drink.costing.food_cost_pct }}%</span>
+                {% else %}
+                  <span class="badge badge-food-high mono-num">{{ drink.costing.food_cost_pct }}%</span>
+                {% endif %}
+              {% else %}
+                <span>—</span>
+              {% endif %}
+            </div>
+          </div>
+
+          <div class="drink-card-footer">
+            <a href="{{ drink.get_absolute_url }}" class="btn btn-outline btn-xs">
+              <span>{% trans "View Recipe" %} →</span>
+            </a>
+            {% if user.can_manage_bar %}
+              <a href="{% url 'bar:drink-update' drink.id %}" class="btn btn-info btn-xs">
+                <span>{% trans "Update" %}</span>
+              </a>
+            {% endif %}
+          </div>
+        </article>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="bento-card">
+      <p class="page-subtitle">{% trans "There are no drinks in the bar yet." %}</p>
+    </div>
+  {% endif %}
+
+  {% include "bar/partials/pagination.html" with htmx_target_id="drink-list-region" %}
+</div>

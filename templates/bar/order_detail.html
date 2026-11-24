@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block content %}
+  <div class="page-header">
+    <div>
+      <h1>
+        {% blocktrans with order_id=order.id table=order.table_number %}Order #{{ order_id }} (Table {{ table }}){% endblocktrans %}
+      </h1>
+      <p class="page-subtitle">{% trans "Live POS workspace and atomic stock deduction" %}</p>
+    </div>
+    <a href="{% url 'bar:order-list' %}" class="btn btn-outline btn-sm">
+      ← {% trans "Back to Orders" %}
+    </a>
+  </div>
+
+  {% include "bar/partials/order_pos_workspace.html" %}
+{% endblock %}

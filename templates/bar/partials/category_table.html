@@ -1,0 +1,59 @@
+{% load i18n %}
+<div id="category-list-region" {% if oob_swap %}hx-swap-oob="outerHTML:#category-list-region"{% endif %}>
+  {% if category_list %}
+    <div class="table-wrap">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>{% trans "ID" %}</th>
+            <th>{% trans "Name" %}</th>
+            <th>{% trans "Type" %}</th>
+            {% if user.can_manage_bar %}
+              <th>{% trans "Update" %}</th>
+              <th>{% trans "Delete" %}</th>
+            {% endif %}
+          </tr>
+        </thead>
+        <tbody>
+          {% for category in category_list %}
+            <tr>
+              <td class="mono-num">{{ category.id }}</td>
+              <td><strong>{{ category.name }}</strong></td>
+              <td>
+                {% if category.is_alcohol %}
+                  <span class="badge badge-warning">{% trans "Alcoholic" %}</span>
+                {% else %}
+                  <span class="badge badge-success">{% trans "Non-alcoholic" %}</span>
+                {% endif %}
+              </td>
+              {% if user.can_manage_bar %}
+                <td>
+                  <a
+                    href="{% url 'bar:category-update' category.id %}"
+                    hx-get="{% url 'bar:category-update' category.id %}"
+                    hx-target="#drawer-body"
+                    hx-swap="innerHTML"
+                    class="btn btn-info btn-xs"
+                  >
+                    {% trans "Update" %}
+                  </a>
+                </td>
+                <td>
+                  <a href="{% url 'bar:category-delete' category.id %}" class="btn btn-error btn-xs">
+                    {% trans "Delete" %}
+                  </a>
+                </td>
+              {% endif %}
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <div class="bento-card">
+      <p class="page-subtitle">{% trans "There are no categories in the bar yet." %}</p>
+    </div>
+  {% endif %}
+
+  {% include "bar/partials/pagination.html" with htmx_target_id="category-list-region" %}
+</div>

@@ -1,0 +1,52 @@
+{% load i18n %}
+<div id="bartender-list-region" {% if oob_swap %}hx-swap-oob="outerHTML:#bartender-list-region"{% endif %}>
+  {% if bartender_list %}
+    <div class="table-wrap">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>{% trans "ID" %}</th>
+            <th>{% trans "Username" %}</th>
+            <th>{% trans "Role" %}</th>
+            <th>{% trans "First Name" %}</th>
+            <th>{% trans "Last Name" %}</th>
+            <th>{% trans "Staff ID" %}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for bartender in bartender_list %}
+            <tr>
+              <td class="mono-num">{{ bartender.id }}</td>
+              <td>
+                <a href="{{ bartender.get_absolute_url }}" class="link-primary">
+                  {{ bartender.username }}
+                </a>
+                {% if bartender == user %}
+                  <span class="badge badge-primary">{% trans "Me" %}</span>
+                {% endif %}
+              </td>
+              <td>
+                {% if bartender.is_owner %}
+                  <span class="badge badge-role-owner">{{ bartender.get_role_display }}</span>
+                {% elif bartender.is_manager %}
+                  <span class="badge badge-role-manager">{{ bartender.get_role_display }}</span>
+                {% else %}
+                  <span class="badge badge-role-bartender">{{ bartender.get_role_display }}</span>
+                {% endif %}
+              </td>
+              <td>{{ bartender.first_name|default:"—" }}</td>
+              <td>{{ bartender.last_name|default:"—" }}</td>
+              <td class="mono-num">{{ bartender.staff_id }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <div class="bento-card">
+      <p class="page-subtitle">{% trans "There are no bartenders in the bar yet." %}</p>
+    </div>
+  {% endif %}
+
+  {% include "bar/partials/pagination.html" with htmx_target_id="bartender-list-region" %}
+</div>

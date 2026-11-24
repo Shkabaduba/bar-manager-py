@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block content %}
+  <div class="page-header">
+    <div>
+      <h1>{% trans "Ingredients Stock" %}</h1>
+      <p class="page-subtitle">{% trans "Live inventory balances, thresholds, and weighted average costs" %}</p>
+    </div>
+    {% if user.can_manage_bar %}
+      <div class="inline-actions">
+        <a
+          href="{% url 'bar:stock-in' %}"
+          hx-get="{% url 'bar:stock-in' %}"
+          hx-target="#drawer-body"
+          hx-swap="innerHTML"
+          class="btn btn-success btn-sm"
+        >
+          + {% trans "Stock In" %}
+        </a>
+        <a
+          href="{% url 'bar:ingredient-create' %}"
+          hx-get="{% url 'bar:ingredient-create' %}"
+          hx-target="#drawer-body"
+          hx-swap="innerHTML"
+          class="btn btn-primary btn-sm"
+        >
+          + {% trans "Create Ingredient" %}
+        </a>
+      </div>
+    {% endif %}
+  </div>
+
+  <form
+    method="get"
+    action=""
+    hx-get="{% url 'bar:ingredient-list' %}"
+    hx-target="#ingredient-list-region"
+    hx-swap="outerHTML"
+    hx-push-url="true"
+    hx-trigger="submit, input changed delay:250ms from:input, change from:select"
+    class="filter-bar"
+  >
+    {{ search_form.name }}
+    <select name="stock_status">
+      <option value="">{% trans "All stock levels" %}</option>
+      <option value="ok" {% if request.GET.stock_status == "ok" %}selected{% endif %}>{% trans "In stock" %}</option>
+      <option value="low" {% if request.GET.stock_status == "low" %}selected{% endif %}>{% trans "Low stock" %}</option>
+      <option value="out" {% if request.GET.stock_status == "out" %}selected{% endif %}>{% trans "Out of stock" %}</option>
+    </select>
+    <button type="submit" class="btn btn-primary btn-sm">{% trans "Search" %}</button>
+  </form>
+
+  {% include "bar/partials/ingredient_table.html" %}
+{% endblock %}
+
+{% block pagination %}{% endblock %}

@@ -1,0 +1,157 @@
+{% extends "base.html" %}
+{% load i18n static %}
+
+{% block title %}
+  <title>{% trans "Sign In | Bar Manager" %}</title>
+{% endblock %}
+
+{% block extra_head %}
+  <link rel="preload" as="image" href="{% static 'img/cyber_bar_bg.jpg' %}" fetchpriority="high">
+{% endblock %}
+
+{% block layout %}
+  {% get_current_language as CURRENT_LANGUAGE %}
+  <div class="auth-shell">
+    <img
+      src="{% static 'img/cyber_bar_bg.jpg' %}"
+      alt=""
+      width="960"
+      height="540"
+      fetchpriority="high"
+      decoding="async"
+      class="pixel-art auth-bg-img"
+      aria-hidden="true"
+    >
+    <div class="auth-bg-scrim" aria-hidden="true"></div>
+
+    <header class="auth-topbar">
+      <div class="inline-actions">
+        <span class="badge badge-primary pixel-badge">
+          <span class="pulse-dot" aria-hidden="true"></span>
+          {% trans "Shift Portal" %}
+        </span>
+        <span class="header-clock mono-num" data-live-clock>--:--:--</span>
+      </div>
+
+      <form action="{% url 'set_language' %}" method="post" class="lang-switcher">
+        {% csrf_token %}
+        <input type="hidden" name="next" value="{{ request.get_full_path }}">
+        <button type="submit" name="language" value="en" class="lang-btn {% if CURRENT_LANGUAGE == 'en' %}is-active{% endif %}">
+          EN
+        </button>
+        <button type="submit" name="language" value="uk" class="lang-btn {% if CURRENT_LANGUAGE == 'uk' %}is-active{% endif %}">
+          UK
+        </button>
+      </form>
+    </header>
+
+    <main class="auth-portal-wrap">
+      <div class="auth-portal-grid">
+        <section class="auth-kinetic-stage" aria-hidden="true">
+          <canvas class="auth-orbital-canvas" data-login-canvas></canvas>
+          <div class="auth-hud-top">
+            <span class="kpi-label">00 // {% trans "Shift Portal" %}</span>
+            <h2 class="auth-stage-title">{% trans "Precision Bar Operations" %}</h2>
+          </div>
+          <div class="auth-hud-bottom">
+            <div class="auth-telemetry" data-login-telemetry>
+              <span>AXIS 0.00 / 0.00</span>
+              <span>ORBITAL SYNC // READY</span>
+            </div>
+          </div>
+        </section>
+
+        <div class="auth-card">
+          <div class="auth-brand">
+            <div class="auth-icon">
+              <img
+                src="{% static 'img/pixel_bar_logo.jpg' %}"
+                alt=""
+                width="64"
+                height="64"
+                decoding="async"
+                class="pixel-art auth-logo-img"
+              >
+            </div>
+            <h1>{% trans "Bar Manager" %}</h1>
+            <p class="page-subtitle">{% trans "Sign in to start your shift" %}</p>
+          </div>
+
+          {% if form.errors %}
+            <div class="alert alert-error" role="alert">
+              <div>
+                <strong>{% trans "Authentication failed" %}</strong>
+                <div>{% trans "Your username and password didn't match. Please try again." %}</div>
+              </div>
+            </div>
+          {% endif %}
+
+          {% if next and not form.errors %}
+            <div class="alert alert-info">
+              <span>{% trans "Please sign in to access this bar management section." %}</span>
+            </div>
+          {% endif %}
+
+          <form method="post" action="{% url 'login' %}" data-login-form>
+            {% csrf_token %}
+            {% if next %}
+              <input type="hidden" name="next" value="{{ next }}">
+            {% endif %}
+
+            <div class="field-group">
+              <label for="id_username" class="field-label">{% trans "Username" %}</label>
+              <input
+                type="text"
+                name="username"
+                id="id_username"
+                required
+                autofocus
+                placeholder="{% trans 'Enter your username' %}"
+              >
+            </div>
+
+            <div class="field-group">
+              <label for="id_password" class="field-label">{% trans "Password" %}</label>
+              <input
+                type="password"
+                name="password"
+                id="id_password"
+                required
+                placeholder="••••••••"
+              >
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-block mt-4" data-magnetic>
+              <span class="kinetic-clip">
+                <span class="kinetic-inner" data-kinetic-label="{% trans 'Sign In to Shift' %}">{% trans "Sign In to Shift" %}</span>
+              </span>
+              <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <line x1="5" y1="12" x2="19" y2="12"/>
+                <polyline points="12 5 19 12 12 19"/>
+              </svg>
+            </button>
+          </form>
+        </div>
+      </div>
+    </main>
+
+    <div class="auth-marquee-wrap">
+      <div class="marquee-strip" data-marquee aria-hidden="true">
+        <div class="marquee-track">
+          <div class="marquee-group">
+            <span>BAR MANAGER</span><span class="marquee-sep">//</span>
+            <span>SHIFT PORTAL</span><span class="marquee-sep">//</span>
+            <span>ATOMIC POS</span><span class="marquee-sep">//</span>
+            <span>LIVE COSTING</span><span class="marquee-sep">//</span>
+          </div>
+          <div class="marquee-group">
+            <span>BAR MANAGER</span><span class="marquee-sep">//</span>
+            <span>SHIFT PORTAL</span><span class="marquee-sep">//</span>
+            <span>ATOMIC POS</span><span class="marquee-sep">//</span>
+            <span>LIVE COSTING</span><span class="marquee-sep">//</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock layout %}

@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block content %}
+  <div class="page-header">
+    <div>
+      <h1>
+        {% if object %}
+          {% trans "Update Cocktail & Recipe" %}
+        {% else %}
+          {% trans "Create Cocktail & Recipe" %}
+        {% endif %}
+      </h1>
+      <p class="page-subtitle">{% trans "Live cost price, Food Cost %, and stock portion calculator" %}</p>
+    </div>
+    <a href="{% url 'bar:drink-list' %}" class="btn btn-outline btn-sm">
+      ← {% trans "Back to Drinks" %}
+    </a>
+  </div>
+
+  <div class="calc-grid">
+    <div class="bento-card">
+      <form id="drink-recipe-form" action="" method="post" novalidate>
+        {% csrf_token %}
+
+        <div
+          id="recipe-live-inputs"
+          hx-post="{% url 'bar:drink-costing-preview' %}"
+          hx-trigger="input changed delay:300ms, change"
+          hx-target="#drink-costing-preview"
+          hx-swap="outerHTML"
+          hx-include="#drink-recipe-form"
+        >
+          {% include "includes/form_fields.html" %}
+
+          <div class="flex items-center justify-between mt-4 mb-4">
+            <h2 style="margin-bottom: 0;">{% trans "Recipe Ingredients" %}</h2>
+            <button type="button" class="btn btn-outline btn-sm" data-add-recipe-row>
+              + {% trans "Add Ingredient" %}
+            </button>
+          </div>
+
+          {{ recipe_formset.management_form }}
+          {% if recipe_formset.non_form_errors %}
+            <div class="form-errors-banner" role="alert">
+              {{ recipe_formset.non_form_errors }}
+            </div>
+          {% endif %}
+
+          <div id="recipe-rows">
+            {% for line_form in recipe_formset %}
+              <div class="recipe-row recipe-row-card" data-recipe-row>
+                {% include "includes/form_fields.html" with form=line_form %}
+                <div class="flex justify-end">
+                  <button type="button" class="btn btn-error btn-xs" data-remove-recipe-row>
+                    {% trans "Remove" %}
+                  </button>
+                </div>
+              </div>
+            {% endfor %}
+          </div>
+        </div>
+
+        <template id="empty-recipe-row-template">
+          <div class="recipe-row recipe-row-card" data-recipe-row>
+            {% include "includes/form_fields.html" with form=recipe_formset.empty_form %}
+            <div class="flex justify-end">
+              <button type="button" class="btn btn-error btn-xs" data-remove-recipe-row>
+                {% trans "Remove" %}
+              </button>
+            </div>
+          </div>
+        </template>
+
+        <div class="inline-actions mt-4">
+          <button type="submit" class="btn btn-primary">{% trans "Save Drink" %}</button>
+          <a href="{% url 'bar:drink-list' %}" class="btn btn-outline">{% trans "Cancel" %}</a>
+        </div>
+      </form>
+    </div>
+
+    <div class="bento-card sticky-panel">
+      <h2 class="section-title">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <line x1="4" y1="21" x2="4" y2="14"/>
+          <line x1="4" y1="10" x2="4" y2="3"/>
+          <line x1="12" y1="21" x2="12" y2="12"/>
+          <line x1="12" y1="8" x2="12" y2="3"/>
+          <line x1="20" y1="21" x2="20" y2="16"/>
+          <line x1="20" y1="12" x2="20" y2="3"/>
+          <line x1="1" y1="14" x2="7" y2="14"/>
+          <line x1="9" y1="8" x2="15" y2="8"/>
+          <line x1="17" y1="16" x2="23" y2="16"/>
+        </svg>
+        <span>{% trans "Live Costing" %}</span>
+      </h2>
+      {% include "bar/partials/drink_costing_preview.html" with costing=costing_preview %}
+    </div>
+  </div>
+{% endblock %}

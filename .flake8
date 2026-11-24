@@ -1,0 +1,12 @@
+[flake8]
+max-line-length = 79
+inline-quotes = "
+exclude =
+    .git,
+    __pycache__,
+    .venv,
+    venv,
+    */migrations/*
+ignore =
+    N807,
+    W503

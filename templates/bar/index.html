@@ -1,0 +1,288 @@
+{% extends "base.html" %}
+{% load i18n static %}
+
+{% block extra_head %}
+  <link rel="preload" as="image" href="{% static 'img/cyber_bar_bg.jpg' %}" fetchpriority="high">
+{% endblock %}
+
+{% block content %}
+  <section class="cyber-hero">
+    <img
+      src="{% static 'img/cyber_bar_bg.jpg' %}"
+      alt=""
+      width="960"
+      height="540"
+      fetchpriority="high"
+      decoding="async"
+      class="pixel-art cyber-hero-bg"
+      aria-hidden="true"
+    >
+    <div class="cyber-hero-scrim" aria-hidden="true"></div>
+
+    <div class="cyber-hero-content">
+      <div class="hero-hud-row">
+        <span class="badge badge-primary pixel-badge">
+          <span class="pulse-dot" aria-hidden="true"></span>
+          {% trans "Shift Online" %}
+        </span>
+        <span class="hero-clock mono-num" data-live-clock>--:--:--</span>
+        <span class="badge badge-neutral">
+          <span>{% trans "Shift Visits" %}:</span>
+          <strong class="mono-num">{{ num_visits }}</strong>
+        </span>
+      </div>
+
+      <h1 class="cyber-hero-title">{% trans "Bar Manager Dashboard" %}</h1>
+      <p class="page-subtitle">{% trans "Shift Control & Inventory Overview" %}</p>
+
+      <div class="hero-actions">
+        <a
+          href="{% url 'bar:order-create' %}"
+          hx-get="{% url 'bar:order-create' %}"
+          hx-target="#drawer-body"
+          hx-swap="innerHTML"
+          class="btn btn-primary btn-sm"
+          data-magnetic
+        >
+          <span class="kinetic-clip">
+            <span class="kinetic-inner" data-kinetic-label="+ {% trans 'Open New Table Order' %}">+ {% trans "Open New Table Order" %}</span>
+          </span>
+        </a>
+        <a href="{% url 'bar:drink-list' %}" class="btn btn-outline btn-sm">
+          <span class="kinetic-clip">
+            <span class="kinetic-inner" data-kinetic-label="{% trans 'Drinks Menu' %} →">{% trans "Drinks Menu" %} →</span>
+          </span>
+        </a>
+      </div>
+    </div>
+
+    <div class="hero-cocktail-strip" aria-hidden="true">
+      <div class="hero-cocktail-thumb">
+        <img
+          src="{% static 'img/cocktail_negroni.jpg' %}"
+          alt=""
+          width="76"
+          height="76"
+          loading="lazy"
+          decoding="async"
+          class="pixel-art"
+        >
+      </div>
+      <div class="hero-cocktail-thumb">
+        <img
+          src="{% static 'img/cocktail_whiskey_sour.jpg' %}"
+          alt=""
+          width="76"
+          height="76"
+          loading="lazy"
+          decoding="async"
+          class="pixel-art"
+        >
+      </div>
+      <div class="hero-cocktail-thumb">
+        <img
+          src="{% static 'img/cocktail_lemonade.jpg' %}"
+          alt=""
+          width="76"
+          height="76"
+          loading="lazy"
+          decoding="async"
+          class="pixel-art"
+        >
+      </div>
+    </div>
+  </section>
+
+  <div class="bento-grid bento-stagger mb-6">
+    <div class="span-3 bento-card kpi-card {% if active_orders %}is-warning{% else %}is-success{% endif %}">
+      <div class="kpi-header">
+        <span class="kpi-label">{% trans "Active Orders" %}</span>
+        <span class="kpi-icon-box {% if active_orders %}is-warning{% else %}is-success{% endif %}">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1-2 1Z"/>
+            <path d="M8 7h8"/>
+            <path d="M8 11h8"/>
+          </svg>
+        </span>
+      </div>
+      <div class="kpi-value text-warning">
+        <span id="kpi-active-orders" data-count-up>{{ active_orders }}</span>
+      </div>
+      <p class="kpi-meta">{% trans "Open & in-progress checks" %}</p>
+    </div>
+
+    <div class="span-3 bento-card kpi-card">
+      <div class="kpi-header">
+        <span class="kpi-label">{% trans "Drinks Menu" %}</span>
+        <span class="kpi-icon-box is-magenta">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M8 22h8"/>
+            <path d="M12 11v11"/>
+            <path d="m19 3-7 8-7-8Z"/>
+          </svg>
+        </span>
+      </div>
+      <div class="kpi-value text-primary">
+        <span id="kpi-num-drinks" data-count-up>{{ num_drinks }}</span>
+      </div>
+      <p class="kpi-meta">
+        {% blocktrans with count=snapshot.num_active_drinks %}{{ count }} active items{% endblocktrans %}
+      </p>
+    </div>
+
+    <div class="span-3 bento-card kpi-card {% if out_of_stock_ingredients %}is-danger{% else %}is-success{% endif %}">
+      <div class="kpi-header">
+        <span class="kpi-label">{% trans "Out of Stock" %}</span>
+        <span class="kpi-icon-box {% if out_of_stock_ingredients %}is-danger{% else %}is-success{% endif %}">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+            <line x1="12" y1="9" x2="12" y2="13"/>
+            <line x1="12" y1="17" x2="12.01" y2="17"/>
+          </svg>
+        </span>
+      </div>
+      <div class="kpi-value {% if out_of_stock_ingredients %}text-error{% else %}text-success{% endif %}">
+        <span id="kpi-out-of-stock" data-count-up>{{ out_of_stock_ingredients }}</span>
+      </div>
+      <p class="kpi-meta">
+        {% blocktrans with low=snapshot.low_stock_ingredients %}{{ low }} low stock alerts{% endblocktrans %}
+      </p>
+    </div>
+
+    <div class="span-3 bento-card kpi-card is-cyan">
+      <div class="kpi-header">
+        <span class="kpi-label">{% trans "Categories" %}</span>
+        <span class="kpi-icon-box is-cyan">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/>
+            <line x1="7" y1="7" x2="7.01" y2="7"/>
+          </svg>
+        </span>
+      </div>
+      <div class="kpi-value">
+        <span id="kpi-num-categories" data-count-up>{{ num_categories }}</span>
+      </div>
+      <p class="kpi-meta">
+        {% blocktrans with suppliers=snapshot.num_suppliers %}{{ suppliers }} active suppliers{% endblocktrans %}
+      </p>
+    </div>
+
+    {% if user.can_manage_bar %}
+      <div class="span-8 bento-card">
+        <div class="flex items-center justify-between mb-4">
+          <h2 class="section-title" style="margin-bottom: 0;">{% trans "Today Shift Financial Pulse" %}</h2>
+          <a href="{% url 'bar:analytics' %}" class="btn btn-outline btn-sm">
+            <span>{% trans "Full Analytics" %} →</span>
+          </a>
+        </div>
+        <div class="bento-grid">
+          <div class="span-3 bg-base-300">
+            <div class="kpi-label">{% trans "Revenue Today" %}</div>
+            <div class="kpi-value text-success mono-num" style="font-size: 1.45rem;" data-count-up>{{ snapshot.revenue_today }} ₴</div>
+          </div>
+          <div class="span-3 bg-base-300">
+            <div class="kpi-label">{% trans "COGS Today" %}</div>
+            <div class="kpi-value mono-num" style="font-size: 1.45rem;" data-count-up>{{ snapshot.cogs_today }} ₴</div>
+          </div>
+          <div class="span-3 bg-base-300">
+            <div class="kpi-label">{% trans "Gross Profit" %}</div>
+            <div class="kpi-value text-primary mono-num" style="font-size: 1.45rem;" data-count-up>{{ snapshot.gross_profit_today }} ₴</div>
+          </div>
+          <div class="span-3 bg-base-300">
+            <div class="kpi-label">{% trans "Stock Value" %}</div>
+            <div class="kpi-value mono-num" style="font-size: 1.45rem;" data-count-up>{{ snapshot.stock_total_value }} ₴</div>
+          </div>
+        </div>
+      </div>
+    {% endif %}
+
+    <div class="{% if user.can_manage_bar %}span-4{% else %}span-12{% endif %} bento-card">
+      <h2 class="section-title">{% trans "Quick Shift Actions" %}</h2>
+      <div class="flex flex-col gap-3">
+        <a href="{% url 'bar:order-list' %}" class="action-tile">
+          <span class="action-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1-2 1Z"/>
+              <path d="M8 8h8"/>
+              <path d="M8 12h8"/>
+            </svg>
+          </span>
+          <div>
+            <div class="action-title">{% trans "Active Orders" %}</div>
+            <div class="action-desc">{% trans "Take checks & process payments" %}</div>
+          </div>
+        </a>
+
+        <a
+          href="{% url 'bar:order-create' %}"
+          hx-get="{% url 'bar:order-create' %}"
+          hx-target="#drawer-body"
+          hx-swap="innerHTML"
+          class="action-tile"
+        >
+          <span class="action-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <circle cx="12" cy="12" r="10"/>
+              <line x1="12" y1="8" x2="12" y2="16"/>
+              <line x1="8" y1="12" x2="16" y2="12"/>
+            </svg>
+          </span>
+          <div>
+            <div class="action-title">{% trans "Open New Table Order" %}</div>
+            <div class="action-desc">{% trans "Launch POS workspace" %}</div>
+          </div>
+        </a>
+
+        {% if user.can_manage_bar %}
+          <a href="{% url 'bar:drink-create' %}" class="action-tile">
+            <span class="action-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M8 22h8"/>
+                <path d="M12 11v11"/>
+                <path d="m19 3-7 8-7-8Z"/>
+              </svg>
+            </span>
+            <div>
+              <div class="action-title">{% trans "New Cocktail Recipe" %}</div>
+              <div class="action-desc">{% trans "Open live costing calculator" %}</div>
+            </div>
+          </a>
+
+          <a
+            href="{% url 'bar:stock-in' %}"
+            hx-get="{% url 'bar:stock-in' %}"
+            hx-target="#drawer-body"
+            hx-swap="innerHTML"
+            class="action-tile"
+          >
+            <span class="action-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/>
+                <path d="m3.3 7 8.7 5 8.7-5"/>
+                <path d="M12 22V12"/>
+              </svg>
+            </span>
+            <div>
+              <div class="action-title">{% trans "Record Stock Receipt" %}</div>
+              <div class="action-desc">{% trans "Update stock & weighted cost" %}</div>
+            </div>
+          </a>
+        {% else %}
+          <a href="{% url 'bar:ingredient-list' %}" class="action-tile">
+            <span class="action-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/>
+                <path d="m3.3 7 8.7 5 8.7-5"/>
+                <path d="M12 22V12"/>
+              </svg>
+            </span>
+            <div>
+              <div class="action-title">{% trans "Stock Storage" %}</div>
+              <div class="action-desc">{% trans "Inspect ingredient balances" %}</div>
+            </div>
+          </a>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+{% endblock %}

@@ -1,0 +1,71 @@
+{% load i18n %}
+<div
+  id="ingredient-list-region"
+  hx-get="{% url 'bar:ingredient-list' %}"
+  hx-trigger="stockChanged from:body"
+  hx-swap="outerHTML"
+  {% if oob_swap %}hx-swap-oob="outerHTML:#ingredient-list-region"{% endif %}
+>
+  {% if ingredient_list %}
+    <div class="table-wrap">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>{% trans "ID" %}</th>
+            <th>{% trans "Name" %}</th>
+            <th>{% trans "Stock Balance" %}</th>
+            <th>{% trans "Avg Cost / Unit" %}</th>
+            <th>{% trans "Supplier" %}</th>
+            {% if user.can_manage_bar %}
+              <th>{% trans "Update" %}</th>
+              <th>{% trans "Delete" %}</th>
+            {% endif %}
+          </tr>
+        </thead>
+        <tbody>
+          {% for ingredient in ingredient_list %}
+            <tr>
+              <td class="mono-num">{{ ingredient.id }}</td>
+              <td><strong>{{ ingredient.name }}</strong></td>
+              <td class="mono-num">
+                {% if ingredient.stock_quantity == 0 %}
+                  <span class="badge badge-error">0 {{ ingredient.unit }}</span>
+                {% elif ingredient.min_stock_threshold > 0 and ingredient.stock_quantity <= ingredient.min_stock_threshold %}
+                  <span class="badge badge-warning">{{ ingredient.stock_quantity }} {{ ingredient.unit }}</span>
+                {% else %}
+                  <span class="badge badge-success">{{ ingredient.stock_quantity }} {{ ingredient.unit }}</span>
+                {% endif %}
+              </td>
+              <td class="mono-num">{{ ingredient.cost_per_unit }} ₴</td>
+              <td>{{ ingredient.supplier.name }}</td>
+              {% if user.can_manage_bar %}
+                <td>
+                  <a
+                    href="{% url 'bar:ingredient-update' ingredient.id %}"
+                    hx-get="{% url 'bar:ingredient-update' ingredient.id %}"
+                    hx-target="#drawer-body"
+                    hx-swap="innerHTML"
+                    class="btn btn-info btn-xs"
+                  >
+                    {% trans "Update" %}
+                  </a>
+                </td>
+                <td>
+                  <a href="{% url 'bar:ingredient-delete' ingredient.id %}" class="btn btn-error btn-xs">
+                    {% trans "Delete" %}
+                  </a>
+                </td>
+              {% endif %}
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <div class="bento-card">
+      <p class="page-subtitle">{% trans "There are no ingredients in the bar yet." %}</p>
+    </div>
+  {% endif %}
+
+  {% include "bar/partials/pagination.html" with htmx_target_id="ingredient-list-region" %}
+</div>

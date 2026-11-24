@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block content %}
+  <div class="confirm-delete-card">
+    <h1>{% trans "Delete Ingredient" %}</h1>
+    <p class="page-subtitle mb-6">
+      {% blocktrans with name=baringredient.name %}Are you sure you want to delete ingredient <strong>{{ name }}</strong>?{% endblocktrans %}
+    </p>
+
+    <form action="" method="post" class="inline-actions">
+      {% csrf_token %}
+      <button type="submit" class="btn btn-error">{% trans "Yes, delete" %}</button>
+      <a href="{% url 'bar:ingredient-list' %}" class="btn btn-outline">{% trans "Cancel" %}</a>
+    </form>
+  </div>
+{% endblock %}

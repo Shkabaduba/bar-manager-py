@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block content %}
+  <div class="page-header">
+    <div>
+      <h1>
+        {% if object %}
+          {% trans "Update Category" %}
+        {% else %}
+          {% trans "Create Category" %}
+        {% endif %}
+      </h1>
+      <p class="page-subtitle">{% trans "Drink classification and alcohol status" %}</p>
+    </div>
+    <a href="{% url 'bar:category-list' %}" class="btn btn-outline btn-sm">
+      ← {% trans "Back to Categories" %}
+    </a>
+  </div>
+
+  <div class="bento-card" style="max-width: 560px;">
+    <form action="" method="post" novalidate>
+      {% csrf_token %}
+      {% include "includes/form_fields.html" %}
+
+      <div class="inline-actions mt-4">
+        <button type="submit" class="btn btn-primary">{% trans "Save Category" %}</button>
+        <a href="{% url 'bar:category-list' %}" class="btn btn-outline">{% trans "Cancel" %}</a>
+      </div>
+    </form>
+  </div>
+{% endblock %}

@@ -1,0 +1,61 @@
+{% load i18n %}
+<div id="order-list-region" {% if oob_swap %}hx-swap-oob="outerHTML:#order-list-region"{% endif %}>
+  {% if order_list %}
+    <div class="table-wrap">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>{% trans "ID" %}</th>
+            <th>{% trans "Table" %}</th>
+            <th>{% trans "Bartender" %}</th>
+            <th>{% trans "Items" %}</th>
+            <th>{% trans "Total" %}</th>
+            <th>{% trans "Status" %}</th>
+            <th>{% trans "Start Time" %}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for order in order_list %}
+            <tr>
+              <td class="mono-num">
+                <a href="{{ order.get_absolute_url }}" class="link-primary">
+                  #{{ order.id }}
+                </a>
+              </td>
+              <td class="mono-num">{% blocktrans with num=order.table_number %}Table {{ num }}{% endblocktrans %}</td>
+              <td>
+                {% if order.bartender %}
+                  <a href="{{ order.bartender.get_absolute_url }}" class="link-primary">
+                    {{ order.bartender.username }}
+                  </a>
+                {% else %}
+                  <span class="badge badge-error">{% trans "Unassigned" %}</span>
+                {% endif %}
+              </td>
+              <td class="mono-num">{{ order.items_count|default:0 }}</td>
+              <td class="mono-num">
+                {% if order.status == "PAID" %}{{ order.total_revenue_snapshot|floatformat:2 }}{% else %}{{ order.calculated_total|default:"0.00"|floatformat:2 }}{% endif %} ₴
+              </td>
+              <td>
+                {% if order.status == "PAID" %}
+                  <span class="badge badge-success">{% trans "Paid" %}</span>
+                {% elif order.status == "CANCELLED" %}
+                  <span class="badge badge-error">{% trans "Cancelled" %}</span>
+                {% else %}
+                  <span class="badge badge-warning">{{ order.get_status_display }}</span>
+                {% endif %}
+              </td>
+              <td class="mono-num">{{ order.created_at|date:"Y-m-d H:i" }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <div class="bento-card">
+      <p class="page-subtitle">{% trans "There are no orders in the bar for now." %}</p>
+    </div>
+  {% endif %}
+
+  {% include "bar/partials/pagination.html" with htmx_target_id="order-list-region" %}
+</div>

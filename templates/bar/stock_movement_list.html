@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block content %}
+  <div class="page-header">
+    <div>
+      <h1>{% trans "Stock Movements" %}</h1>
+      <p class="page-subtitle">{% trans "Immutable ledger of receipts, order deductions, write-offs, and audits" %}</p>
+    </div>
+    <div class="inline-actions">
+      <a
+        href="{% url 'bar:stock-in' %}"
+        hx-get="{% url 'bar:stock-in' %}"
+        hx-target="#drawer-body"
+        hx-swap="innerHTML"
+        class="btn btn-success btn-sm"
+      >
+        + {% trans "Stock In" %}
+      </a>
+      <a
+        href="{% url 'bar:stock-writeoff' %}"
+        hx-get="{% url 'bar:stock-writeoff' %}"
+        hx-target="#drawer-body"
+        hx-swap="innerHTML"
+        class="btn btn-warning btn-sm"
+      >
+        {% trans "Write-off" %}
+      </a>
+      <a
+        href="{% url 'bar:stock-adjustment' %}"
+        hx-get="{% url 'bar:stock-adjustment' %}"
+        hx-target="#drawer-body"
+        hx-swap="innerHTML"
+        class="btn btn-info btn-sm"
+      >
+        {% trans "Adjustment" %}
+      </a>
+    </div>
+  </div>
+
+  <form
+    method="get"
+    action=""
+    hx-get="{% url 'bar:stock-movement-list' %}"
+    hx-target="#stock-movement-list-region"
+    hx-swap="outerHTML"
+    hx-push-url="true"
+    hx-trigger="submit, change from:select"
+    class="filter-bar"
+  >
+    {{ filter_form.movement_type }}
+    {{ filter_form.ingredient }}
+    <button type="submit" class="btn btn-primary btn-sm">{% trans "Filter" %}</button>
+  </form>
+
+  {% include "bar/partials/stock_movement_table.html" %}
+{% endblock %}
+
+{% block pagination %}{% endblock %}

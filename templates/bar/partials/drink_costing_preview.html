@@ -1,0 +1,85 @@
+{% load i18n %}
+<div id="drink-costing-preview">
+  {% if preview_error %}
+    <div class="alert alert-error" role="alert">
+      <span>{{ preview_error }}</span>
+    </div>
+  {% elif costing %}
+    <div class="bento-grid mb-4">
+      <div class="span-6 bg-base-300">
+        <div class="kpi-label">{% trans "Cost Price" %}</div>
+        <div class="kpi-value mono-num" style="font-size: 1.35rem;">{{ costing.cost_price }} ₴</div>
+      </div>
+      <div class="span-6 bg-base-300">
+        <div class="kpi-label">{% trans "Gross Margin" %}</div>
+        <div class="kpi-value text-success mono-num" style="font-size: 1.35rem;">{{ costing.gross_margin }} ₴</div>
+      </div>
+      <div class="span-6 bg-base-300">
+        <div class="kpi-label">{% trans "Food Cost %" %}</div>
+        <div class="mt-2">
+          {% if costing.food_cost_zone == "OPTIMAL" %}
+            <span class="badge badge-food-optimal mono-num">{{ costing.food_cost_pct }}% ({{ costing.food_cost_zone }})</span>
+          {% elif costing.food_cost_zone == "MODERATE" %}
+            <span class="badge badge-food-moderate mono-num">{{ costing.food_cost_pct }}% ({{ costing.food_cost_zone }})</span>
+          {% else %}
+            <span class="badge badge-food-high mono-num">{{ costing.food_cost_pct }}% ({{ costing.food_cost_zone }})</span>
+          {% endif %}
+        </div>
+      </div>
+      <div class="span-6 bg-base-300">
+        <div class="kpi-label">{% trans "Recommended Price" %}</div>
+        <div class="kpi-value text-primary mono-num" style="font-size: 1.35rem;">{{ costing.recommended_price }} ₴</div>
+      </div>
+      <div class="span-6 bg-base-300">
+        <div class="kpi-label">{% trans "Est. Volume" %}</div>
+        <div class="mono-num" style="font-weight: 700;">{{ costing.estimated_volume_ml }} ml</div>
+      </div>
+      <div class="span-6 bg-base-300">
+        <div class="kpi-label">{% trans "Max Portions" %}</div>
+        <div class="mono-num" style="font-weight: 700;">
+          {% if costing.max_portions is not None %}
+            {{ costing.max_portions }} ({{ costing.availability_status }})
+          {% else %}
+            — ({{ costing.availability_status }})
+          {% endif %}
+        </div>
+      </div>
+    </div>
+
+    {% if costing.lines %}
+      <div class="table-wrap">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>{% trans "Ingredient" %}</th>
+              <th>{% trans "Amount" %}</th>
+              <th>{% trans "Line Cost" %}</th>
+              <th>{% trans "Share %" %}</th>
+              <th>{% trans "Portions" %}</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for line in costing.lines %}
+              <tr>
+                <td><strong>{{ line.ingredient_name }}</strong></td>
+                <td class="mono-num">{{ line.amount }} {{ line.unit }}</td>
+                <td class="mono-num">{{ line.line_cost }} ₴</td>
+                <td class="mono-num">{{ line.cost_share_pct }}%</td>
+                <td class="mono-num">
+                  {{ line.available_portions }}
+                  {% if line.is_out_of_stock %}
+                    <span class="badge badge-error">{% trans "Out" %}</span>
+                  {% elif line.is_limiting %}
+                    <span class="badge badge-warning">{% trans "Limiting" %}</span>
+                  {% endif %}
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% endif %}
+  {% else %}
+    <p class="page-subtitle">{% trans "Add ingredients to preview costing." %}</p>
+  {% endif %}
+</div>

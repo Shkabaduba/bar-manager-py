@@ -1,0 +1,34 @@
+{% load i18n query_transform %}
+{% if is_paginated %}
+  <div class="join">
+    {% if page_obj.has_previous %}
+      <a
+        href="{{ hx_base_url|default:request.path }}?{% query_transform request page=page_obj.previous_page_number %}"
+        hx-get="{{ hx_base_url|default:request.path }}?{% query_transform request page=page_obj.previous_page_number %}"
+        hx-target="#{{ htmx_target_id }}"
+        hx-swap="outerHTML"
+        hx-push-url="true"
+        class="join-item btn btn-sm btn-outline"
+      >
+        « {% trans "Prev" %}
+      </a>
+    {% endif %}
+
+    <button type="button" class="join-item btn btn-sm btn-primary mono-num" disabled>
+      {% blocktrans with current=page_obj.number total=paginator.num_pages %}Page {{ current }} of {{ total }}{% endblocktrans %}
+    </button>
+
+    {% if page_obj.has_next %}
+      <a
+        href="{{ hx_base_url|default:request.path }}?{% query_transform request page=page_obj.next_page_number %}"
+        hx-get="{{ hx_base_url|default:request.path }}?{% query_transform request page=page_obj.next_page_number %}"
+        hx-target="#{{ htmx_target_id }}"
+        hx-swap="outerHTML"
+        hx-push-url="true"
+        class="join-item btn btn-sm btn-outline"
+      >
+        {% trans "Next" %} »
+      </a>
+    {% endif %}
+  </div>
+{% endif %}

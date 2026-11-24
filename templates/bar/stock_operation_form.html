@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block content %}
+  <div class="page-header">
+    <div>
+      <h1>{{ operation_title }}</h1>
+      <p class="page-subtitle">{% trans "Recorded atomically in the immutable stock ledger" %}</p>
+    </div>
+    <a href="{% url 'bar:stock-movement-list' %}" class="btn btn-outline btn-sm">
+      ← {% trans "Back to Movements" %}
+    </a>
+  </div>
+
+  <div class="bento-card" style="max-width: 620px;">
+    <form action="" method="post" novalidate>
+      {% csrf_token %}
+      {% include "includes/form_fields.html" %}
+
+      <div class="inline-actions mt-4">
+        <button type="submit" class="btn btn-primary">{{ operation_action }}</button>
+        <a href="{% url 'bar:stock-movement-list' %}" class="btn btn-outline">{% trans "Cancel" %}</a>
+      </div>
+    </form>
+  </div>
+{% endblock %}

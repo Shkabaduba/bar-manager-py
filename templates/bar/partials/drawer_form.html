@@ -1,0 +1,24 @@
+{% load i18n %}
+<div class="bento-card" style="border: none; padding: 0; background: transparent;">
+  <div class="page-header" style="margin-bottom: 1rem;">
+    <h2 style="margin-bottom: 0;">{{ drawer_title|default:_("Edit") }}</h2>
+  </div>
+
+  <form
+    method="post"
+    action="{{ form_action }}"
+    hx-post="{{ form_action }}"
+    hx-target="#drawer-body"
+    hx-swap="innerHTML"
+    novalidate
+  >
+    {% csrf_token %}
+    {% include "includes/form_fields.html" %}
+
+    <div class="inline-actions mt-4">
+      <button type="submit" class="btn btn-primary btn-sm" hx-disabled-elt="this">
+        {{ drawer_submit_label|default:_("Save") }}
+      </button>
+    </div>
+  </form>
+</div>

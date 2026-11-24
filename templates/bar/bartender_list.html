@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block content %}
+  <div class="page-header">
+    <div>
+      <h1>{% trans "Staff & Bartenders" %}</h1>
+      <p class="page-subtitle">{% trans "Shift roster, roles, and performance links" %}</p>
+    </div>
+    {% if user.can_manage_staff %}
+      <a href="{% url 'bar:bartender-create' %}" class="btn btn-primary btn-sm">
+        + {% trans "Create Bartender" %}
+      </a>
+    {% endif %}
+  </div>
+
+  <form
+    method="get"
+    action=""
+    hx-get="{% url 'bar:bartender-list' %}"
+    hx-target="#bartender-list-region"
+    hx-swap="outerHTML"
+    hx-push-url="true"
+    hx-trigger="submit, input changed delay:250ms from:input, change from:select"
+    class="filter-bar"
+  >
+    {{ search_form.username }}
+    <select name="role">
+      <option value="">{% trans "All roles" %}</option>
+      <option value="OWNER" {% if request.GET.role == "OWNER" %}selected{% endif %}>{% trans "Owner / Admin" %}</option>
+      <option value="MANAGER" {% if request.GET.role == "MANAGER" %}selected{% endif %}>{% trans "Bar Manager" %}</option>
+      <option value="BARTENDER" {% if request.GET.role == "BARTENDER" %}selected{% endif %}>{% trans "Bartender" %}</option>
+    </select>
+    <button type="submit" class="btn btn-primary btn-sm">{% trans "Search" %}</button>
+  </form>
+
+  {% include "bar/partials/bartender_table.html" %}
+{% endblock %}
+
+{% block pagination %}{% endblock %}

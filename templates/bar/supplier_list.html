@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block content %}
+  <div class="page-header">
+    <div>
+      <h1>{% trans "Suppliers" %}</h1>
+      <p class="page-subtitle">{% trans "Beverage distributors and partner contacts" %}</p>
+    </div>
+    {% if user.can_manage_bar %}
+      <a
+        href="{% url 'bar:supplier-create' %}"
+        hx-get="{% url 'bar:supplier-create' %}"
+        hx-target="#drawer-body"
+        hx-swap="innerHTML"
+        class="btn btn-primary btn-sm"
+      >
+        + {% trans "Create Supplier" %}
+      </a>
+    {% endif %}
+  </div>
+
+  <form
+    method="get"
+    action=""
+    hx-get="{% url 'bar:supplier-list' %}"
+    hx-target="#supplier-list-region"
+    hx-swap="outerHTML"
+    hx-push-url="true"
+    hx-trigger="submit, input changed delay:250ms from:input, change from:select"
+    class="filter-bar"
+  >
+    {{ search_form.name }}
+    <button type="submit" class="btn btn-primary btn-sm">{% trans "Search" %}</button>
+  </form>
+
+  {% include "bar/partials/supplier_table.html" %}
+{% endblock %}
+
+{% block pagination %}{% endblock %}

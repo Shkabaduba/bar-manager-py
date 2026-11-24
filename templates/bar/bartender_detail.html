@@ -1,0 +1,120 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block content %}
+  <div class="page-header">
+    <div>
+      <h1>{% trans "Staff Profile" %}: {{ bartender.username }}</h1>
+      <p class="page-subtitle">
+        {% if bartender.first_name or bartender.last_name %}
+          {{ bartender.first_name }} {{ bartender.last_name }}
+        {% else %}
+          {% trans "Name not specified" %}
+        {% endif %}
+        •
+        {% if bartender.is_owner %}
+          <span class="badge badge-role-owner">{{ bartender.get_role_display }}</span>
+        {% elif bartender.is_manager %}
+          <span class="badge badge-role-manager">{{ bartender.get_role_display }}</span>
+        {% else %}
+          <span class="badge badge-role-bartender">{{ bartender.get_role_display }}</span>
+        {% endif %}
+      </p>
+    </div>
+    <div class="inline-actions">
+      {% if user.can_manage_staff %}
+        <a href="{% url 'bar:bartender-update' bartender.id %}" class="btn btn-info btn-sm">
+          {% trans "Update Role & ID" %}
+        </a>
+        <a href="{% url 'bar:bartender-delete' bartender.id %}" class="btn btn-error btn-sm">
+          {% trans "Delete" %}
+        </a>
+      {% endif %}
+      <a href="{% url 'bar:bartender-list' %}" class="btn btn-outline btn-sm">
+        ← {% trans "Back to Bartenders" %}
+      </a>
+    </div>
+  </div>
+
+  <div class="bento-grid bento-stagger mb-6">
+    <div class="span-4 bento-card kpi-card">
+      <div class="kpi-label">{% trans "Staff ID" %}</div>
+      <div class="kpi-value text-primary mono-num" style="font-size: 1.5rem;">{{ bartender.staff_id }}</div>
+    </div>
+
+    <div class="span-4 bento-card kpi-card is-cyan">
+      <div class="kpi-label">{% trans "Assigned Orders" %}</div>
+      <div class="kpi-value mono-num" style="font-size: 1.5rem;">{{ bartender.total_orders_count }}</div>
+      <p class="kpi-meta mono-num">
+        {% blocktrans with paid=bartender.paid_orders_count %}{{ paid }} paid checks{% endblocktrans %}
+      </p>
+    </div>
+
+    <div class="span-4 bento-card kpi-card is-success">
+      <div class="kpi-label">{% trans "Closed Revenue" %}</div>
+      {% if can_view_staff_financials %}
+        <div class="kpi-value text-success mono-num" style="font-size: 1.5rem;" data-count-up>{{ bartender.total_revenue|floatformat:2 }} ₴</div>
+      {% else %}
+        <div class="kpi-value mono-num" style="font-size: 1.5rem;">—</div>
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="bento-card">
+    <h2 class="section-title">{% trans "Assigned Orders" %}</h2>
+    {% if not can_view_staff_financials %}
+      <p class="page-subtitle">{% trans "You do not have permission to perform this action." %}</p>
+    {% elif bartender.orders.all %}
+      <div class="table-wrap">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>{% trans "Order" %}</th>
+              <th>{% trans "Table" %}</th>
+              <th>{% trans "Time" %}</th>
+              <th>{% trans "Status" %}</th>
+              <th>{% trans "Drinks" %}</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for order in bartender.orders.all %}
+              <tr>
+                <td class="mono-num">
+                  <a href="{{ order.get_absolute_url }}" class="link-primary">
+                    #{{ order.id }}
+                  </a>
+                </td>
+                <td class="mono-num">{% blocktrans with num=order.table_number %}Table {{ num }}{% endblocktrans %}</td>
+                <td class="mono-num">{{ order.created_at|date:"Y-m-d H:i" }}</td>
+                <td>
+                  {% if order.status == "PAID" %}
+                    <span class="badge badge-success">{% trans "Paid" %}</span>
+                  {% elif order.status == "CANCELLED" %}
+                    <span class="badge badge-error">{% trans "Cancelled" %}</span>
+                  {% else %}
+                    <span class="badge badge-warning">{{ order.get_status_display }}</span>
+                  {% endif %}
+                </td>
+                <td>
+                  {% if order.drinks.all %}
+                    <div class="inline-actions">
+                      {% for drink in order.drinks.all %}
+                        <a href="{{ drink.get_absolute_url }}" class="badge badge-neutral">
+                          {{ drink.name }}
+                        </a>
+                      {% endfor %}
+                    </div>
+                  {% else %}
+                    <span class="page-subtitle">{% trans "No drinks" %}</span>
+                  {% endif %}
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% else %}
+      <p class="page-subtitle">{% trans "No orders assigned to this bartender yet." %}</p>
+    {% endif %}
+  </div>
+{% endblock %}
